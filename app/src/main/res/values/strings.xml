@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">OnePlusOne</string>
+    <string name="title_activity_map">Map_Activity</string>
+    <string name="title_activity_navi">NaviActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_activity_home_view">HomeViewActivity</string>
+    <string name="title_activity_home_fragment">HomeFragment</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -1,4 +1,4 @@
-# OnePlusOne API Server
+# OnePlusOne API Application
 
 ___
 ## 목차

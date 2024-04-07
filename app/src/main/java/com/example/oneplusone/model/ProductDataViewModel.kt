@@ -3,8 +3,12 @@ package com.example.oneplusone.model
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-
-class ProductDataViewModel:ViewModel() {
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+//productDataRepository : ProductDataRepository
+@HiltViewModel
+class ProductDataViewModel @Inject constructor()
+    :ViewModel() {
     private var _productDataList= MutableLiveData<List<ProductData>>()
     val productDataList : LiveData<List<ProductData>>
         get()=_productDataList
@@ -34,6 +38,34 @@ class ProductDataViewModel:ViewModel() {
                 byteArrayOf(),
                 true),
             ProductData(4,
+                "a",
+                1,
+                "c",
+                "d",
+                byteArrayOf(),
+                false),
+            ProductData(5,
+                "a",
+                1,
+                "c",
+                "d",
+                byteArrayOf(),
+                false),
+            ProductData(6,
+                "a",
+                1,
+                "c",
+                "d",
+                byteArrayOf(),
+                false),
+            ProductData(5,
+                "a",
+                1,
+                "c",
+                "d",
+                byteArrayOf(),
+                false),
+            ProductData(6,
                 "a",
                 1,
                 "c",
