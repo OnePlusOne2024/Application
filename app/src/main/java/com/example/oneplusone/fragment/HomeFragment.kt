@@ -1,5 +1,6 @@
 package com.example.oneplusone.fragment
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -9,6 +10,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.oneplusone.MainActivity
 import com.example.oneplusone.databinding.FragmentHomeBinding
 import com.example.oneplusone.model.ProductDataViewModel
 import com.example.oneplusone.model.ProductItemRecyclerAdapter
@@ -44,6 +46,7 @@ class HomeFragment : Fragment() {
         binding.productGridView.layoutManager = GridLayoutManager(context, 2)
         binding.productGridView.addItemDecoration(itemSpacingController)
 
+        //주의 사항: Fragment에서 DataBinding을 사용할 경우, lifecycleOwner에 this(Fragment)가 아닌 viewLifecycleOwner를 전달해야 한다.(누수 방지)
         productDataViewModel.productDataList.observe(viewLifecycleOwner, Observer { productDataList ->
             Log.d("test", productDataViewModel.productDataList.toString())
             productItemRecyclerAdapter.submitList(productDataList)

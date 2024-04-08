@@ -16,6 +16,15 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file("local.properties").newDataInputStream())
+        buildConfigField "String", "MAP_API_KEY", "\"${properties.getProperty("MAP_API_KEY")}\""
+
+        defaultConfig {
+            manifestPlaceholders = ["MAP_API_KEY" : "\"${properties.getProperty("MAP_API_KEY")}\""]
+        }
+
     }
     buildFeatures {
         viewBinding true
@@ -47,7 +56,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.7.0'
 
 
-    implementation 'androidx.activity:activity:1.8.0'
+    implementation 'androidx.activity:activity:1.8.2'
 
 
     kapt "com.android.databinding:compiler:3.1.4"
@@ -59,6 +68,9 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     implementation 'com.google.android.material:material:1.11.0'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.7.7'
+
+    //googleMap
+    implementation 'com.google.android.gms:play-services-maps:18.2.0'
 
     //hilt
     implementation "com.google.dagger:hilt-android:2.38.1"

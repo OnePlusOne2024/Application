@@ -28,8 +28,8 @@ class ProductItemRecyclerAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(product: ProductData, productClickListener: ProductClickListener) {
-            binding.productName.text=product.productName
 
+            binding.productName.text=product.productName
 
             with(binding) {
                 itemView.setOnClickListener {
