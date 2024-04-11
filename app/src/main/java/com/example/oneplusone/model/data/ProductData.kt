@@ -1,4 +1,4 @@
-package com.example.oneplusone.model
+package com.example.oneplusone.model.data
 
 data class ProductData(
 
@@ -12,7 +12,7 @@ data class ProductData(
 
     var benefits: String,
 
-    var productImage : ByteArray,
+    var productImage : Int,
 
     var favorite: Boolean,
 

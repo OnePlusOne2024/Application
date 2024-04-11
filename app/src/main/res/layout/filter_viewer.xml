@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <data>
+        <variable
+            name="filterData"
+            type="com.example.oneplusone.model.data.FilterData" />
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#ffffff"
+        android:id="@+id/product_filter">
+
+
+        <ImageView
+            android:id="@+id/filter_item"
+            android:layout_width="75dp"
+            android:layout_height="45dp"
+
+            android:layout_marginTop="2dp"
+            android:background="@drawable/filter_border"
+            imageResource="@{filterData.filterImage}"
+            app:layout_constraintBottom_toTopOf="@id/filter_bar_item_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/filter_bar_item_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:fontFamily="@font/scdream5"
+            android:paddingBottom="3dp"
+            android:text="@{String.valueOf(filterData.filterName)}"
+            android:textColor="#000000"
+
+            android:textSize="10sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/filter_item"
+            app:layout_constraintStart_toStartOf="@id/filter_item"
+            app:layout_constraintTop_toBottomOf="@id/filter_item" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
