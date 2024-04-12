@@ -6,7 +6,7 @@
     <data>
         <variable
             name="filterDataViewModel"
-            type="com.example.oneplusone.model.FilterDataViewModel" />
+            type="com.example.oneplusone.viewModel.FilterDataViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

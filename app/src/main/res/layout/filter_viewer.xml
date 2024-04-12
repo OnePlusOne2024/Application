@@ -23,7 +23,7 @@
 
             android:layout_marginTop="2dp"
             android:background="@drawable/filter_border"
-            imageResource="@{filterData.filterImage}"
+            filterImage="@{filterData.filterImage}"
             app:layout_constraintBottom_toTopOf="@id/filter_bar_item_text"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -36,7 +36,7 @@
 
             android:fontFamily="@font/scdream5"
             android:paddingBottom="3dp"
-            android:text="@{String.valueOf(filterData.filterName)}"
+            filterText="@{String.valueOf(filterData.filterText)}"
             android:textColor="#000000"
 
             android:textSize="10sp"

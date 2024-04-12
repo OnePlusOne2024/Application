@@ -1,31 +1,28 @@
-package com.example.oneplusone.model
+package com.example.oneplusone.viewModel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.oneplusone.R
 import com.example.oneplusone.model.data.FilterData
-import com.example.oneplusone.model.data.ProductData
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 
 
-class FilterDataViewModel @Inject constructor()
-    : ViewModel() {
+class FilterDataViewModel() : ViewModel() {
+
     private var _filterDataList= MutableLiveData<List<FilterData>>()
-    val filterDataList : LiveData<List<FilterData>>
-        get()=_filterDataList
+    val filterDataList: LiveData<List<FilterData>>
+        get() = _filterDataList
 
-    private fun loadItems(filterList:String){
+    private fun loadItems(filterList: String) {
         val loadItems=when(filterList){
-            CONVENIENCE_STORE->listOf(
+            CONVENIENCE_STORE ->listOf(
                 FilterData("편의점 전체", R.drawable.all_convenience_store),
                 FilterData("GS 25", R.drawable.gs_25),
                 FilterData("CU", R.drawable.cu),
                 FilterData("세븐 일레븐", R.drawable.seven_eleven),
                 FilterData("이마트 24", R.drawable.emart_24),
             )
-            PRODUCT_CATEGORY->listOf(
+            PRODUCT_CATEGORY ->listOf(
                 FilterData("모든 상품", R.drawable.all_product_category),
                 FilterData("음료", R.drawable.drink),
                 FilterData("과자", R.drawable.snack),
@@ -33,14 +30,14 @@ class FilterDataViewModel @Inject constructor()
                 FilterData("아이스 크림", R.drawable.ice_cream),
                 FilterData("생활 용품", R.drawable.soap)
             )
-            BENEFITS->listOf(
+            BENEFITS ->listOf(
                 FilterData("행사 전체", R.drawable.all_benefits),
                 FilterData("", R.drawable.one_plus_one),
                 FilterData("", R.drawable.two_plus_one),
                 FilterData("", R.drawable.three_plus_one),
                 FilterData("", R.drawable.discount),
 
-            )
+                )
             else -> emptyList()
         }
         _filterDataList.value = loadItems

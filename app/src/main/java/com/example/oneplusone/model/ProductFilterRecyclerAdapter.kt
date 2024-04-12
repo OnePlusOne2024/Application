@@ -31,16 +31,19 @@ class ProductFilterRecyclerAdapter (
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(filter: FilterData) {
-
-
             with(binding) {
-                itemView.setOnClickListener {
-                    Log.d("클릭","클릭")
-                }
+
+                binding.filterData=filter
+
+//                itemView.setOnClickListener {
+//                    Log.d("클릭","클릭")
+//                }
             }
         }
     }
-
+    override fun submitList(list: List<FilterData>?) {
+        super.submitList(list)
+    }
     class FilterClickListener(val clickListener: (product: ProductData) -> Unit) {
         fun onClick(product: ProductData) = clickListener(product)
     }
@@ -48,10 +51,10 @@ class ProductFilterRecyclerAdapter (
 
     class FilterDiffCallback : DiffUtil.ItemCallback<FilterData>() {
         override fun areItemsTheSame(oldItem: FilterData, newItem: FilterData): Boolean {
-            return oldItem.filterName == newItem.filterName
+            return oldItem.filterText == newItem.filterText
         }
         override fun areContentsTheSame(oldItem: FilterData, newItem: FilterData): Boolean {
-            return oldItem == newItem
+            return oldItem.hashCode() == newItem.hashCode()
         }
     }
 }

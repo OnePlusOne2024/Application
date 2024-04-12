@@ -1,22 +1,16 @@
 package com.example.oneplusone.fragment
 
-import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.oneplusone.MainActivity
 import com.example.oneplusone.databinding.FragmentHomeBinding
-import com.example.oneplusone.model.FilterDataViewModel
-import com.example.oneplusone.model.ProductDataViewModel
-import com.example.oneplusone.model.ProductFilterRecyclerAdapter
+import com.example.oneplusone.viewModel.FilterDataViewModel
+import com.example.oneplusone.viewModel.ProductDataViewModel
 import com.example.oneplusone.model.ProductItemRecyclerAdapter
 import com.example.oneplusone.util.ItemSpacingController
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,11 +20,7 @@ class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
     private lateinit var productDataViewModel: ProductDataViewModel
-    private val viewModel: FilterDataViewModel by viewModels()
-
-
-
-
+    private lateinit var filterDataViewModel: FilterDataViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,7 +34,7 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val productSpacingController = ItemSpacingController(25, 25, 40)
-        val filterSpacingController = ItemSpacingController(25, 25,0)
+        val filterSpacingController = ItemSpacingController(25, 25, 0)
 
         productDataViewModel = ViewModelProvider(this)[ProductDataViewModel::class.java]
 
@@ -58,45 +48,16 @@ class HomeFragment : Fragment() {
         binding.productGridView.addItemDecoration(productSpacingController)
 
         //주의 사항: Fragment에서 DataBinding을 사용할 경우, lifecycleOwner에 this(Fragment)가 아닌 viewLifecycleOwner를 전달해야 한다.(누수 방지)
-        productDataViewModel.productDataList.observe(viewLifecycleOwner, Observer { productDataList ->
-            Log.d("test", productDataViewModel.productDataList.toString())
-            productItemRecyclerAdapter.submitList(productDataList)
-        })
+        productDataViewModel.productDataList.observe(
+            viewLifecycleOwner,
+            Observer { productDataList ->
+                productItemRecyclerAdapter.submitList(productDataList)
+            })
 
-        binding.apply {
-            lifecycleOwner=viewLifecycleOwner
-            filterDataViewModel=viewModel
-        }
+        filterDataViewModel = ViewModelProvider(this)[FilterDataViewModel::class.java]
 
-//        val filterClickListener = ProductFilterRecyclerAdapter.FilterClickListener {
-//        }
+        binding.filterDataViewModel = filterDataViewModel
 
-//        val filterItemRecyclerAdapter = ProductFilterRecyclerAdapter(filterClickListener)
-//        binding.filterViewer.adapter = filterItemRecyclerAdapter
-//        binding.filterViewer.layoutManager = LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL, false)
-//
-//        filterDataViewModel = ViewModelProvider(this)[FilterDataViewModel::class.java]
-//        filterDataViewModel.filterDataList.observe(viewLifecycleOwner, Observer { filterDataList ->
-//            filterItemRecyclerAdapter.submitList(filterDataList)
-//        })
-
-//        setupFilterClickListeners()
+        binding.lifecycleOwner = viewLifecycleOwner
     }
-
-//    private fun setupFilterClickListeners() {
-//        binding.convenienceStoreFilter.setOnClickListener {
-//            filterDataViewModel.loadItems(CONVENIENCE_STORE)
-//        }
-//        binding.productCategoryFilter.setOnClickListener {
-//            filterDataViewModel.loadItems(PRODUCT_CATEGORY)
-//        }
-//        binding.productBenefitsFilter.setOnClickListener {
-//            filterDataViewModel.loadItems(BENEFITS)
-//        }
-//    }
-//    companion object {
-//        const val CONVENIENCE_STORE: String="convenienceStore"
-//        const val PRODUCT_CATEGORY: String="productCategory"
-//        const val BENEFITS: String="benefits"
-//    }
 }

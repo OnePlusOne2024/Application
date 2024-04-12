@@ -1,4 +1,4 @@
-package com.example.oneplusone.model
+package com.example.oneplusone.viewModel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

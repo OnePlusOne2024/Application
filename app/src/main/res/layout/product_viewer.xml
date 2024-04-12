@@ -7,7 +7,7 @@
     <data>
         <variable
             name="productData"
-            type="com.example.oneplusone.model.ProductDataViewModel" />
+            type="com.example.oneplusone.viewModel.ProductDataViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
