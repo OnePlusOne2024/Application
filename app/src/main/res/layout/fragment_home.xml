@@ -7,6 +7,10 @@
         <variable
             name="filterDataViewModel"
             type="com.example.oneplusone.viewModel.FilterDataViewModel" />
+
+        <variable
+            name="productDataViewModel"
+            type="com.example.oneplusone.viewModel.ProductDataViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -152,122 +156,8 @@
             app:layout_constraintEnd_toEndOf="@id/filter_bar_detail"
             app:layout_constraintStart_toStartOf="@id/filter_bar_detail"
             app:layout_constraintTop_toTopOf="@id/filter_bar_detail"
-            items="@{filterDataViewModel.filterDataList}"
+            filterItems="@{filterDataViewModel.filterDataList}"
             />
-
-
-<!--        <ImageView-->
-<!--            android:id="@+id/filter_item_1"-->
-<!--            android:layout_width="75dp"-->
-<!--            android:layout_height="45dp"-->
-<!--            android:layout_marginStart="16dp"-->
-<!--            android:layout_marginTop="2dp"-->
-<!--            android:background="@drawable/filter_border"-->
-<!--            android:src="@drawable/all_convenience_store"-->
-<!--            app:layout_constraintBottom_toTopOf="@id/filter_bar_item_text_1"-->
-<!--            app:layout_constraintStart_toStartOf="@id/filter_bar_detail"-->
-<!--            app:layout_constraintTop_toTopOf="@id/filter_bar_detail" />-->
-
-<!--        <TextView-->
-<!--            android:id="@+id/filter_bar_item_text_1"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginStart="2dp"-->
-<!--            android:fontFamily="@font/scdream5"-->
-<!--            android:paddingBottom="3dp"-->
-<!--            android:text="편의점 전체"-->
-<!--            android:textColor="#000000"-->
-<!--            android:textSize="10sp"-->
-
-<!--            app:layout_constraintBottom_toBottomOf="@id/filter_bar_detail"-->
-<!--            app:layout_constraintStart_toStartOf="@id/filter_item_1"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/filter_item_1"-->
-<!--            app:layout_constraintEnd_toEndOf="@id/filter_item_1"/>-->
-
-<!--        <ImageView-->
-<!--            android:id="@+id/filter_item_2"-->
-<!--            android:layout_width="75dp"-->
-<!--            android:layout_height="45dp"-->
-<!--            android:layout_marginStart="10dp"-->
-<!--            android:layout_marginTop="2dp"-->
-<!--            android:src="@drawable/gs_25"-->
-<!--            android:background="@drawable/filter_border"-->
-<!--            app:layout_constraintBottom_toTopOf="@id/filter_bar_item_text_2"-->
-<!--            app:layout_constraintStart_toEndOf="@id/filter_item_1"-->
-<!--            app:layout_constraintTop_toTopOf="@id/filter_bar_detail" />-->
-
-<!--        <TextView-->
-<!--            android:id="@+id/filter_bar_item_text_2"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginStart="2dp"-->
-<!--            android:fontFamily="@font/scdream5"-->
-<!--            android:paddingBottom="3dp"-->
-<!--            android:text="지에스 25"-->
-<!--            android:textColor="#000000"-->
-<!--            android:textSize="10sp"-->
-<!--            app:layout_constraintBottom_toBottomOf="@id/filter_bar_detail"-->
-<!--            app:layout_constraintEnd_toEndOf="@id/filter_item_2"-->
-<!--            app:layout_constraintStart_toStartOf="@id/filter_item_2"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/filter_item_2" />-->
-
-<!--        <ImageView-->
-<!--            android:id="@+id/filter_item_3"-->
-<!--            android:layout_width="75dp"-->
-<!--            android:layout_height="45dp"-->
-<!--            android:layout_marginStart="10dp"-->
-<!--            android:layout_marginTop="2dp"-->
-<!--            android:background="@drawable/filter_border"-->
-
-<!--            android:src="@drawable/seven_eleven"-->
-<!--            app:layout_constraintBottom_toTopOf="@id/filter_bar_item_text_3"-->
-<!--            app:layout_constraintStart_toEndOf="@id/filter_item_2"-->
-<!--            app:layout_constraintTop_toTopOf="@id/filter_bar_detail" />-->
-
-<!--        <TextView-->
-<!--            android:id="@+id/filter_bar_item_text_3"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginStart="2dp"-->
-<!--            android:fontFamily="@font/scdream5"-->
-<!--            android:paddingBottom="3dp"-->
-<!--            android:text="세븐 일레븐"-->
-<!--            android:textColor="#000000"-->
-<!--            android:textSize="10sp"-->
-<!--            app:layout_constraintBottom_toBottomOf="@id/filter_bar_detail"-->
-<!--            app:layout_constraintEnd_toEndOf="@id/filter_item_3"-->
-<!--            app:layout_constraintStart_toStartOf="@id/filter_item_3"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/filter_item_3" />-->
-
-<!--        <ImageView-->
-<!--            android:id="@+id/filter_item_4"-->
-<!--            android:layout_width="75dp"-->
-<!--            android:layout_height="45dp"-->
-<!--            android:layout_marginStart="10dp"-->
-<!--            android:layout_marginTop="2dp"-->
-<!--            android:background="@drawable/filter_border"-->
-
-<!--            android:src="@drawable/emart_24"-->
-<!--            app:layout_constraintBottom_toTopOf="@id/filter_bar_item_text_4"-->
-<!--            app:layout_constraintStart_toEndOf="@id/filter_item_3"-->
-<!--            app:layout_constraintTop_toTopOf="@id/filter_bar_detail" />-->
-
-<!--        <TextView-->
-<!--            android:id="@+id/filter_bar_item_text_4"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginStart="2dp"-->
-<!--            android:fontFamily="@font/scdream5"-->
-<!--            android:paddingBottom="3dp"-->
-<!--            android:text="이마트 24"-->
-<!--            android:textColor="#000000"-->
-<!--            android:textSize="10sp"-->
-<!--            app:layout_constraintBottom_toBottomOf="@id/filter_bar_detail"-->
-<!--            app:layout_constraintEnd_toEndOf="@id/filter_item_4"-->
-<!--            app:layout_constraintStart_toStartOf="@id/filter_item_4"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/filter_item_4" />-->
-
-
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/product_grid_view"
@@ -279,8 +169,11 @@
             app:layoutManager="GridLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/convenience_store_filter"
+            app:layout_constraintVertical_bias="0.0"
+            productItems="@{productDataViewModel.productDataList}"
             app:spanCount="2" />
 
 

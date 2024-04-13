@@ -4,6 +4,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragment.MapFragment">
 
+    <data>
+
+        <variable
+            name="productDataViewModel"
+            type="com.example.oneplusone.viewModel.ProductDataViewModel" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -41,6 +48,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                productItems="@{productDataViewModel.productDataList}"
                 app:spanCount="2" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 

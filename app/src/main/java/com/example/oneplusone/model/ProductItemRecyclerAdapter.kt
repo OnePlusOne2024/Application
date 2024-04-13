@@ -3,11 +3,14 @@ package com.example.oneplusone.model
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
 import com.example.oneplusone.databinding.ProductViewerBinding
+import com.example.oneplusone.`interface`.ProductClickListener
+import com.example.oneplusone.model.data.FilterData
 import com.example.oneplusone.model.data.ProductData
 
 class ProductItemRecyclerAdapter(
@@ -22,28 +25,25 @@ class ProductItemRecyclerAdapter(
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        holder.bind(getItem(position), productClickListener)
+        holder.bind(getItem(position),productClickListener)
     }
 
     class Holder(private val binding: ProductViewerBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(product: ProductData, productClickListener: ProductClickListener) {
+        fun bind(product: ProductData,productClickListener:ProductClickListener) {
 
-            binding.productName.text=product.productName
+            binding.productData=product
 
-            with(binding) {
-                itemView.setOnClickListener {
-                    Log.d("클릭","클릭")
-                }
+            itemView.setOnClickListener {
+                productClickListener.onItemClick(product)
             }
         }
     }
 
-    class ProductClickListener(val clickListener: (product: ProductData) -> Unit) {
-        fun onClick(product: ProductData) = clickListener(product)
+    override fun submitList(list: List<ProductData>?) {
+        super.submitList(list)
     }
-
     class ProductDiffCallback : DiffUtil.ItemCallback<ProductData>() {
         override fun areItemsTheSame(oldItem: ProductData, newItem: ProductData): Boolean {
             return oldItem.productId == newItem.productId

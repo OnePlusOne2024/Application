@@ -45,20 +45,23 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         productDataViewModel = ViewModelProvider(this)[ProductDataViewModel::class.java]
 
-        val productClickListener = ProductItemRecyclerAdapter.ProductClickListener {
-        }
+        productDataViewModel = ViewModelProvider(this)[ProductDataViewModel::class.java]
+        binding.productDataViewModel=productDataViewModel
 
-        val productItemRecyclerAdapter = ProductItemRecyclerAdapter(productClickListener)
+//        val productClickListener = ProductItemRecyclerAdapter.ProductClickListener {
+//        }
 
-        binding.mapProductGridView.adapter = productItemRecyclerAdapter
-        binding.mapProductGridView.layoutManager = GridLayoutManager(context, 2)
-        binding.mapProductGridView.addItemDecoration(itemSpacingController)
+//        val productItemRecyclerAdapter = ProductItemRecyclerAdapter(productClickListener)
 
-        //주의 사항: Fragment에서 DataBinding을 사용할 경우, lifecycleOwner에 this(Fragment)가 아닌 viewLifecycleOwner를 전달해야 한다.(누수 방지)
-        productDataViewModel.productDataList.observe(viewLifecycleOwner, Observer { productDataList ->
-            Log.d("test", productDataViewModel.productDataList.toString())
-            productItemRecyclerAdapter.submitList(productDataList)
-        })
+//        binding.mapProductGridView.adapter = productItemRecyclerAdapter
+//        binding.mapProductGridView.layoutManager = GridLayoutManager(context, 2)
+//        binding.mapProductGridView.addItemDecoration(itemSpacingController)
+//
+//        //주의 사항: Fragment에서 DataBinding을 사용할 경우, lifecycleOwner에 this(Fragment)가 아닌 viewLifecycleOwner를 전달해야 한다.(누수 방지)
+//        productDataViewModel.productDataList.observe(viewLifecycleOwner, Observer { productDataList ->
+//            Log.d("test", productDataViewModel.productDataList.toString())
+//            productItemRecyclerAdapter.submitList(productDataList)
+//        })
     }
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap

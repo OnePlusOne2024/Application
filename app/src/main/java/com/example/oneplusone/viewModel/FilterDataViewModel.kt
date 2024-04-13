@@ -36,7 +36,6 @@ class FilterDataViewModel() : ViewModel() {
                 FilterData("", R.drawable.two_plus_one),
                 FilterData("", R.drawable.three_plus_one),
                 FilterData("", R.drawable.discount),
-
                 )
             else -> emptyList()
         }

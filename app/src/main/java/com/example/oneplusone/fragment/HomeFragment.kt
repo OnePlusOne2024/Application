@@ -37,22 +37,8 @@ class HomeFragment : Fragment() {
         val filterSpacingController = ItemSpacingController(25, 25, 0)
 
         productDataViewModel = ViewModelProvider(this)[ProductDataViewModel::class.java]
+        binding.productDataViewModel=productDataViewModel
 
-        val productClickListener = ProductItemRecyclerAdapter.ProductClickListener {
-        }
-
-        val productItemRecyclerAdapter = ProductItemRecyclerAdapter(productClickListener)
-
-        binding.productGridView.adapter = productItemRecyclerAdapter
-        binding.productGridView.layoutManager = GridLayoutManager(context, 2)
-        binding.productGridView.addItemDecoration(productSpacingController)
-
-        //주의 사항: Fragment에서 DataBinding을 사용할 경우, lifecycleOwner에 this(Fragment)가 아닌 viewLifecycleOwner를 전달해야 한다.(누수 방지)
-        productDataViewModel.productDataList.observe(
-            viewLifecycleOwner,
-            Observer { productDataList ->
-                productItemRecyclerAdapter.submitList(productDataList)
-            })
 
         filterDataViewModel = ViewModelProvider(this)[FilterDataViewModel::class.java]
 

@@ -10,7 +10,7 @@ import com.example.oneplusone.model.data.FilterData
 
 object FilterBindingAdapter {
     @JvmStatic
-    @BindingAdapter("items")
+    @BindingAdapter("filterItems")
     fun setFilterItems(recyclerView: RecyclerView, items: List<FilterData>?) {
 //java.lang.RuntimeException: Failed to call observer method 에러의 원인: 처음 어플을 실행하고 터치하지 않았을때는
 //items: List<FilterData>가 null이기때문에 앱이 크래쉬됐던것 null을 허용했어야했음
