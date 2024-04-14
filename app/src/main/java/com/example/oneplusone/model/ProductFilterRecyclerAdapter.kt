@@ -1,19 +1,19 @@
 package com.example.oneplusone.model
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.oneplusone.databinding.FilterViewerBinding
+import com.example.oneplusone.`interface`.FilterClickListener
+import com.example.oneplusone.`interface`.ProductClickListener
 import com.example.oneplusone.model.data.FilterData
 import com.example.oneplusone.model.data.ProductData
 
-class ProductFilterRecyclerAdapter (
-//    private val filterClickListener: FilterClickListener
+class ProductFilterRecyclerAdapter(
+    private val filterClickListener: FilterClickListener
 ): ListAdapter<FilterData, ProductFilterRecyclerAdapter.Holder>(FilterDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
@@ -24,30 +24,25 @@ class ProductFilterRecyclerAdapter (
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position),filterClickListener)
     }
 
     class Holder(private val binding: FilterViewerBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(filter: FilterData) {
-            with(binding) {
+        fun bind(filter: FilterData,filterClickListener:FilterClickListener) {
 
-                binding.filterData=filter
 
-//                itemView.setOnClickListener {
-//                    Log.d("클릭","클릭")
-//                }
+            binding.filterData=filter
+
+            itemView.setOnClickListener {
+                filterClickListener.onFilterClick(filter)
             }
         }
     }
     override fun submitList(list: List<FilterData>?) {
         super.submitList(list)
     }
-    class FilterClickListener(val clickListener: (product: ProductData) -> Unit) {
-        fun onClick(product: ProductData) = clickListener(product)
-    }
-
 
     class FilterDiffCallback : DiffUtil.ItemCallback<FilterData>() {
         override fun areItemsTheSame(oldItem: FilterData, newItem: FilterData): Boolean {

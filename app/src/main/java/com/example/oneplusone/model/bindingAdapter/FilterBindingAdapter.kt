@@ -1,10 +1,11 @@
 package com.example.oneplusone.model.bindingAdapter
 
+import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
-import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
+import com.example.oneplusone.`interface`.FilterClickListener
 import com.example.oneplusone.model.ProductFilterRecyclerAdapter
 import com.example.oneplusone.model.data.FilterData
 
@@ -17,7 +18,11 @@ object FilterBindingAdapter {
 
 
         if(recyclerView.adapter == null) {
-            recyclerView.adapter = ProductFilterRecyclerAdapter()
+            recyclerView.adapter = ProductFilterRecyclerAdapter(object : FilterClickListener {
+                override fun onFilterClick(filterData: FilterData) {
+                    Log.d("FilterClick", "Clicked Filter Name: ${filterData.filterText}")
+                }
+            })
         }
 
         val adapter = recyclerView.adapter as? ProductFilterRecyclerAdapter

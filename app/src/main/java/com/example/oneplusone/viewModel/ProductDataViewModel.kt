@@ -14,7 +14,7 @@ class ProductDataViewModel @Inject constructor()
     private var _productDataList= MutableLiveData<List<ProductData>>()
     val productDataList : LiveData<List<ProductData>>
         get()=_productDataList
-
+    //todo 서버에서 데이터를 가져왔을 경우를 생각해 레포지토리 생성하기
     private var items= mutableListOf<ProductData>()
     init{
         items= arrayListOf(
