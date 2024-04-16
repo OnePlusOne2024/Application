@@ -1,17 +1,13 @@
 package com.example.oneplusone.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.GridLayoutManager
 import com.example.oneplusone.databinding.FragmentMapBinding
 import com.example.oneplusone.viewModel.ProductDataViewModel
-import com.example.oneplusone.model.ProductItemRecyclerAdapter
 import com.example.oneplusone.util.ItemSpacingController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap

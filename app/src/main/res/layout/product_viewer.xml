@@ -44,6 +44,7 @@
             android:textColor="#000000"
             productPrice="@{String.valueOf(productData.productPrice)}"
             android:textSize="15dp"
+            tools:text="test"
             app:layout_constraintBottom_toTopOf="@id/favorite"
             app:layout_constraintStart_toStartOf="parent" />
 

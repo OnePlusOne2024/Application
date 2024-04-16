@@ -6,4 +6,5 @@ data class FilterData(
     val filterText:String,
 
     val filterImage: Int,
+
     )

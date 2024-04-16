@@ -1,14 +1,13 @@
 package com.example.oneplusone.model.bindingAdapter
 
 import android.util.Log
-import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.oneplusone.R
 import com.example.oneplusone.`interface`.ProductClickListener
-import com.example.oneplusone.model.ProductItemRecyclerAdapter
+import com.example.oneplusone.recyclerAdapter.ProductItemRecyclerAdapter
 import com.example.oneplusone.model.data.ProductData
 
 object ProductBindingAdapter {
@@ -16,6 +15,7 @@ object ProductBindingAdapter {
     @BindingAdapter("productItems")
     fun setProductItems(recyclerView: RecyclerView, items: List<ProductData>?) {
         if(recyclerView.adapter == null) {
+
             recyclerView.adapter = ProductItemRecyclerAdapter(object : ProductClickListener {
                 override fun onItemClick(productData: ProductData) {
                     Log.d("ProductClick", "Clicked Product ID: ${productData.productId}")

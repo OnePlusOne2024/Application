@@ -1,16 +1,13 @@
-package com.example.oneplusone.model
+package com.example.oneplusone.recyclerAdapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.graphics.drawable.toDrawable
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.oneplusone.databinding.FilterViewerBinding
 import com.example.oneplusone.`interface`.FilterClickListener
-import com.example.oneplusone.`interface`.ProductClickListener
 import com.example.oneplusone.model.data.FilterData
-import com.example.oneplusone.model.data.ProductData
 
 class ProductFilterRecyclerAdapter(
     private val filterClickListener: FilterClickListener
