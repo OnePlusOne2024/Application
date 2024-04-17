@@ -1,5 +1,6 @@
 package com.example.oneplusone.recyclerAdapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -11,6 +12,7 @@ import com.example.oneplusone.model.data.FilterData
 
 class ProductFilterRecyclerAdapter(
     private val filterClickListener: FilterClickListener
+
 ): ListAdapter<FilterData, ProductFilterRecyclerAdapter.Holder>(FilterDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
@@ -28,9 +30,10 @@ class ProductFilterRecyclerAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(filter: FilterData,filterClickListener:FilterClickListener) {
-
-
-            binding.filterData=filter
+            Log.d("filter.filterImage",filter.filterText)
+            binding.filterItemImage.setImageResource(filter.filterImage)
+            binding.filterItemText.text=filter.filterText
+//            binding.filterData=filte
 
             itemView.setOnClickListener {
                 filterClickListener.onFilterClick(filter)

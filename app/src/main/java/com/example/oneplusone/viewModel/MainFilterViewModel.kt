@@ -15,9 +15,14 @@ import com.example.oneplusone.model.data.enum.ProductCategoryType
 class MainFilterViewModel() : ViewModel() {
 
     private var _mainFilterDataList= MutableLiveData<List<MainFilterData>>()
+    private val _selectedMainFilter = MutableLiveData<MainFilterData>()
 
     val mainFilterDataList: LiveData<List<MainFilterData>>
         get() = _mainFilterDataList
+
+    val selectedMainFilter: LiveData<List<MainFilterData>>
+        get() = _mainFilterDataList
+
 
 
     private var items= mutableListOf<MainFilterData>()
@@ -42,5 +47,7 @@ class MainFilterViewModel() : ViewModel() {
         )
         _mainFilterDataList.postValue(items)
     }
-
+    fun selectMainFilter(mainFilterData: MainFilterData) {
+        _selectedMainFilter.value = mainFilterData
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.oneplusone.model.data
 
+import com.example.oneplusone.model.data.enum.FilterType
 
 
 data class FilterData(
@@ -7,4 +8,5 @@ data class FilterData(
 
     val filterImage: Int,
 
+    val filterType: FilterType
     )

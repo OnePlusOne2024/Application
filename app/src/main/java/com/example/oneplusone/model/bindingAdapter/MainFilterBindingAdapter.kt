@@ -10,8 +10,9 @@ import com.example.oneplusone.model.data.MainFilterData
 import com.example.oneplusone.model.data.enum.ConvenienceType
 import com.example.oneplusone.recyclerAdapter.MainFilterRecyclerAdapter
 import com.example.oneplusone.viewModel.FilterDataViewModel
+import com.example.oneplusone.viewModel.MainFilterViewModel
 
-
+//보류
 object MainFilterBindingAdapter {
 
     @JvmStatic
@@ -19,15 +20,15 @@ object MainFilterBindingAdapter {
     fun setMainFilterItems(recyclerView: RecyclerView, items: List<MainFilterData>?) {
 
         //처음 시작할 때 생성
-        if(recyclerView.adapter == null) {
-
-            recyclerView.adapter = MainFilterRecyclerAdapter(object : MainFilterClickListener {
-                override fun onMainFilterClick(mainFilter: MainFilterData) {
+//        if(recyclerView.adapter == null) {
+//
+//            recyclerView.adapter = MainFilterRecyclerAdapter(object : MainFilterClickListener {
+//                override fun onMainFilterClick(mainFilter: MainFilterData) {
 //                    FilterDataViewModel().loadFilterItems(mainFilter)
-
-                }
-            })
-        }
+//
+//                }
+//            })
+//        }
 
         val adapter = recyclerView.adapter as? MainFilterRecyclerAdapter
         adapter?.submitList(items)

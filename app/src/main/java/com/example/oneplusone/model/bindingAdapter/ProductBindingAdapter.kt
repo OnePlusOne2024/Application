@@ -9,7 +9,7 @@ import com.example.oneplusone.R
 import com.example.oneplusone.`interface`.ProductClickListener
 import com.example.oneplusone.recyclerAdapter.ProductItemRecyclerAdapter
 import com.example.oneplusone.model.data.ProductData
-
+//보류
 object ProductBindingAdapter {
     @JvmStatic
     @BindingAdapter("productItems")

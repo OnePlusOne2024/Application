@@ -19,56 +19,88 @@ class FilterDataViewModel() : ViewModel() {
     private var _currentFilterCategory = MutableLiveData<String>()
     private var _filterBar=MutableLiveData<Boolean>()
 
+    private var _convenienceFilterImage = MutableLiveData<Int>()
+    private var _convenienceFilterText = MutableLiveData<String>()
+
+    private var _productCategoryFilterImage = MutableLiveData<Int>()
+    private var _productCategoryFilterText = MutableLiveData<String>()
+
+    private var _benefitsFilterImage = MutableLiveData<Int>()
+    private var _benefitsFilterText = MutableLiveData<String>()
 
     val filterDataList: LiveData<List<FilterData>>
         get() = _filterDataList
 
-    val currentFilterCategory: LiveData<String>
-        get() = _currentFilterCategory
-
     val filterBar: LiveData<Boolean>
         get() = _filterBar
 
-    init{
-        val loadItems=
-            listOf(
-                FilterData("편의점 전체", R.drawable.all_convenience_store),
-                FilterData("GS 25", R.drawable.gs_25),
-                FilterData("CU", R.drawable.cu),
-                FilterData("세븐 일레븐", R.drawable.seven_eleven),
-                FilterData("이마트 24", R.drawable.emart_24),
-            )
+    val convenienceFilterImage: LiveData<Int>
+        get() = _convenienceFilterImage
 
-        _filterDataList.value = loadItems
+    val convenienceFilterText: LiveData<String>
+        get() = _convenienceFilterText
+
+    val productCategoryFilterImage: LiveData<Int>
+        get() = _productCategoryFilterImage
+
+    val productCategoryFilterText: LiveData<String>
+        get() = _productCategoryFilterText
+
+    val benefitsFilterImage: LiveData<Int>
+        get() = _benefitsFilterImage
+
+    val benefitsFilterText: LiveData<String>
+        get() = _benefitsFilterText
+
+
+    //일단 초기 필터값
+        init{
+            _convenienceFilterImage.value =ConvenienceType.ALL_CONVENIENCE_STORE.iconResId
+            _convenienceFilterText.value = ConvenienceType.ALL_CONVENIENCE_STORE.title
+
+            _productCategoryFilterImage.value = ProductCategoryType.ALL_PRODUCT_CATEGORY.iconResId
+            _productCategoryFilterText.value =ProductCategoryType.ALL_PRODUCT_CATEGORY.title
+
+            _benefitsFilterImage.value = BenefitsType.ALL_BENEFITS.iconResId
+            _benefitsFilterText.value =BenefitsType.ALL_BENEFITS.title
+
+
     }
 
     private fun loadItems(filterType:FilterType) {
 
-
-        Log.d("선택", filterType.toString())
-
+        //선택된 필터의 종류에 따라 필터 데이터에 넣어줌, 필터 타입도 넣어줌
         val loadItems = when (filterType) {
             FilterType.CONVENIENCE -> ConvenienceType.values().map { enumItem ->
-                FilterData(enumItem.title, enumItem.iconResId)
+                FilterData(enumItem.title, enumItem.iconResId,FilterType.CONVENIENCE)
             }
             FilterType.PRODUCT_CATEGORY -> ProductCategoryType.values().map { enumItem ->
-                FilterData(enumItem.title, enumItem.iconResId)
+                FilterData(enumItem.title, enumItem.iconResId,FilterType.PRODUCT_CATEGORY)
             }
             FilterType.BENEFITS -> BenefitsType.values().map { enumItem ->
-                FilterData(enumItem.title, enumItem.iconResId)
+                FilterData(enumItem.title, enumItem.iconResId,FilterType.BENEFITS)
             }
         }
-        Log.d("선택", loadItems.toString())
+
 
 //        _filterDataList.value = loadItems
         _filterDataList.value = loadItems
+        Log.d("선택", filterDataList.value.toString())
         _filterBar.value=true
     }
 
-    fun loadFilterItems(mainFilter: MainFilterData) {
-        Log.d("필터타입", mainFilter.filterType.javaClass.name)
-        loadItems(mainFilter.filterType)
-    }
+    //메인 필터 터치시
+    fun convenienceCategoryClick() {
+        loadItems(FilterType.CONVENIENCE)
 
+    }
+    fun productCategoryClick() {
+        loadItems(FilterType.PRODUCT_CATEGORY)
+
+    }
+    fun benefitsCategoryClick() {
+        loadItems(FilterType.BENEFITS)
+
+    }
 
 }
