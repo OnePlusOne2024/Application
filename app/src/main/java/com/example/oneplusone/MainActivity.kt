@@ -9,9 +9,10 @@ import androidx.fragment.app.Fragment
 import com.example.oneplusone.databinding.ActivityMainBinding
 import com.example.oneplusone.fragment.HomeFragment
 import com.example.oneplusone.fragment.MapFragment
+import dagger.hilt.android.AndroidEntryPoint
 
 
-
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }

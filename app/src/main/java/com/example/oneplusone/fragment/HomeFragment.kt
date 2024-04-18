@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,8 +33,8 @@ class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
 
     private lateinit var productDataViewModel: ProductDataViewModel
-    private lateinit var filterDataViewModel: FilterDataViewModel
-    private lateinit var mainFilterViewModel: MainFilterViewModel
+    private val filterDataViewModel: FilterDataViewModel by viewModels()
+    private val mainFilterViewModel: MainFilterViewModel by viewModels()
 
     private lateinit var productFilterAdapter: ProductFilterRecyclerAdapter
     private lateinit var productItemRecyclerAdapter: ProductItemRecyclerAdapter
@@ -56,8 +57,8 @@ class HomeFragment : Fragment() {
         val productSpacingController = ItemSpacingController(25, 25, 40)
         val filterSpacingController = ItemSpacingController(25, 25, 0)
 
-        mainFilterViewModel = ViewModelProvider(this)[MainFilterViewModel::class.java]
-        filterDataViewModel = ViewModelProvider(this)[FilterDataViewModel::class.java]
+//        mainFilterViewModel = ViewModelProvider(this)[MainFilterViewModel::class.java]
+//        filterDataViewModel = ViewModelProvider(this)[FilterDataViewModel::class.java]
         productDataViewModel = ViewModelProvider(this)[ProductDataViewModel::class.java]
 
 
