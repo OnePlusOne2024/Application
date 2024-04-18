@@ -20,35 +20,33 @@
 
 
         <ImageView
-            android:id="@+id/convenience_store_filter"
+            android:id="@+id/main_filter_image"
 
             android:layout_width="75dp"
             android:layout_height="45dp"
 
             android:background="@drawable/filter_border"
 
-            app:layout_constraintBottom_toTopOf="@id/convenience_store_filter_text"
+            app:layout_constraintBottom_toTopOf="@id/main_filter_text"
 
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            tools:src="@drawable/all_convenience_store"
-            mainFilterImage="@{mainFilterData.mainFilterImage}" />
+            android:src="@drawable/all_convenience_store" />
 
         <TextView
-            android:id="@+id/convenience_store_filter_text"
+            android:id="@+id/main_filter_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="2dp"
             android:fontFamily="@font/scdream5"
             android:paddingBottom="3dp"
-            tools:text="편의점 전체"
+            android:text="편의점 전체"
             android:textColor="#000000"
             android:textSize="10sp"
 
-            app:layout_constraintEnd_toEndOf="@id/convenience_store_filter"
-            app:layout_constraintStart_toStartOf="@id/convenience_store_filter"
-            app:layout_constraintTop_toBottomOf="@id/convenience_store_filter"
-            mainFilterText="@{mainFilterData.mainFilterText}"/>
+            app:layout_constraintEnd_toEndOf="@id/main_filter_image"
+            app:layout_constraintStart_toStartOf="@id/main_filter_image"
+            app:layout_constraintTop_toBottomOf="@id/main_filter_image" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

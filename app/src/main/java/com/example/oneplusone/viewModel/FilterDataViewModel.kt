@@ -34,40 +34,24 @@ class FilterDataViewModel() : ViewModel() {
     val filterBar: LiveData<Boolean>
         get() = _filterBar
 
-    val convenienceFilterImage: LiveData<Int>
-        get() = _convenienceFilterImage
 
-    val convenienceFilterText: LiveData<String>
-        get() = _convenienceFilterText
-
-    val productCategoryFilterImage: LiveData<Int>
-        get() = _productCategoryFilterImage
-
-    val productCategoryFilterText: LiveData<String>
-        get() = _productCategoryFilterText
-
-    val benefitsFilterImage: LiveData<Int>
-        get() = _benefitsFilterImage
-
-    val benefitsFilterText: LiveData<String>
-        get() = _benefitsFilterText
 
 
     //일단 초기 필터값
-        init{
-            _convenienceFilterImage.value =ConvenienceType.ALL_CONVENIENCE_STORE.iconResId
-            _convenienceFilterText.value = ConvenienceType.ALL_CONVENIENCE_STORE.title
+//        init{
+//            _convenienceFilterImage.value =ConvenienceType.ALL_CONVENIENCE_STORE.iconResId
+//            _convenienceFilterText.value = ConvenienceType.ALL_CONVENIENCE_STORE.title
+//
+//            _productCategoryFilterImage.value = ProductCategoryType.ALL_PRODUCT_CATEGORY.iconResId
+//            _productCategoryFilterText.value =ProductCategoryType.ALL_PRODUCT_CATEGORY.title
+//
+//            _benefitsFilterImage.value = BenefitsType.ALL_BENEFITS.iconResId
+//            _benefitsFilterText.value =BenefitsType.ALL_BENEFITS.title
+//
+//
+//    }
 
-            _productCategoryFilterImage.value = ProductCategoryType.ALL_PRODUCT_CATEGORY.iconResId
-            _productCategoryFilterText.value =ProductCategoryType.ALL_PRODUCT_CATEGORY.title
-
-            _benefitsFilterImage.value = BenefitsType.ALL_BENEFITS.iconResId
-            _benefitsFilterText.value =BenefitsType.ALL_BENEFITS.title
-
-
-    }
-
-    private fun loadItems(filterType:FilterType) {
+    fun loadItems(filterType:FilterType) {
 
         //선택된 필터의 종류에 따라 필터 데이터에 넣어줌, 필터 타입도 넣어줌
         val loadItems = when (filterType) {
@@ -89,18 +73,5 @@ class FilterDataViewModel() : ViewModel() {
         _filterBar.value=true
     }
 
-    //메인 필터 터치시
-    fun convenienceCategoryClick() {
-        loadItems(FilterType.CONVENIENCE)
-
-    }
-    fun productCategoryClick() {
-        loadItems(FilterType.PRODUCT_CATEGORY)
-
-    }
-    fun benefitsCategoryClick() {
-        loadItems(FilterType.BENEFITS)
-
-    }
 
 }

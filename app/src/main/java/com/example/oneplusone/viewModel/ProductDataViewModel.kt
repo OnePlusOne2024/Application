@@ -5,12 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.oneplusone.R
 import com.example.oneplusone.model.data.ProductData
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
+
 //productDataRepository : ProductDataRepository
 
-class ProductDataViewModel @Inject constructor()
-    :ViewModel() {
+class ProductDataViewModel :ViewModel() {
     private var _productDataList= MutableLiveData<List<ProductData>>()
     val productDataList : LiveData<List<ProductData>>
         get()=_productDataList

@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import com.example.oneplusone.databinding.ActivityMainBinding
 import com.example.oneplusone.fragment.HomeFragment
 import com.example.oneplusone.fragment.MapFragment
-import dagger.hilt.android.HiltAndroidApp
 
 
 

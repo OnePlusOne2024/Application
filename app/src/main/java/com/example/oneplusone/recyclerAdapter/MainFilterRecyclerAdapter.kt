@@ -10,6 +10,7 @@ import com.example.oneplusone.`interface`.FilterClickListener
 import com.example.oneplusone.`interface`.MainFilterClickListener
 import com.example.oneplusone.model.data.FilterData
 import com.example.oneplusone.model.data.MainFilterData
+import com.example.oneplusone.model.data.enum.FilterType
 
 class MainFilterRecyclerAdapter(
     private val mainFilterClickListener: MainFilterClickListener
@@ -32,11 +33,22 @@ class MainFilterRecyclerAdapter(
         fun bind(mainFilter: MainFilterData, mainFilterClickListener: MainFilterClickListener) {
 
 
-            binding.mainFilterData=mainFilter
+            binding.mainFilterImage.setImageResource(mainFilter.mainFilterImage)
+            binding.mainFilterText.text=mainFilter.mainFilterText
 
             itemView.setOnClickListener {
                 mainFilterClickListener.onMainFilterClick(mainFilter)
             }
+        }
+    }
+
+    fun updateFilterItem(filterType: FilterType, imageResource: Int, text: String) {
+        val updateList = currentList.toMutableList()
+        val index = updateList.indexOfFirst { it.filterType == filterType }
+        if (index != -1) {
+            val item = updateList[index]
+            updateList[index] = item.copy(mainFilterImage = imageResource, mainFilterText = text)
+            submitList(updateList) // 변경된 리스트를 제출
         }
     }
     override fun submitList(list: List<MainFilterData>?) {

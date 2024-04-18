@@ -30,12 +30,17 @@ import dagger.hilt.android.AndroidEntryPoint
 class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
+
     private lateinit var productDataViewModel: ProductDataViewModel
     private lateinit var filterDataViewModel: FilterDataViewModel
     private lateinit var mainFilterViewModel: MainFilterViewModel
 
     private lateinit var productFilterAdapter: ProductFilterRecyclerAdapter
     private lateinit var productItemRecyclerAdapter: ProductItemRecyclerAdapter
+    private lateinit var mainFilterAdapter: MainFilterRecyclerAdapter
+
+
+    private lateinit var currentFilterCategory:FilterType
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -51,12 +56,15 @@ class HomeFragment : Fragment() {
         val productSpacingController = ItemSpacingController(25, 25, 40)
         val filterSpacingController = ItemSpacingController(25, 25, 0)
 
+        mainFilterViewModel = ViewModelProvider(this)[MainFilterViewModel::class.java]
         filterDataViewModel = ViewModelProvider(this)[FilterDataViewModel::class.java]
         productDataViewModel = ViewModelProvider(this)[ProductDataViewModel::class.java]
+
 
         initAdapter()
 
         binding.apply {
+            this.mainFilterViewModel = this@HomeFragment.mainFilterViewModel
             this.filterDataViewModel = this@HomeFragment.filterDataViewModel
             this.productDataViewModel = this@HomeFragment.productDataViewModel
             lifecycleOwner = viewLifecycleOwner
@@ -68,20 +76,28 @@ class HomeFragment : Fragment() {
 
     private fun initAdapter() {
 
+        mainFilterAdapter=MainFilterRecyclerAdapter(object : MainFilterClickListener {
+            override fun onMainFilterClick(mainFilter:MainFilterData) {
+                when (mainFilter.filterType) {
+                    FilterType.CONVENIENCE -> filterDataViewModel.loadItems(FilterType.CONVENIENCE)
+                    FilterType.PRODUCT_CATEGORY -> filterDataViewModel.loadItems(FilterType.PRODUCT_CATEGORY)
+                    FilterType.BENEFITS -> filterDataViewModel.loadItems(FilterType.BENEFITS)
+                }
+            }
+        })
+        binding.mainFilterViewer.adapter=mainFilterAdapter
+
         productFilterAdapter = ProductFilterRecyclerAdapter(object : FilterClickListener {
             override fun onFilterClick(filterData: FilterData) {
                 when(filterData.filterType){
                     FilterType.CONVENIENCE -> {
-                        binding.filterItem1.setImageResource(filterData.filterImage)
-                        binding.filterBarItemText1.text=filterData.filterText
+                        mainFilterAdapter.updateFilterItem(FilterType.CONVENIENCE, filterData.filterImage, filterData.filterText)
                     }
                     FilterType.PRODUCT_CATEGORY -> {
-                        binding.filterItem2.setImageResource(filterData.filterImage)
-                        binding.filterBarItemText2.text=filterData.filterText
+                        mainFilterAdapter.updateFilterItem(FilterType.PRODUCT_CATEGORY, filterData.filterImage, filterData.filterText)
                     }
                     FilterType.BENEFITS -> {
-                        binding.filterItem3.setImageResource(filterData.filterImage)
-                        binding.filterBarItemText3.text=filterData.filterText
+                        mainFilterAdapter.updateFilterItem(FilterType.BENEFITS, filterData.filterImage, filterData.filterText)
                     }
                 }
             }
@@ -97,6 +113,11 @@ class HomeFragment : Fragment() {
     }
 
     private fun observeViewModel() {
+
+        mainFilterViewModel.mainFilterDataList.observe(viewLifecycleOwner, Observer { data ->
+            mainFilterAdapter.submitList(data)
+        })
+
         filterDataViewModel.filterDataList.observe(viewLifecycleOwner, Observer { data ->
             productFilterAdapter.submitList(data)
         })
