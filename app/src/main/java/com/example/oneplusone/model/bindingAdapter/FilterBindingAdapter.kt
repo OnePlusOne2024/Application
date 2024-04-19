@@ -99,15 +99,15 @@ object FilterBindingAdapter {
         view.text=resource
     }
 
-    @JvmStatic
-    @BindingAdapter("filterBar")
-    fun setFilterBar(view: ImageView, resource: Boolean) {
-        if(resource){
-            view.visibility = View.VISIBLE
-        }
-        else{
-            view.visibility = View.INVISIBLE
-        }
-    }
+//    @JvmStatic
+//    @BindingAdapter("filterBar")
+//    fun setFilterBar(view: ImageView, resource: Boolean) {
+//        if(resource){
+//            view.visibility = View.VISIBLE
+//        }
+//        else{
+//            view.visibility = View.INVISIBLE
+//        }
+//    }
 
 }

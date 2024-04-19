@@ -32,7 +32,7 @@ class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
 
-    private lateinit var productDataViewModel: ProductDataViewModel
+    private val productDataViewModel: ProductDataViewModel by viewModels()
     private val filterDataViewModel: FilterDataViewModel by viewModels()
     private val mainFilterViewModel: MainFilterViewModel by viewModels()
 
@@ -57,28 +57,37 @@ class HomeFragment : Fragment() {
         val productSpacingController = ItemSpacingController(25, 25, 40)
         val filterSpacingController = ItemSpacingController(25, 25, 0)
 
-//        mainFilterViewModel = ViewModelProvider(this)[MainFilterViewModel::class.java]
-//        filterDataViewModel = ViewModelProvider(this)[FilterDataViewModel::class.java]
-        productDataViewModel = ViewModelProvider(this)[ProductDataViewModel::class.java]
-
-
         initAdapter()
 
-        binding.apply {
-            this.mainFilterViewModel = this@HomeFragment.mainFilterViewModel
-            this.filterDataViewModel = this@HomeFragment.filterDataViewModel
-            this.productDataViewModel = this@HomeFragment.productDataViewModel
-            lifecycleOwner = viewLifecycleOwner
-        }
+        setupDataBinding()
 
-        observeViewModel()
+        observeSetting()
 
     }
 
     private fun initAdapter() {
+        initMainFilterAdapter()
+        initProductFilterAdapter()
+        initProductItemRecyclerAdapter()
+    }
 
-        mainFilterAdapter=MainFilterRecyclerAdapter(object : MainFilterClickListener {
-            override fun onMainFilterClick(mainFilter:MainFilterData) {
+    private fun setupDataBinding() {
+        binding.apply {
+            mainFilterViewModel = this@HomeFragment.mainFilterViewModel
+            filterDataViewModel = this@HomeFragment.filterDataViewModel
+            productDataViewModel = this@HomeFragment.productDataViewModel
+            lifecycleOwner = viewLifecycleOwner
+        }
+    }
+    private fun observeSetting(){
+        observeMainFilterViewModel()
+        observeFilterDataViewModel()
+        observeProductDataViewModel()
+    }
+
+    private fun initMainFilterAdapter() {
+        mainFilterAdapter = MainFilterRecyclerAdapter(object : MainFilterClickListener {
+            override fun onMainFilterClick(mainFilter: MainFilterData) {
                 when (mainFilter.filterType) {
                     FilterType.CONVENIENCE -> filterDataViewModel.loadItems(FilterType.CONVENIENCE)
                     FilterType.PRODUCT_CATEGORY -> filterDataViewModel.loadItems(FilterType.PRODUCT_CATEGORY)
@@ -86,11 +95,14 @@ class HomeFragment : Fragment() {
                 }
             }
         })
-        binding.mainFilterViewer.adapter=mainFilterAdapter
+        binding.mainFilterViewer.adapter = mainFilterAdapter
+    }
 
+
+    private fun initProductFilterAdapter() {
         productFilterAdapter = ProductFilterRecyclerAdapter(object : FilterClickListener {
             override fun onFilterClick(filterData: FilterData) {
-                when(filterData.filterType){
+                when (filterData.filterType) {
                     FilterType.CONVENIENCE -> {
                         mainFilterAdapter.updateFilterItem(FilterType.CONVENIENCE, filterData.filterImage, filterData.filterText)
                     }
@@ -104,7 +116,9 @@ class HomeFragment : Fragment() {
             }
         })
         binding.filterViewer.adapter = productFilterAdapter
+    }
 
+    private fun initProductItemRecyclerAdapter() {
         productItemRecyclerAdapter = ProductItemRecyclerAdapter(object : ProductClickListener {
             override fun onItemClick(productData: ProductData) {
 
@@ -113,18 +127,24 @@ class HomeFragment : Fragment() {
         binding.productGridView.adapter = productItemRecyclerAdapter
     }
 
-    private fun observeViewModel() {
 
+
+    private fun observeMainFilterViewModel() {
         mainFilterViewModel.mainFilterDataList.observe(viewLifecycleOwner, Observer { data ->
             mainFilterAdapter.submitList(data)
         })
+    }
 
+    private fun observeFilterDataViewModel() {
         filterDataViewModel.filterDataList.observe(viewLifecycleOwner, Observer { data ->
             productFilterAdapter.submitList(data)
         })
+    }
 
+    private fun observeProductDataViewModel() {
         productDataViewModel.productDataList.observe(viewLifecycleOwner, Observer { data ->
             productItemRecyclerAdapter.submitList(data)
         })
     }
+
 }
