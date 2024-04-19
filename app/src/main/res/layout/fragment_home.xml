@@ -51,44 +51,45 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/main_filter_viewer"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
 
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="@id/product_filter_bar"
 
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/product_filter_bar"
-            />
+            app:layout_constraintTop_toTopOf="@id/product_filter_bar" />
 
 
         <ImageView
             android:id="@+id/filter_bar_detail"
             android:layout_width="match_parent"
             android:layout_height="65dp"
-
             android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"
             android:background="#ffffff"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/product_grid_view"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/product_filter_bar"
-            filterBar="@{filterDataViewModel.filterBar}"/>
-
+            app:layout_constraintTop_toBottomOf="@id/product_filter_bar" />
+<!--            filterBar="@{filterDataViewModel.filterBar}"/>-->
 
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/filter_viewer"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
 
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="@id/filter_bar_detail"
 
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/filter_bar_detail"
-            />
+            app:layout_constraintTop_toTopOf="@id/filter_bar_detail" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/product_grid_view"

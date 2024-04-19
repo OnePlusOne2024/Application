@@ -1,5 +1,7 @@
 package com.example.oneplusone.fragment
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -39,7 +41,7 @@ class HomeFragment : Fragment() {
     private lateinit var productFilterAdapter: ProductFilterRecyclerAdapter
     private lateinit var productItemRecyclerAdapter: ProductItemRecyclerAdapter
     private lateinit var mainFilterAdapter: MainFilterRecyclerAdapter
-
+    private var filterBarSwitch:Boolean = false
 
     private lateinit var currentFilterCategory:FilterType
     override fun onCreateView(
@@ -88,6 +90,9 @@ class HomeFragment : Fragment() {
     private fun initMainFilterAdapter() {
         mainFilterAdapter = MainFilterRecyclerAdapter(object : MainFilterClickListener {
             override fun onMainFilterClick(mainFilter: MainFilterData) {
+
+//                filterDataViewModel.filterBarSwitch()
+
                 when (mainFilter.filterType) {
                     FilterType.CONVENIENCE -> filterDataViewModel.loadItems(FilterType.CONVENIENCE)
                     FilterType.PRODUCT_CATEGORY -> filterDataViewModel.loadItems(FilterType.PRODUCT_CATEGORY)
@@ -101,7 +106,11 @@ class HomeFragment : Fragment() {
 
     private fun initProductFilterAdapter() {
         productFilterAdapter = ProductFilterRecyclerAdapter(object : FilterClickListener {
+
             override fun onFilterClick(filterData: FilterData) {
+
+//                filterDataViewModel.filterBarSwitch()
+
                 when (filterData.filterType) {
                     FilterType.CONVENIENCE -> {
                         mainFilterAdapter.updateFilterItem(FilterType.CONVENIENCE, filterData.filterImage, filterData.filterText)
@@ -113,6 +122,9 @@ class HomeFragment : Fragment() {
                         mainFilterAdapter.updateFilterItem(FilterType.BENEFITS, filterData.filterImage, filterData.filterText)
                     }
                 }
+                //세부 필터를 고르면 불러온 데이터를 제거함
+                filterDataViewModel.clearFilterData()
+
             }
         })
         binding.filterViewer.adapter = productFilterAdapter
@@ -133,11 +145,36 @@ class HomeFragment : Fragment() {
         mainFilterViewModel.mainFilterDataList.observe(viewLifecycleOwner, Observer { data ->
             mainFilterAdapter.submitList(data)
         })
+
     }
 
     private fun observeFilterDataViewModel() {
+        //여기서 변화를 감지하고 변경함
         filterDataViewModel.filterDataList.observe(viewLifecycleOwner, Observer { data ->
             productFilterAdapter.submitList(data)
+        })
+        filterDataViewModel.filterBar.observe(viewLifecycleOwner, Observer { isVisible  ->
+
+            //사라질 때 시각적으로 버벅 거림이 느껴져서 애니메이션으로 부드럽게 바꿨음
+            if (isVisible) {
+                binding.filterBarDetail.apply {
+                    alpha = 0f
+                    visibility = View.VISIBLE
+                    animate()
+                        .alpha(1f)
+                        .setDuration(300)
+                        .setListener(null)
+                }
+            } else {
+                binding.filterBarDetail.animate()
+                    .alpha(0f)
+                    .setDuration(300)
+                    .setListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator) {
+                            binding.filterBarDetail.visibility = View.GONE
+                        }
+                    })
+            }
         })
     }
 

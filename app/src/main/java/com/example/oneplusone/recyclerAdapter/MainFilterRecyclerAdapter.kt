@@ -1,5 +1,7 @@
 package com.example.oneplusone.recyclerAdapter
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -16,6 +18,7 @@ class MainFilterRecyclerAdapter(
     private val mainFilterClickListener: MainFilterClickListener
 ): ListAdapter<MainFilterData, MainFilterRecyclerAdapter.Holder>(MainFilterDiffCallback()) {
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val binding = MainFilterViewerBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
@@ -28,6 +31,7 @@ class MainFilterRecyclerAdapter(
     }
 
     class Holder(private val binding: MainFilterViewerBinding) :
+
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(mainFilter: MainFilterData, mainFilterClickListener: MainFilterClickListener) {
@@ -37,6 +41,13 @@ class MainFilterRecyclerAdapter(
             binding.mainFilterText.text=mainFilter.mainFilterText
 
             itemView.setOnClickListener {
+
+                //터치시 효과를...
+//                itemView.alpha = 0.5f
+//                itemView.backgroundTintList= ColorStateList.valueOf(Color.parseColor("#87CEEB"))
+//
+//                binding.mainFilterText.setTextColor(Color.parseColor("#04A7EA"))
+
                 mainFilterClickListener.onMainFilterClick(mainFilter)
             }
         }
