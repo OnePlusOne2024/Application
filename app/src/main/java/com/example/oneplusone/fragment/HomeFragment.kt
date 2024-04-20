@@ -2,16 +2,17 @@ package com.example.oneplusone.fragment
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.oneplusone.R
 import com.example.oneplusone.databinding.FragmentHomeBinding
 import com.example.oneplusone.`interface`.FilterClickListener
 import com.example.oneplusone.`interface`.MainFilterClickListener
@@ -19,7 +20,7 @@ import com.example.oneplusone.`interface`.ProductClickListener
 import com.example.oneplusone.model.data.FilterData
 import com.example.oneplusone.model.data.MainFilterData
 import com.example.oneplusone.model.data.ProductData
-import com.example.oneplusone.model.data.enum.FilterType
+import com.example.oneplusone.model.data.enums.FilterType
 import com.example.oneplusone.recyclerAdapter.MainFilterRecyclerAdapter
 import com.example.oneplusone.recyclerAdapter.ProductFilterRecyclerAdapter
 import com.example.oneplusone.recyclerAdapter.ProductItemRecyclerAdapter
@@ -41,9 +42,11 @@ class HomeFragment : Fragment() {
     private lateinit var productFilterAdapter: ProductFilterRecyclerAdapter
     private lateinit var productItemRecyclerAdapter: ProductItemRecyclerAdapter
     private lateinit var mainFilterAdapter: MainFilterRecyclerAdapter
-    private var filterBarSwitch:Boolean = false
 
-    private lateinit var currentFilterCategory:FilterType
+    private val productSpacingController = ItemSpacingController(25, 25, 40)
+
+    private var selectMainFilter:View?=null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -56,7 +59,7 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val productSpacingController = ItemSpacingController(25, 25, 40)
+
         val filterSpacingController = ItemSpacingController(25, 25, 0)
 
         initAdapter()
@@ -89,20 +92,34 @@ class HomeFragment : Fragment() {
 
     private fun initMainFilterAdapter() {
         mainFilterAdapter = MainFilterRecyclerAdapter(object : MainFilterClickListener {
-            override fun onMainFilterClick(mainFilter: MainFilterData) {
+            override fun onMainFilterClick(mainFilter: MainFilterData,itemView: View) {
 
-//                filterDataViewModel.filterBarSwitch()
+//                resetPreviousMainFilter()
 
-                when (mainFilter.filterType) {
-                    FilterType.CONVENIENCE -> filterDataViewModel.loadItems(FilterType.CONVENIENCE)
-                    FilterType.PRODUCT_CATEGORY -> filterDataViewModel.loadItems(FilterType.PRODUCT_CATEGORY)
-                    FilterType.BENEFITS -> filterDataViewModel.loadItems(FilterType.BENEFITS)
-                }
+                filterDataViewModel.setFilterType(mainFilter.filterType)
+
+//                updateMainFilterUI(itemView)
+
+//                // 현재 선택된 뷰를 기록
+//                selectMainFilter = itemView
             }
         })
         binding.mainFilterViewer.adapter = mainFilterAdapter
     }
 
+    private fun resetPreviousMainFilter() {
+        selectMainFilter?.let {
+            it.alpha = 1f
+            it.backgroundTintList = null
+            it.findViewById<TextView>(R.id.main_filter_text).setTextColor(Color.parseColor("#000000"))
+        }
+    }
+
+    private fun updateMainFilterUI(itemView: View) {
+        itemView.alpha = 0.5f
+        itemView.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#87CEEB"))
+        itemView.findViewById<TextView>(R.id.main_filter_text).setTextColor(Color.parseColor("#04A7EA"))
+    }
 
     private fun initProductFilterAdapter() {
         productFilterAdapter = ProductFilterRecyclerAdapter(object : FilterClickListener {
@@ -111,17 +128,8 @@ class HomeFragment : Fragment() {
 
 //                filterDataViewModel.filterBarSwitch()
 
-                when (filterData.filterType) {
-                    FilterType.CONVENIENCE -> {
-                        mainFilterAdapter.updateFilterItem(FilterType.CONVENIENCE, filterData.filterImage, filterData.filterText)
-                    }
-                    FilterType.PRODUCT_CATEGORY -> {
-                        mainFilterAdapter.updateFilterItem(FilterType.PRODUCT_CATEGORY, filterData.filterImage, filterData.filterText)
-                    }
-                    FilterType.BENEFITS -> {
-                        mainFilterAdapter.updateFilterItem(FilterType.BENEFITS, filterData.filterImage, filterData.filterText)
-                    }
-                }
+                mainFilterAdapter.updateFilterItem(filterData)
+
                 //세부 필터를 고르면 불러온 데이터를 제거함
                 filterDataViewModel.clearFilterData()
 
@@ -137,6 +145,7 @@ class HomeFragment : Fragment() {
             }
         })
         binding.productGridView.adapter = productItemRecyclerAdapter
+        binding.productGridView.addItemDecoration(productSpacingController)
     }
 
 

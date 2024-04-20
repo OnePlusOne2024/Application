@@ -1,4 +1,4 @@
-package com.example.oneplusone.model.data.enum
+package com.example.oneplusone.model.data.enums
 
 import com.example.oneplusone.R
 

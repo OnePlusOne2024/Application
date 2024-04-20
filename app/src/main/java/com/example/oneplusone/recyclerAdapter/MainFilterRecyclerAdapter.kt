@@ -1,18 +1,15 @@
 package com.example.oneplusone.recyclerAdapter
 
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.oneplusone.databinding.MainFilterViewerBinding
-import com.example.oneplusone.`interface`.FilterClickListener
 import com.example.oneplusone.`interface`.MainFilterClickListener
 import com.example.oneplusone.model.data.FilterData
 import com.example.oneplusone.model.data.MainFilterData
-import com.example.oneplusone.model.data.enum.FilterType
+import com.example.oneplusone.model.data.enums.FilterType
 
 class MainFilterRecyclerAdapter(
     private val mainFilterClickListener: MainFilterClickListener
@@ -48,22 +45,19 @@ class MainFilterRecyclerAdapter(
 //
 //                binding.mainFilterText.setTextColor(Color.parseColor("#04A7EA"))
 
-                mainFilterClickListener.onMainFilterClick(mainFilter)
+                mainFilterClickListener.onMainFilterClick(mainFilter,itemView)
             }
         }
     }
 
-    fun updateFilterItem(filterType: FilterType, imageResource: Int, text: String) {
-        val updateList = currentList.toMutableList()
-        val index = updateList.indexOfFirst { it.filterType == filterType }
-        if (index != -1) {
-            val item = updateList[index]
-            updateList[index] = item.copy(mainFilterImage = imageResource, mainFilterText = text)
-            submitList(updateList) // 변경된 리스트를 제출
+    fun updateFilterItem(filterData: FilterData) {
+
+        val updatedList = currentList.map { currentItem ->
+            if (currentItem.filterType == filterData.filterType) {
+                currentItem.copy(mainFilterImage = filterData.filterImage, mainFilterText = filterData.filterText)
+            } else currentItem
         }
-    }
-    override fun submitList(list: List<MainFilterData>?) {
-        super.submitList(list)
+        submitList(updatedList)
     }
 
     class MainFilterDiffCallback : DiffUtil.ItemCallback<MainFilterData>() {

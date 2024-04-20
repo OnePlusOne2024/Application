@@ -1,6 +1,6 @@
 package com.example.oneplusone.model.data
 
-import com.example.oneplusone.model.data.enum.FilterType
+import com.example.oneplusone.model.data.enums.FilterType
 
 
 data class FilterData(

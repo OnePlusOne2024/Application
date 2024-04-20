@@ -3,10 +3,10 @@ package com.example.oneplusone.repository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.oneplusone.model.data.MainFilterData
-import com.example.oneplusone.model.data.enum.BenefitsType
-import com.example.oneplusone.model.data.enum.ConvenienceType
-import com.example.oneplusone.model.data.enum.FilterType
-import com.example.oneplusone.model.data.enum.ProductCategoryType
+import com.example.oneplusone.model.data.enums.BenefitsType
+import com.example.oneplusone.model.data.enums.ConvenienceType
+import com.example.oneplusone.model.data.enums.FilterType
+import com.example.oneplusone.model.data.enums.ProductCategoryType
 import javax.inject.Inject
 
 

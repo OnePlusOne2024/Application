@@ -1,16 +1,11 @@
 package com.example.oneplusone.model.bindingAdapter
 
-import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.oneplusone.`interface`.MainFilterClickListener
 import com.example.oneplusone.model.data.MainFilterData
-import com.example.oneplusone.model.data.enum.ConvenienceType
 import com.example.oneplusone.recyclerAdapter.MainFilterRecyclerAdapter
-import com.example.oneplusone.viewModel.FilterDataViewModel
-import com.example.oneplusone.viewModel.MainFilterViewModel
 
 //보류
 object MainFilterBindingAdapter {
