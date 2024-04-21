@@ -9,7 +9,7 @@
             type="com.example.oneplusone.model.data.FilterData" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="80dp"
+        android:layout_width="85dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:background="#ffffff"
@@ -18,11 +18,11 @@
 
         <ImageView
             android:id="@+id/filter_item_image"
-            android:layout_width="80dp"
+            android:layout_width="60dp"
             android:layout_height="45dp"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="3dp"
             android:background="@drawable/filter_border"
-            android:src="@drawable/all_convenience_store"
+            android:src="@drawable/emar_24_log_2"
             app:layout_constraintBottom_toTopOf="@id/filter_item_text"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -39,12 +39,6 @@ class MainFilterRecyclerAdapter(
 
             itemView.setOnClickListener {
 
-                //터치시 효과를...
-//                itemView.alpha = 0.5f
-//                itemView.backgroundTintList= ColorStateList.valueOf(Color.parseColor("#87CEEB"))
-//
-//                binding.mainFilterText.setTextColor(Color.parseColor("#04A7EA"))
-
                 mainFilterClickListener.onMainFilterClick(mainFilter,itemView)
             }
         }
@@ -59,6 +53,7 @@ class MainFilterRecyclerAdapter(
         }
         submitList(updatedList)
     }
+
 
     class MainFilterDiffCallback : DiffUtil.ItemCallback<MainFilterData>() {
         override fun areItemsTheSame(oldItem: MainFilterData, newItem: MainFilterData): Boolean {

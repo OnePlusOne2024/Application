@@ -11,30 +11,30 @@ import com.example.oneplusone.recyclerAdapter.ProductItemRecyclerAdapter
 import com.example.oneplusone.model.data.ProductData
 //보류
 object ProductBindingAdapter {
-    @JvmStatic
-    @BindingAdapter("productItems")
-    fun setProductItems(recyclerView: RecyclerView, items: List<ProductData>?) {
-        if(recyclerView.adapter == null) {
-
-            recyclerView.adapter = ProductItemRecyclerAdapter(object : ProductClickListener {
-                override fun onItemClick(productData: ProductData) {
-                    Log.d("ProductClick", "Clicked Product ID: ${productData.productId}")
-                }
-            })
-        }
-
-        val adapter = recyclerView.adapter as? ProductItemRecyclerAdapter
-        adapter?.submitList(items ?: emptyList())
-    }
+//    @JvmStatic
+//    @BindingAdapter("productItems")
+//    fun setProductItems(recyclerView: RecyclerView, items: List<ProductData>?) {
+//        if(recyclerView.adapter == null) {
+//
+//            recyclerView.adapter = ProductItemRecyclerAdapter(object : ProductClickListener {
+//                override fun onItemClick(productData: ProductData) {
+//                    Log.d("ProductClick", "Clicked Product ID: ${productData.productId}")
+//                }
+//            })
+//        }
+//
+//        val adapter = recyclerView.adapter as? ProductItemRecyclerAdapter
+//        adapter?.submitList(items ?: emptyList())
+//    }
 
     @JvmStatic
     @BindingAdapter("benefitsImage")
     fun setBenefitsImage(imageView: ImageView, resource: String) {
         when (resource) {
-            "1+1" -> imageView.setImageResource(R.drawable.one_plus_one_product_icon)
-            "2+1" -> imageView.setImageResource(R.drawable.two_plus_one_product_icon)
-            "3+1" -> imageView.setImageResource(R.drawable.three_plus_one_product_icon)
-            "할인" -> imageView.setImageResource(R.drawable.discount)
+            "onePlusOne" -> imageView.setImageResource(R.drawable.one_plus_one_product_icon)
+            "twoPlusOne" -> imageView.setImageResource(R.drawable.two_plus_one_product_icon)
+            "ThreePlusOne" -> imageView.setImageResource(R.drawable.three_plus_one_product_icon)
+            "discount" -> imageView.setImageResource(R.drawable.discount)
             else -> imageView.setImageResource(R.drawable.discount)
         }
     }

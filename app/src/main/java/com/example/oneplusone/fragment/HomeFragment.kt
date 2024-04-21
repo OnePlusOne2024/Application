@@ -5,11 +5,13 @@ import android.animation.AnimatorListenerAdapter
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.example.oneplusone.R
@@ -45,6 +47,8 @@ class HomeFragment : Fragment() {
 
     private val productSpacingController = ItemSpacingController(25, 25, 40)
 
+    private val filterSpacingController = ItemSpacingController(15, 15, 0)
+
     private var selectMainFilter:View?=null
 
     override fun onCreateView(
@@ -60,7 +64,7 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-        val filterSpacingController = ItemSpacingController(25, 25, 0)
+
 
         initAdapter()
 
@@ -94,39 +98,28 @@ class HomeFragment : Fragment() {
         mainFilterAdapter = MainFilterRecyclerAdapter(object : MainFilterClickListener {
             override fun onMainFilterClick(mainFilter: MainFilterData,itemView: View) {
 
-//                resetPreviousMainFilter()
 
-                filterDataViewModel.setFilterType(mainFilter.filterType)
+                if(selectMainFilter!=itemView){
+                    resetPreviousFilterStyle()
+                }
+                selectMainFilter = itemView
+                filterDataViewModel.showFilter(mainFilter.filterType)
 
-//                updateMainFilterUI(itemView)
 
-//                // 현재 선택된 뷰를 기록
-//                selectMainFilter = itemView
             }
         })
         binding.mainFilterViewer.adapter = mainFilterAdapter
+//        binding.mainFilterViewer.addItemDecoration(filterSpacingController)
     }
 
-    private fun resetPreviousMainFilter() {
-        selectMainFilter?.let {
-            it.alpha = 1f
-            it.backgroundTintList = null
-            it.findViewById<TextView>(R.id.main_filter_text).setTextColor(Color.parseColor("#000000"))
-        }
-    }
 
-    private fun updateMainFilterUI(itemView: View) {
-        itemView.alpha = 0.5f
-        itemView.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#87CEEB"))
-        itemView.findViewById<TextView>(R.id.main_filter_text).setTextColor(Color.parseColor("#04A7EA"))
-    }
 
     private fun initProductFilterAdapter() {
         productFilterAdapter = ProductFilterRecyclerAdapter(object : FilterClickListener {
 
             override fun onFilterClick(filterData: FilterData) {
 
-//                filterDataViewModel.filterBarSwitch()
+
 
                 mainFilterAdapter.updateFilterItem(filterData)
 
@@ -136,6 +129,7 @@ class HomeFragment : Fragment() {
             }
         })
         binding.filterViewer.adapter = productFilterAdapter
+//        binding.filterViewer.addItemDecoration(filterSpacingController)
     }
 
     private fun initProductItemRecyclerAdapter() {
@@ -163,7 +157,6 @@ class HomeFragment : Fragment() {
             productFilterAdapter.submitList(data)
         })
         filterDataViewModel.filterBar.observe(viewLifecycleOwner, Observer { isVisible  ->
-
             //사라질 때 시각적으로 버벅 거림이 느껴져서 애니메이션으로 부드럽게 바꿨음
             if (isVisible) {
                 binding.filterBarDetail.apply {
@@ -185,12 +178,42 @@ class HomeFragment : Fragment() {
                     })
             }
         })
+        filterDataViewModel.selectFilterColorSwitch.observe(viewLifecycleOwner, Observer { switchState ->
+
+            if(switchState){
+                updateFilterStyle()
+            }else{
+                resetPreviousFilterStyle()
+            }
+        })
     }
 
     private fun observeProductDataViewModel() {
         productDataViewModel.productDataList.observe(viewLifecycleOwner, Observer { data ->
             productItemRecyclerAdapter.submitList(data)
         })
+    }
+
+    private fun resetPreviousFilterStyle() {
+        selectMainFilter?.let {
+            it.alpha = 1f
+            it.backgroundTintList = null
+//            it.setBackgroundColor(Color.parseColor("#ffffff"))
+            it.findViewById<TextView>(R.id.main_filter_text).setTextColor(
+                ContextCompat.getColor(requireContext(), R.color.black))
+        }
+    }
+
+    private fun updateFilterStyle() {
+        selectMainFilter?.let {
+            it.alpha = 0.5f
+            it.backgroundTintList = ColorStateList.valueOf(
+                ContextCompat.getColor(requireContext(), R.color.filter_background_selected)
+            )
+//            it.setBackgroundColor(Color.parseColor("#87CEEB"))
+            it.findViewById<TextView>(R.id.main_filter_text).setTextColor(
+                ContextCompat.getColor(requireContext(), R.color.filter_text_selected))
+        }
     }
 
 }
