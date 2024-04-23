@@ -32,6 +32,7 @@ import com.example.oneplusone.model.data.ProductData
 import com.example.oneplusone.recyclerAdapter.MainFilterRecyclerAdapter
 import com.example.oneplusone.recyclerAdapter.ProductFilterRecyclerAdapter
 import com.example.oneplusone.recyclerAdapter.ProductItemRecyclerAdapter
+import com.example.oneplusone.util.DialogBuilder
 import com.example.oneplusone.viewModel.FilterDataViewModel
 import com.example.oneplusone.viewModel.ProductDataViewModel
 import com.example.oneplusone.util.ItemSpacingController
@@ -202,18 +203,8 @@ class HomeFragment : Fragment() {
 
         productDataViewModel.clickProductData.observe(viewLifecycleOwner, Observer { clickProductData ->
 
-            val mDialogView = LayoutInflater.from(requireContext()).inflate(R.layout.product_detail_viewer, null)
+            DialogBuilder().showProductDetailDialog(requireContext(), clickProductData)
 
-            //프로덕트 아이템과 바인딩 어댑터를 공유함. 프로덕트 아이템은 리사이클러 어댑터 에서 바인딩 어댑터와 연결하지만 이건 여기서 연결 했음 근데 조금 꼴보기 싫어서 수정할 예정
-            val dialogBinding = ProductDetailViewerBinding.bind(mDialogView)
-            dialogBinding.productData = clickProductData
-
-            val mBuilder = AlertDialog.Builder(requireContext())
-                .setView(mDialogView)
-
-            val dialog = mBuilder.show()
-
-            dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         })
     }
 
@@ -233,7 +224,6 @@ class HomeFragment : Fragment() {
             it.backgroundTintList = ColorStateList.valueOf(
                 ContextCompat.getColor(requireContext(), R.color.filter_background_selected)
             )
-//            it.setBackgroundColor(Color.parseColor("#87CEEB"))
             it.findViewById<TextView>(R.id.main_filter_text).setTextColor(
                 ContextCompat.getColor(requireContext(), R.color.filter_text_selected))
         }

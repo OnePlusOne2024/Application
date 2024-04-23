@@ -5,10 +5,18 @@
     tools:context=".fragment.MapFragment">
 
     <data>
+        <variable
+            name="filterDataViewModel"
+            type="com.example.oneplusone.viewModel.FilterDataViewModel" />
 
         <variable
             name="productDataViewModel"
             type="com.example.oneplusone.viewModel.ProductDataViewModel" />
+
+        <variable
+            name="mainFilterViewModel"
+            type="com.example.oneplusone.viewModel.MainFilterViewModel" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -35,6 +43,109 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/map_view">
 
+            <TextView
+                android:id="@+id/product_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:text="상품 필터"
+                android:fontFamily="@font/scdream6"
+                android:textColor="#000000"
+                android:textSize="16dp"
+
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/product_filter_bar"
+                android:layout_width="match_parent"
+                android:layout_height="85dp"
+                android:layout_marginTop="10dp"
+                android:background="#ffffff"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/product_filter" />
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/main_filter_viewer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_marginStart="8dp"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+
+                app:layout_constraintBottom_toBottomOf="@id/product_filter_bar"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/product_filter_bar" />
+
+
+            <TextView
+                android:id="@+id/pb_switch_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:fontFamily="@font/scdream4"
+                android:gravity="center_vertical"
+
+                android:text="pb 상품 포함"
+                android:textSize="12dp"
+                app:layout_constraintTop_toTopOf="@id/pb_switch"
+                app:layout_constraintBottom_toBottomOf="@id/pb_switch"
+                app:layout_constraintEnd_toStartOf="@id/pb_switch"
+                />
+
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/pb_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_marginEnd="5dp"
+                android:background="@color/white"
+
+                android:switchMinWidth="0dp"
+                android:textOff=""
+                android:textOn=""
+                android:lineSpacingExtra="6.4sp"
+                app:layout_constraintBottom_toBottomOf="@id/product_filter_bar"
+                app:layout_constraintEnd_toEndOf="@id/product_filter_bar"
+                app:switchMinWidth="0dp"
+                app:thumbTextPadding="15dp"
+                android:thumb="@drawable/pb_filter_thumb"
+                app:track="@drawable/pb_filter_track" />
+
+
+            <ImageView
+                android:id="@+id/filter_bar_detail"
+                android:layout_width="match_parent"
+                android:layout_height="85dp"
+                android:layout_marginTop="7dp"
+                android:background="#ffffff"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@+id/map_product_grid_view"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/product_filter_bar" />
+            <!--            filterBar="@{filterDataViewModel.filterBar}"/>-->
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/filter_viewer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_marginStart="8dp"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+
+                app:layout_constraintBottom_toBottomOf="@id/filter_bar_detail"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/filter_bar_detail" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/map_product_grid_view"
                 android:layout_width="match_parent"
@@ -47,7 +158,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/filter_bar_detail"
 
                 app:spanCount="2" />
         </androidx.constraintlayout.widget.ConstraintLayout>
