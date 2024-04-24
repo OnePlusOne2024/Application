@@ -1,28 +1,17 @@
 package com.example.oneplusone.fragment
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.app.AlertDialog
-import android.app.Dialog
-import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.Color
-import android.graphics.Point
-import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.example.oneplusone.R
 import com.example.oneplusone.databinding.FragmentHomeBinding
-import com.example.oneplusone.databinding.ProductDetailViewerBinding
 import com.example.oneplusone.`interface`.FilterClickListener
 import com.example.oneplusone.`interface`.MainFilterClickListener
 import com.example.oneplusone.`interface`.ProductClickListener
@@ -36,6 +25,8 @@ import com.example.oneplusone.util.DialogBuilder
 import com.example.oneplusone.viewModel.FilterDataViewModel
 import com.example.oneplusone.viewModel.ProductDataViewModel
 import com.example.oneplusone.util.ItemSpacingController
+import com.example.oneplusone.util.FilterAnimated
+import com.example.oneplusone.util.FilterStyle
 import com.example.oneplusone.viewModel.MainFilterViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -57,6 +48,7 @@ class HomeFragment : Fragment() {
     private val filterSpacingController = ItemSpacingController(15, 15, 0)
 
     private var selectMainFilter:View?=null
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -107,9 +99,9 @@ class HomeFragment : Fragment() {
             override fun onMainFilterClick(mainFilter: MainFilterData,itemView: View) {
 
 
-                if(selectMainFilter!=itemView){
-                    resetPreviousFilterStyle()
-                }
+                //하나의 메인 필터를 터치한 상태에서 다른 메인필터를 터치하면 초기화
+                FilterStyle().resetPreviousFilterStyle(requireContext(),selectMainFilter)
+
                 selectMainFilter = itemView
                 filterDataViewModel.showFilter(mainFilter.filterType)
 
@@ -120,14 +112,10 @@ class HomeFragment : Fragment() {
 //        binding.mainFilterViewer.addItemDecoration(filterSpacingController)
     }
 
-
-
     private fun initProductFilterAdapter() {
         productFilterAdapter = ProductFilterRecyclerAdapter(object : FilterClickListener {
 
             override fun onFilterClick(filterData: FilterData) {
-
-
 
                 mainFilterAdapter.updateFilterItem(filterData)
 
@@ -137,7 +125,6 @@ class HomeFragment : Fragment() {
             }
         })
         binding.filterViewer.adapter = productFilterAdapter
-//        binding.filterViewer.addItemDecoration(filterSpacingController)
     }
 
     private fun initProductItemRecyclerAdapter() {
@@ -145,7 +132,6 @@ class HomeFragment : Fragment() {
             override fun onItemClick(productData: ProductData) {
 
                 productDataViewModel.loadClickProductData(productData)
-
             }
         })
         binding.productGridView.adapter = productItemRecyclerAdapter
@@ -166,32 +152,16 @@ class HomeFragment : Fragment() {
         })
         filterDataViewModel.filterBar.observe(viewLifecycleOwner, Observer { isVisible  ->
             //사라질 때 시각적으로 버벅 거림이 느껴져서 애니메이션으로 부드럽게 바꿨음
-            if (isVisible) {
-                binding.filterBarDetail.apply {
-                    alpha = 0f
-                    visibility = View.VISIBLE
-                    animate()
-                        .alpha(1f)
-                        .setDuration(300)
-                        .setListener(null)
-                }
-            } else {
-                binding.filterBarDetail.animate()
-                    .alpha(0f)
-                    .setDuration(300)
-                    .setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator) {
-                            binding.filterBarDetail.visibility = View.GONE
-                        }
-                    })
-            }
+            FilterAnimated().viewAnimated(isVisible,binding.filterBarDetail)
+
         })
         filterDataViewModel.selectFilterColorSwitch.observe(viewLifecycleOwner, Observer { switchState ->
 
             if(switchState){
-                updateFilterStyle()
-            }else{
-                resetPreviousFilterStyle()
+                FilterStyle().updateFilterStyle(requireContext(),selectMainFilter)
+            }
+            else{
+                FilterStyle().resetPreviousFilterStyle(requireContext(),selectMainFilter)
             }
         })
     }
@@ -207,26 +177,4 @@ class HomeFragment : Fragment() {
 
         })
     }
-
-    private fun resetPreviousFilterStyle() {
-        selectMainFilter?.let {
-            it.alpha = 1f
-            it.backgroundTintList = null
-//            it.setBackgroundColor(Color.parseColor("#ffffff"))
-            it.findViewById<TextView>(R.id.main_filter_text).setTextColor(
-                ContextCompat.getColor(requireContext(), R.color.black))
-        }
-    }
-
-    private fun updateFilterStyle() {
-        selectMainFilter?.let {
-            it.alpha = 0.5f
-            it.backgroundTintList = ColorStateList.valueOf(
-                ContextCompat.getColor(requireContext(), R.color.filter_background_selected)
-            )
-            it.findViewById<TextView>(R.id.main_filter_text).setTextColor(
-                ContextCompat.getColor(requireContext(), R.color.filter_text_selected))
-        }
-    }
-
 }

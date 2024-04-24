@@ -25,6 +25,8 @@ import com.example.oneplusone.recyclerAdapter.MainFilterRecyclerAdapter
 import com.example.oneplusone.recyclerAdapter.ProductFilterRecyclerAdapter
 import com.example.oneplusone.recyclerAdapter.ProductItemRecyclerAdapter
 import com.example.oneplusone.util.DialogBuilder
+import com.example.oneplusone.util.FilterAnimated
+import com.example.oneplusone.util.FilterStyle
 import com.example.oneplusone.viewModel.ProductDataViewModel
 import com.example.oneplusone.util.ItemSpacingController
 import com.example.oneplusone.viewModel.FilterDataViewModel
@@ -98,14 +100,18 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         observeFilterDataViewModel()
         observeProductDataViewModel()
     }
+
+    private fun mapZipperTouch(){
+
+    }
     private fun initMainFilterAdapter() {
         mainFilterAdapter = MainFilterRecyclerAdapter(object : MainFilterClickListener {
-            override fun onMainFilterClick(mainFilter: MainFilterData, itemView: View) {
+            override fun onMainFilterClick(mainFilter: MainFilterData,itemView: View) {
 
 
-                if(selectMainFilter!=itemView){
-                    resetPreviousFilterStyle()
-                }
+                //하나의 메인 필터를 터치한 상태에서 다른 메인필터를 터치하면 초기화
+                FilterStyle().resetPreviousFilterStyle(requireContext(),selectMainFilter)
+
                 selectMainFilter = itemView
                 filterDataViewModel.showFilter(mainFilter.filterType)
 
@@ -122,8 +128,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         productFilterAdapter = ProductFilterRecyclerAdapter(object : FilterClickListener {
 
             override fun onFilterClick(filterData: FilterData) {
-
-
 
                 mainFilterAdapter.updateFilterItem(filterData)
 
@@ -162,32 +166,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         })
         filterDataViewModel.filterBar.observe(viewLifecycleOwner, Observer { isVisible  ->
             //사라질 때 시각적으로 버벅 거림이 느껴져서 애니메이션으로 부드럽게 바꿨음
-            if (isVisible) {
-                binding.filterBarDetail.apply {
-                    alpha = 0f
-                    visibility = View.VISIBLE
-                    animate()
-                        .alpha(1f)
-                        .setDuration(300)
-                        .setListener(null)
-                }
-            } else {
-                binding.filterBarDetail.animate()
-                    .alpha(0f)
-                    .setDuration(300)
-                    .setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator) {
-                            binding.filterBarDetail.visibility = View.GONE
-                        }
-                    })
-            }
+            FilterAnimated().viewAnimated(isVisible,binding.filterBarDetail)
+
         })
         filterDataViewModel.selectFilterColorSwitch.observe(viewLifecycleOwner, Observer { switchState ->
 
             if(switchState){
-                updateFilterStyle()
-            }else{
-                resetPreviousFilterStyle()
+                FilterStyle().updateFilterStyle(requireContext(),selectMainFilter)
+            }
+            else{
+                FilterStyle().resetPreviousFilterStyle(requireContext(),selectMainFilter)
             }
         })
     }
@@ -202,27 +190,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             DialogBuilder().showProductDetailDialog(requireContext(), clickProductData)
 
         })
-    }
-
-    private fun resetPreviousFilterStyle() {
-        selectMainFilter?.let {
-            it.alpha = 1f
-            it.backgroundTintList = null
-//            it.setBackgroundColor(Color.parseColor("#ffffff"))
-            it.findViewById<TextView>(R.id.main_filter_text).setTextColor(
-                ContextCompat.getColor(requireContext(), R.color.black))
-        }
-    }
-
-    private fun updateFilterStyle() {
-        selectMainFilter?.let {
-            it.alpha = 0.5f
-            it.backgroundTintList = ColorStateList.valueOf(
-                ContextCompat.getColor(requireContext(), R.color.filter_background_selected)
-            )
-            it.findViewById<TextView>(R.id.main_filter_text).setTextColor(
-                ContextCompat.getColor(requireContext(), R.color.filter_text_selected))
-        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
