@@ -1,19 +1,22 @@
 package com.example.oneplusone.fragment
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.content.res.ColorStateList
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.res.Resources
+import android.graphics.PointF
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.core.content.ContextCompat
+import android.view.WindowManager
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import com.example.oneplusone.R
 import com.example.oneplusone.databinding.FragmentMapBinding
 import com.example.oneplusone.`interface`.FilterClickListener
 import com.example.oneplusone.`interface`.MainFilterClickListener
@@ -27,16 +30,17 @@ import com.example.oneplusone.recyclerAdapter.ProductItemRecyclerAdapter
 import com.example.oneplusone.util.DialogBuilder
 import com.example.oneplusone.util.FilterAnimated
 import com.example.oneplusone.util.FilterStyle
-import com.example.oneplusone.viewModel.ProductDataViewModel
 import com.example.oneplusone.util.ItemSpacingController
 import com.example.oneplusone.viewModel.FilterDataViewModel
 import com.example.oneplusone.viewModel.MainFilterViewModel
+import com.example.oneplusone.viewModel.ProductDataViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import dagger.hilt.android.AndroidEntryPoint
+
 
 @AndroidEntryPoint
 class MapFragment : Fragment(), OnMapReadyCallback {
@@ -56,6 +60,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private val productSpacingController = ItemSpacingController(25, 25, 40)
 
+
+
+    private val screenHeight = Resources.getSystem().displayMetrics.heightPixels
+
     private var selectMainFilter:View?=null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -69,14 +77,18 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         initAdapter()
-
         setupDataBinding()
-//
         observeSetting()
+        mapZipperTouch()
+
+
+        //임시로 초기 상품뷰의 높이 설정
+        binding.mapProductLayout.layoutParams.height=(screenHeight * 0.4).toInt()
     }
 
     private fun initAdapter() {
@@ -101,9 +113,32 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         observeProductDataViewModel()
     }
 
-    private fun mapZipperTouch(){
 
+    @SuppressLint("ClickableViewAccessibility")
+    private fun mapZipperTouch() {
+        var initialTouchY = 0f
+        var initialHeight = 0
+
+        binding.mapZipper.setOnTouchListener { _, event ->
+            when (event.action) {
+                //터치 했을 때
+                MotionEvent.ACTION_DOWN -> {
+                    initialTouchY = event.rawY
+                    initialHeight = binding.mapProductLayout.layoutParams.height
+                    Log.d("initialHeight", initialHeight.toString())
+                    true
+                }
+                //움직일 때
+                MotionEvent.ACTION_MOVE -> {
+                    productDataViewModel.updateLayoutHeight(initialHeight, initialTouchY, event.rawY,screenHeight)
+                    true
+                }
+
+                else -> false
+            }
+        }
     }
+
     private fun initMainFilterAdapter() {
         mainFilterAdapter = MainFilterRecyclerAdapter(object : MainFilterClickListener {
             override fun onMainFilterClick(mainFilter: MainFilterData,itemView: View) {
@@ -121,7 +156,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         binding.mainFilterViewer.adapter = mainFilterAdapter
 //        binding.mainFilterViewer.addItemDecoration(filterSpacingController)
     }
-
 
 
     private fun initProductFilterAdapter() {
@@ -188,6 +222,23 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         productDataViewModel.clickProductData.observe(viewLifecycleOwner, Observer { clickProductData ->
 
             DialogBuilder().showProductDetailDialog(requireContext(), clickProductData)
+
+        })
+
+        productDataViewModel.layoutHeight.observe(viewLifecycleOwner, Observer { height ->
+
+            val params=binding.mapProductLayout.layoutParams
+
+            params.height=height
+
+            binding.mapProductLayout.layoutParams = params
+
+//            val params=binding.mapFragment.layoutParams
+//
+//            params.height=height
+//
+//            binding.mapProductLayout.layoutParams = params
+//            Log.d("screenHeight2", height.toString())
 
         })
     }
