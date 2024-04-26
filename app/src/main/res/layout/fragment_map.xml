@@ -25,16 +25,7 @@
         android:background="#E3E3E3"
         android:id="@+id/mapFragment">
 
-        <com.google.android.gms.maps.MapView
-            android:id="@+id/map_view"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
+        <!--        <ImageView
             android:id="@+id/map_zipper"
             android:layout_width="20dp"
             android:layout_height="20dp"
@@ -43,26 +34,38 @@
             android:src="@drawable/map_zipper"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/map_product_layout" />
+            app:layout_constraintBottom_toTopOf="@id/map_product_layout" />-->
 
+
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/map_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/map_product_layout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:background="#E3E3E3"
+            android:background="@drawable/map_view_product_border"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
+
 
             <TextView
                 android:id="@+id/product_filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
-                android:text="상품 필터"
+                android:layout_marginTop="17dp"
                 android:fontFamily="@font/scdream6"
+                android:text="상품 필터"
                 android:textColor="#000000"
                 android:textSize="16dp"
 
@@ -175,6 +178,16 @@
                 app:spanCount="2" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <View
+            android:id="@+id/map_zipper"
+            android:layout_width="60dp"
+            android:layout_height="4dp"
+
+            android:layout_marginTop="7dp"
+            android:background="@drawable/map_zipper_2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/map_product_layout" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

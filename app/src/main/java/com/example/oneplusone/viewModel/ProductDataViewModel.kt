@@ -40,7 +40,7 @@ class ProductDataViewModel @Inject constructor(
     }
 
 
-    //이유를 모르 겠으나 원하는 비율로 나타나게 하고 싶다면 거의 두배의 값을 줘야함
+
     fun updateLayoutHeight(
         initialHeight: Int,
         initialTouchY: Float,

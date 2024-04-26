@@ -33,6 +33,7 @@ import com.example.oneplusone.util.FilterStyle
 import com.example.oneplusone.util.ItemSpacingController
 import com.example.oneplusone.viewModel.FilterDataViewModel
 import com.example.oneplusone.viewModel.MainFilterViewModel
+import com.example.oneplusone.viewModel.MapDataViewModel
 import com.example.oneplusone.viewModel.ProductDataViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -53,6 +54,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val productDataViewModel: ProductDataViewModel by viewModels()
     private val filterDataViewModel: FilterDataViewModel by viewModels()
     private val mainFilterViewModel: MainFilterViewModel by viewModels()
+    private val mapDataViewModel: MapDataViewModel by viewModels()
 
     private lateinit var productFilterAdapter: ProductFilterRecyclerAdapter
     private lateinit var productItemRecyclerAdapter: ProductItemRecyclerAdapter
@@ -86,6 +88,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         observeSetting()
         mapZipperTouch()
 
+        //todo:지도에 편의점 띄우기 + 터치시 상품뷰 출력
 
         //임시로 초기 상품뷰의 높이 설정
         binding.mapProductLayout.layoutParams.height=(screenHeight * 0.4).toInt()

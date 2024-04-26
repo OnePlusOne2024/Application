@@ -2,6 +2,8 @@ package com.example.oneplusone.mudule
 
 import androidx.lifecycle.MutableLiveData
 import com.example.oneplusone.model.data.MainFilterData
+import com.example.oneplusone.repository.ConvenienceDataRepository
+import com.example.oneplusone.repository.ConvenienceDataRepositoryImpl
 import com.example.oneplusone.repository.FilterDataRepository
 import com.example.oneplusone.repository.FilterDataRepositoryImpl
 import com.example.oneplusone.repository.MainFilterRepository
@@ -26,4 +28,7 @@ object AppModule {
 
     @Provides
     fun provideProductDataRepository(): ProductDataRepository = ProductDataRepositoryImpl()
+
+    @Provides
+    fun provideConvenienceDataRepository(): ConvenienceDataRepository = ConvenienceDataRepositoryImpl()
 }
