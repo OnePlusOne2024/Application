@@ -1,11 +1,19 @@
 package com.example.oneplusone.fragment
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.PointF
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import android.location.Address
 import android.os.Build
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -13,17 +21,25 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.example.oneplusone.R
 import com.example.oneplusone.databinding.FragmentMapBinding
 import com.example.oneplusone.`interface`.FilterClickListener
 import com.example.oneplusone.`interface`.MainFilterClickListener
 import com.example.oneplusone.`interface`.ProductClickListener
+import com.example.oneplusone.model.data.ConvenienceData
 import com.example.oneplusone.model.data.FilterData
 import com.example.oneplusone.model.data.MainFilterData
 import com.example.oneplusone.model.data.ProductData
+import com.example.oneplusone.model.data.enums.BenefitsType
+import com.example.oneplusone.model.data.enums.ConvenienceType
+import com.example.oneplusone.model.data.enums.FilterType
+import com.example.oneplusone.model.data.enums.ProductCategoryType
 import com.example.oneplusone.recyclerAdapter.MainFilterRecyclerAdapter
 import com.example.oneplusone.recyclerAdapter.ProductFilterRecyclerAdapter
 import com.example.oneplusone.recyclerAdapter.ProductItemRecyclerAdapter
@@ -38,9 +54,13 @@ import com.example.oneplusone.viewModel.ProductDataViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.Circle
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.ByteArrayOutputStream
 
 
 @AndroidEntryPoint
@@ -62,7 +82,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private val productSpacingController = ItemSpacingController(25, 25, 40)
 
-
+    @SuppressLint("InflateParams")
+    private val markerView: View =LayoutInflater.from(requireContext()).inflate(R.layout.custom_marker,null)
+    private val tagMarker: TextView = markerView.findViewById(R.id.custom_marker)
 
     private val screenHeight = Resources.getSystem().displayMetrics.heightPixels
 
@@ -101,12 +123,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 //
 
-    //Hilt
+    //레이아웃과 연결 (Hilt)
     private fun setupDataBinding() {
         binding.apply {
             mainFilterViewModel = this@MapFragment.mainFilterViewModel
             filterDataViewModel = this@MapFragment.filterDataViewModel
             productDataViewModel = this@MapFragment.productDataViewModel
+            mapDataViewModel = this@MapFragment.mapDataViewModel
             lifecycleOwner = viewLifecycleOwner
         }
     }
@@ -114,9 +137,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         observeMainFilterViewModel()
         observeFilterDataViewModel()
         observeProductDataViewModel()
+        observeConvenienceData()
     }
 
 
+
+    //지도에서 지퍼로 올리거나 내리거나 할 수 있는 기능
     @SuppressLint("ClickableViewAccessibility")
     private fun mapZipperTouch() {
         var initialTouchY = 0f
@@ -236,14 +262,44 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
             binding.mapProductLayout.layoutParams = params
 
-//            val params=binding.mapFragment.layoutParams
-//
-//            params.height=height
-//
-//            binding.mapProductLayout.layoutParams = params
-//            Log.d("screenHeight2", height.toString())
-
         })
+    }
+
+    @SuppressLint("InflateParams")
+    private fun observeConvenienceData() {
+        mapDataViewModel.convenienceDataList.observe(viewLifecycleOwner, Observer { convenienceData ->
+            for(i in convenienceData.indices){
+                addMarker(convenienceData[i])
+            }
+        })
+    }
+
+    private fun addMarker(convenienceData: ConvenienceData): Marker {
+        var addressList: List<Address>? = null
+        var markerOptions = MarkerOptions()
+
+        markerOptions.position(convenienceData.conveniencePosition)
+        tagMarker.text = convenienceData.convenienceName
+        markerOptions.icon(
+            createDrawableFromView(requireContext(), convenienceData.convenienceType)
+            )
+        )
+        return mMap.addMarker(markerOptions)
+    }
+    private fun createDrawableFromView(context: Context, convenienceType: String): Drawable {
+
+
+        val convenienceImageBitmap:Bitmap=when(convenienceType){
+
+            ConvenienceType.STORE_GS_25.title -> (ContextCompat.getDrawable(context, R.drawable.gs25_product_icon) as BitmapDrawable).bitmap
+            ConvenienceType.STORE_CU.title -> (ContextCompat.getDrawable(context, R.drawable.cu_product_icon) as BitmapDrawable).bitmap
+            ConvenienceType.STORE_SEVEN_ELEVEN.title -> (ContextCompat.getDrawable(context, R.drawable.seven_eleven_product_icon) as BitmapDrawable).bitmap
+            ConvenienceType.STORE_E_MART24.title -> (ContextCompat.getDrawable(context, R.drawable.emart24_product_icon) as BitmapDrawable).bitmap
+
+            else -> (ContextCompat.getDrawable(context, R.drawable.all_convenience_store) as BitmapDrawable).bitmap
+        }
+
+        return BitmapDrawable(context.resources,convenienceImageBitmap)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {

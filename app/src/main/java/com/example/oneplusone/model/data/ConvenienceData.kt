@@ -1,5 +1,7 @@
 package com.example.oneplusone.model.data
 
+import com.google.android.gms.maps.model.LatLng
+
 
 data class ConvenienceData(
 
@@ -7,8 +9,5 @@ data class ConvenienceData(
 
     val convenienceName: String,
 
-    val convenienceLatitude: Double,
-
-    val convenienceLongitude: Double,
-
+    val conveniencePosition: LatLng,
     )

@@ -1,5 +1,6 @@
 package com.example.oneplusone.viewModel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,15 +16,14 @@ class MapDataViewModel  @Inject constructor(
 
 ): ViewModel() {
 
-
-    val convenienceDataList: LiveData<List<ConvenienceData>> = convenienceDataRepository.getConvenienceData()
-
-    private var _convenienceData= MutableLiveData<ConvenienceData>()
+    //_convenienceDataList는 관찰 가능한 데이터를 제공
+    private val _convenienceDataList: LiveData<List<ConvenienceData>> = convenienceDataRepository.getConvenienceData()
 
 
 
-    val convenienceData: LiveData<ConvenienceData>
-        get() = _convenienceData
+    //loadConvenienceData()는 데이터를 로딩하는 데 필요
+    val convenienceDataList: LiveData<List<ConvenienceData>>
+        get() = _convenienceDataList
 
 
 
