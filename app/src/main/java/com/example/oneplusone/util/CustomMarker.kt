@@ -27,7 +27,13 @@ class CustomMarker {
         val tagMarkerText = markerView.findViewById<TextView>(R.id.custom_marker_text)
         val tagMarkerImage = markerView.findViewById<ImageView>(R.id.custom_marker_image)
 
-        tagMarkerText.text = convenienceData.convenienceName
+        //점포명이 너무 길면 미관상 별로라서 단축시켜서 표현
+        val adjustedName = if(convenienceData.convenienceName.length > 8)
+            "${convenienceData.convenienceName.substring(0, 8)}..."
+        else
+            convenienceData.convenienceName
+
+        tagMarkerText.text = adjustedName
 
 
         if(selectedMarker){

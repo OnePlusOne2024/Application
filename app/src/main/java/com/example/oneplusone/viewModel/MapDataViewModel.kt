@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.oneplusone.model.data.ConvenienceData
 import com.example.oneplusone.repository.ConvenienceDataRepository
+import com.google.android.gms.maps.model.Marker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -18,7 +19,7 @@ class MapDataViewModel  @Inject constructor(
     //_convenienceDataList는 관찰 가능한 데이터를 제공
     private val _convenienceDataList: LiveData<List<ConvenienceData>> = convenienceDataRepository.getConvenienceData()
 
-    private val _markerSelectSwitch = MutableLiveData<Boolean>()
+    private val _selectedMarkerData = MutableLiveData<ConvenienceData?>()
 
 
 
@@ -26,9 +27,8 @@ class MapDataViewModel  @Inject constructor(
     val convenienceDataList: LiveData<List<ConvenienceData>>
         get() = _convenienceDataList
 
-    val markerSelectSwitch: LiveData<Boolean>
-        get() = _markerSelectSwitch
-
+    val selectedMarkerData: LiveData<ConvenienceData?>
+        get() = _selectedMarkerData
 
     init{
         loadConvenienceData()
@@ -38,5 +38,14 @@ class MapDataViewModel  @Inject constructor(
         convenienceDataRepository.loadConvenienceData()
     }
 
+    fun selectMarker(convenienceData: ConvenienceData?) {
+        if (_selectedMarkerData.value == convenienceData) {
+
+            _selectedMarkerData.value = null
+        } else {
+            // 새로운 마커 선택
+            _selectedMarkerData.value = convenienceData
+        }
+    }
 
 }

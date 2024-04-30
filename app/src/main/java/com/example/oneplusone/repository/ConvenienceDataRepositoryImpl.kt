@@ -22,9 +22,22 @@ class ConvenienceDataRepositoryImpl @Inject constructor() : ConvenienceDataRepos
                 ),
 
             ConvenienceData(ConvenienceType.STORE_SEVEN_ELEVEN.title,
-                "세븐 일레븐 대천2점12412414141411512515",
+                "세븐 일레븐 대천2점 울트라",
                 LatLng(37.516927,126.980288),
-            )
+            ),
+            ConvenienceData(ConvenienceType.STORE_CU.title,
+                "CU 아산5호점",
+                LatLng(37.514655, 126.983000),
+            ),
+            ConvenienceData(ConvenienceType.STORE_E_MART24.title,
+                "이마트 24 순천",
+                LatLng(37.514655, 126.981100),
+            ),
+            ConvenienceData(ConvenienceType.STORE_GS_25.title,
+                "GS25 대천5",
+                LatLng(37.516927,126.982200),
+            ),
+
         )
     }
 

@@ -16,8 +16,8 @@
             type="com.example.oneplusone.viewModel.ProductDataViewModel" />
 
         <variable
-            name="mainFilterViewModel"
-            type="com.example.oneplusone.viewModel.MainFilterViewModel" />
+            name="mapMainFilterViewModel"
+            type="com.example.oneplusone.viewModel.MapMainFilterViewModel" />
 
         <variable
             name="mapDataViewModel"
@@ -47,6 +47,7 @@
             android:id="@+id/map_product_layout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:visibility="gone"
             android:background="@drawable/map_view_product_border"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -175,7 +176,7 @@
             android:id="@+id/map_zipper"
             android:layout_width="60dp"
             android:layout_height="4dp"
-
+            android:visibility="gone"
             android:layout_marginTop="7dp"
             android:background="@drawable/map_zipper_2"
             app:layout_constraintEnd_toEndOf="parent"

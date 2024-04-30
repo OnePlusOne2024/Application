@@ -8,6 +8,8 @@ import com.example.oneplusone.repository.FilterDataRepository
 import com.example.oneplusone.repository.FilterDataRepositoryImpl
 import com.example.oneplusone.repository.MainFilterRepository
 import com.example.oneplusone.repository.MainFilterRepositoryImpl
+import com.example.oneplusone.repository.MapMainFilterRepository
+import com.example.oneplusone.repository.MapMainFilterRepositoryImpl
 import com.example.oneplusone.repository.ProductDataRepository
 import com.example.oneplusone.repository.ProductDataRepositoryImpl
 import dagger.Module
@@ -31,4 +33,7 @@ object AppModule {
 
     @Provides
     fun provideConvenienceDataRepository(): ConvenienceDataRepository = ConvenienceDataRepositoryImpl()
+
+    @Provides
+    fun provideMapMainFilterRepository(): MapMainFilterRepository = MapMainFilterRepositoryImpl()
 }

@@ -35,6 +35,7 @@ import com.example.oneplusone.util.ItemSpacingController
 import com.example.oneplusone.viewModel.FilterDataViewModel
 import com.example.oneplusone.viewModel.MainFilterViewModel
 import com.example.oneplusone.viewModel.MapDataViewModel
+import com.example.oneplusone.viewModel.MapMainFilterViewModel
 import com.example.oneplusone.viewModel.ProductDataViewModel
 import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -57,7 +58,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private val productDataViewModel: ProductDataViewModel by viewModels()
     private val filterDataViewModel: FilterDataViewModel by viewModels()
-    private val mainFilterViewModel: MainFilterViewModel by viewModels()
+    private val mapMainFilterViewModel: MapMainFilterViewModel by viewModels()
     private val mapDataViewModel: MapDataViewModel by viewModels()
 
     private lateinit var productFilterAdapter: ProductFilterRecyclerAdapter
@@ -66,6 +67,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private val productSpacingController = ItemSpacingController(25, 25, 40)
 
+
 //    private lateinit var markerView: View
 //    private lateinit var tagMarker: TextView
 
@@ -73,12 +75,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 //    val tagMarkerText = markerView.findViewById<TextView>(R.id.custom_marker_text)
 //    val tagMarkerImage = markerView.findViewById<ImageView>(R.id.custom_marker_image)
 
+//todo 코드 너무 중구난방으로 나누어져 있음, 맵메인뷰모델을 꼭 써야하는지 생각해보기, 디자인 구림,
+// 점포 아이콘 아래에 정확한 위치에 편의점 아이콘을 넣는것은 어떨지 생각해보기
+
 
     private val screenHeight = Resources.getSystem().displayMetrics.heightPixels
-
-    private var selectedMarkerCheck:Boolean=false
-    private var lastSelectedMarker: Marker? = null
-    private var oldSelectedMarker:ConvenienceData?=null
 
     private var selectMainFilter:View?=null
     override fun onCreateView(
@@ -123,7 +124,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     //레이아웃과 연결 (Hilt)
     private fun setupDataBinding() {
         binding.apply {
-            mainFilterViewModel = this@MapFragment.mainFilterViewModel
+            mapMainFilterViewModel = this@MapFragment.mapMainFilterViewModel
             filterDataViewModel = this@MapFragment.filterDataViewModel
             productDataViewModel = this@MapFragment.productDataViewModel
             mapDataViewModel = this@MapFragment.mapDataViewModel
@@ -175,8 +176,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
                 selectMainFilter = itemView
                 filterDataViewModel.showFilter(mainFilter.filterType)
-
-
             }
         })
         binding.mainFilterViewer.adapter = mainFilterAdapter
@@ -213,12 +212,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
 
-
-
-
-
     private fun observeMainFilterViewModel() {
-        mainFilterViewModel.mainFilterDataList.observe(viewLifecycleOwner, Observer { data ->
+        mapMainFilterViewModel.mainFilterDataList.observe(viewLifecycleOwner, Observer { data ->
             mainFilterAdapter.submitList(data)
         })
     }
@@ -268,35 +263,47 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         })
     }
 
-    @SuppressLint("InflateParams")
+    @SuppressLint("InflateParams", "SetTextI18n")
     private fun observeConvenienceData() {
         mapDataViewModel.convenienceDataList.observe(viewLifecycleOwner, Observer { convenienceData ->
 
             for(i in convenienceData.indices){
-                addMarker(convenienceData[i])
+                addMarker(convenienceData[i],false)
             }
         })
-        mapDataViewModel.markerSelectSwitch.observe(viewLifecycleOwner, Observer { markerSelectSwitch ->
+
+        mapDataViewModel.selectedMarkerData.observe(viewLifecycleOwner, Observer { selectedMarkerData ->
+
+            if(selectedMarkerData!=null){
+                binding.mapZipper.visibility=View.VISIBLE
+                binding.mapProductLayout.visibility=View.VISIBLE
+                binding.productFilter.text=("${selectedMarkerData.convenienceName}점")
+
+            }else{
+                binding.mapZipper.visibility=View.GONE
+                binding.mapProductLayout.visibility=View.GONE
+            }
 
 
+            googleMap?.clear()
+            mapDataViewModel.convenienceDataList.value?.forEach { convenienceData ->
+
+                val isSelected = convenienceData == selectedMarkerData
+                addMarker(convenienceData, isSelected)
+            }
         })
     }
 
-    private fun addMarker(convenienceData: ConvenienceData) {
+    private fun addMarker(convenienceData: ConvenienceData, isSelected: Boolean) {
+
         val markerOptions = MarkerOptions()
         markerOptions.position(convenienceData.conveniencePosition)
-
-        // 처음 마커 이미지 설정
-        val defaultIcon = BitmapDescriptorFactory.fromBitmap(CustomMarker().createDrawableFromView(requireContext(), convenienceData,false))
-        markerOptions.icon(defaultIcon)
-
-
+        val icon = BitmapDescriptorFactory.fromBitmap(CustomMarker().createDrawableFromView(requireContext(), convenienceData, isSelected))
+        markerOptions.icon(icon)
         val marker = googleMap?.addMarker(markerOptions)
-
-        //tag를 쓰면 마커에 데이터 저장
         marker?.tag = convenienceData
-
     }
+
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
 //        val point = LatLng(37.514655, 126.979974)
@@ -310,28 +317,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     //이상하게 일정거리 이상에서 마커를 터치하면 분명 같은 마커를 터치 했는데 다른 마커가 터치된 것처럼 반응함(축소거리 조정예정)
     private fun setMarkerClickListener() {
         googleMap?.setOnMarkerClickListener { marker ->
-
-            lastSelectedMarker = if (lastSelectedMarker == marker) {
-                changeMarkerColor(marker, false)
-                null
-            } else {
-                lastSelectedMarker?.let { changeMarkerColor(it, false) }
-                changeMarkerColor(marker, true)
-                marker
-            }
+            val convenienceData = marker.tag as? ConvenienceData
+            mapDataViewModel.selectMarker(convenienceData)
             true
         }
-    }
-    private fun changeMarkerColor(marker: Marker, isSelected: Boolean) {
-        val convenienceData = marker.tag as? ConvenienceData
-
-
-        val icon = if (isSelected) {
-            BitmapDescriptorFactory.fromBitmap(CustomMarker().createDrawableFromView(requireContext(), convenienceData!!, true))
-        } else {
-            BitmapDescriptorFactory.fromBitmap(CustomMarker().createDrawableFromView(requireContext(), convenienceData!!, false))
-        }
-        marker.setIcon(icon)
     }
 
     override fun onResume() {
