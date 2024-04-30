@@ -1,29 +1,17 @@
 package com.example.oneplusone.fragment
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Context
 import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.PointF
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
-import android.location.Address
 import android.os.Build
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.util.Log
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -36,13 +24,10 @@ import com.example.oneplusone.model.data.ConvenienceData
 import com.example.oneplusone.model.data.FilterData
 import com.example.oneplusone.model.data.MainFilterData
 import com.example.oneplusone.model.data.ProductData
-import com.example.oneplusone.model.data.enums.BenefitsType
-import com.example.oneplusone.model.data.enums.ConvenienceType
-import com.example.oneplusone.model.data.enums.FilterType
-import com.example.oneplusone.model.data.enums.ProductCategoryType
 import com.example.oneplusone.recyclerAdapter.MainFilterRecyclerAdapter
 import com.example.oneplusone.recyclerAdapter.ProductFilterRecyclerAdapter
 import com.example.oneplusone.recyclerAdapter.ProductItemRecyclerAdapter
+import com.example.oneplusone.util.CustomMarker
 import com.example.oneplusone.util.DialogBuilder
 import com.example.oneplusone.util.FilterAnimated
 import com.example.oneplusone.util.FilterStyle
@@ -51,16 +36,15 @@ import com.example.oneplusone.viewModel.FilterDataViewModel
 import com.example.oneplusone.viewModel.MainFilterViewModel
 import com.example.oneplusone.viewModel.MapDataViewModel
 import com.example.oneplusone.viewModel.ProductDataViewModel
+import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.Circle
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import dagger.hilt.android.AndroidEntryPoint
-import java.io.ByteArrayOutputStream
 
 
 @AndroidEntryPoint
@@ -82,11 +66,19 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private val productSpacingController = ItemSpacingController(25, 25, 40)
 
-    @SuppressLint("InflateParams")
-    private val markerView: View =LayoutInflater.from(requireContext()).inflate(R.layout.custom_marker,null)
-    private val tagMarker: TextView = markerView.findViewById(R.id.custom_marker)
+//    private lateinit var markerView: View
+//    private lateinit var tagMarker: TextView
+
+//    val markerView: View = LayoutInflater.from(context).inflate(R.layout.custom_marker, null)
+//    val tagMarkerText = markerView.findViewById<TextView>(R.id.custom_marker_text)
+//    val tagMarkerImage = markerView.findViewById<ImageView>(R.id.custom_marker_image)
+
 
     private val screenHeight = Resources.getSystem().displayMetrics.heightPixels
+
+    private var selectedMarkerCheck:Boolean=false
+    private var lastSelectedMarker: Marker? = null
+    private var oldSelectedMarker:ConvenienceData?=null
 
     private var selectMainFilter:View?=null
     override fun onCreateView(
@@ -94,6 +86,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentMapBinding.inflate(inflater, container, false)
+
+//        @SuppressLint("InflateParams")
+//        markerView = LayoutInflater.from(requireContext()).inflate(R.layout.custom_marker, null)
+//        tagMarker = markerView.findViewById(R.id.custom_marker)
 
         binding.mapView.onCreate(savedInstanceState)
         binding.mapView.getMapAsync(this)
@@ -109,8 +105,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         setupDataBinding()
         observeSetting()
         mapZipperTouch()
-
+//        onMarkerClickListener()
         //todo:지도에 편의점 띄우기 + 터치시 상품뷰 출력
+
 
         //임시로 초기 상품뷰의 높이 설정
         binding.mapProductLayout.layoutParams.height=(screenHeight * 0.4).toInt()
@@ -137,7 +134,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         observeMainFilterViewModel()
         observeFilterDataViewModel()
         observeProductDataViewModel()
-        observeConvenienceData()
+//        observeConvenienceData()
     }
 
 
@@ -215,11 +212,15 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         binding.mapProductGridView.addItemDecoration(productSpacingController)
     }
 
+
+
+
+
+
     private fun observeMainFilterViewModel() {
         mainFilterViewModel.mainFilterDataList.observe(viewLifecycleOwner, Observer { data ->
             mainFilterAdapter.submitList(data)
         })
-
     }
 
     private fun observeFilterDataViewModel() {
@@ -227,11 +228,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         filterDataViewModel.filterDataList.observe(viewLifecycleOwner, Observer { data ->
             productFilterAdapter.submitList(data)
         })
+
         filterDataViewModel.filterBar.observe(viewLifecycleOwner, Observer { isVisible  ->
             //사라질 때 시각적으로 버벅 거림이 느껴져서 애니메이션으로 부드럽게 바꿨음
             FilterAnimated().viewAnimated(isVisible,binding.filterBarDetail)
 
         })
+
         filterDataViewModel.selectFilterColorSwitch.observe(viewLifecycleOwner, Observer { switchState ->
 
             if(switchState){
@@ -268,45 +271,67 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     @SuppressLint("InflateParams")
     private fun observeConvenienceData() {
         mapDataViewModel.convenienceDataList.observe(viewLifecycleOwner, Observer { convenienceData ->
+
             for(i in convenienceData.indices){
                 addMarker(convenienceData[i])
             }
         })
+        mapDataViewModel.markerSelectSwitch.observe(viewLifecycleOwner, Observer { markerSelectSwitch ->
+
+
+        })
     }
 
-    private fun addMarker(convenienceData: ConvenienceData): Marker {
-        var addressList: List<Address>? = null
-        var markerOptions = MarkerOptions()
-
+    private fun addMarker(convenienceData: ConvenienceData) {
+        val markerOptions = MarkerOptions()
         markerOptions.position(convenienceData.conveniencePosition)
-        tagMarker.text = convenienceData.convenienceName
-        markerOptions.icon(
-            createDrawableFromView(requireContext(), convenienceData.convenienceType)
-            )
-        )
-        return mMap.addMarker(markerOptions)
+
+        // 처음 마커 이미지 설정
+        val defaultIcon = BitmapDescriptorFactory.fromBitmap(CustomMarker().createDrawableFromView(requireContext(), convenienceData,false))
+        markerOptions.icon(defaultIcon)
+
+
+        val marker = googleMap?.addMarker(markerOptions)
+
+        //tag를 쓰면 마커에 데이터 저장
+        marker?.tag = convenienceData
+
     }
-    private fun createDrawableFromView(context: Context, convenienceType: String): Drawable {
-
-
-        val convenienceImageBitmap:Bitmap=when(convenienceType){
-
-            ConvenienceType.STORE_GS_25.title -> (ContextCompat.getDrawable(context, R.drawable.gs25_product_icon) as BitmapDrawable).bitmap
-            ConvenienceType.STORE_CU.title -> (ContextCompat.getDrawable(context, R.drawable.cu_product_icon) as BitmapDrawable).bitmap
-            ConvenienceType.STORE_SEVEN_ELEVEN.title -> (ContextCompat.getDrawable(context, R.drawable.seven_eleven_product_icon) as BitmapDrawable).bitmap
-            ConvenienceType.STORE_E_MART24.title -> (ContextCompat.getDrawable(context, R.drawable.emart24_product_icon) as BitmapDrawable).bitmap
-
-            else -> (ContextCompat.getDrawable(context, R.drawable.all_convenience_store) as BitmapDrawable).bitmap
-        }
-
-        return BitmapDrawable(context.resources,convenienceImageBitmap)
-    }
-
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
-        val point = LatLng(37.514655, 126.979974)
-        googleMap.addMarker(MarkerOptions().position(point))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 12f))
+//        val point = LatLng(37.514655, 126.979974)
+//        googleMap.addMarker(MarkerOptions().position(point))
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(37.514655, 126.979974), 12f))
+        observeConvenienceData()
+        setMarkerClickListener()
+    }
+
+
+    //이상하게 일정거리 이상에서 마커를 터치하면 분명 같은 마커를 터치 했는데 다른 마커가 터치된 것처럼 반응함(축소거리 조정예정)
+    private fun setMarkerClickListener() {
+        googleMap?.setOnMarkerClickListener { marker ->
+
+            lastSelectedMarker = if (lastSelectedMarker == marker) {
+                changeMarkerColor(marker, false)
+                null
+            } else {
+                lastSelectedMarker?.let { changeMarkerColor(it, false) }
+                changeMarkerColor(marker, true)
+                marker
+            }
+            true
+        }
+    }
+    private fun changeMarkerColor(marker: Marker, isSelected: Boolean) {
+        val convenienceData = marker.tag as? ConvenienceData
+
+
+        val icon = if (isSelected) {
+            BitmapDescriptorFactory.fromBitmap(CustomMarker().createDrawableFromView(requireContext(), convenienceData!!, true))
+        } else {
+            BitmapDescriptorFactory.fromBitmap(CustomMarker().createDrawableFromView(requireContext(), convenienceData!!, false))
+        }
+        marker.setIcon(icon)
     }
 
     override fun onResume() {

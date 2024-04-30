@@ -2,27 +2,41 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="#E3E3E3"
+
     android:id="@+id/custom_marker_viewer"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+
     <TextView
-        android:id="@+id/custom_marker"
+        android:id="@+id/custom_marker_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
-        android:background="@drawable/filter_border"
         android:gravity="center"
-        android:paddingStart="8dp"
-        android:paddingTop="5dp"
-        android:paddingEnd="8dp"
-        android:paddingBottom="5dp"
-        android:drawablePadding="5dp"
+        android:paddingStart="50dp"
+
+
+
+        android:fontFamily="@font/scdream5"
         android:text="GS25 ㅇㅇ점"
-        android:textSize="10sp"
-        app:drawableLeftCompat="@drawable/gs25_product_icon"
+        android:textSize="11sp"
+        android:background="@drawable/convenience_info_border2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/custom_marker_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="5dp"
+        android:paddingBottom="7dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/gs25_product_icon"
+
+        app:layout_constraintBottom_toBottomOf="@id/custom_marker_text"
+        app:layout_constraintStart_toStartOf="@id/custom_marker_text"
+        app:layout_constraintTop_toTopOf="@id/custom_marker_text"
+        />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

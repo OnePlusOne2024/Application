@@ -39,8 +39,6 @@ class ProductDataViewModel @Inject constructor(
         loadProductData()
     }
 
-
-
     fun updateLayoutHeight(
         initialHeight: Int,
         initialTouchY: Float,

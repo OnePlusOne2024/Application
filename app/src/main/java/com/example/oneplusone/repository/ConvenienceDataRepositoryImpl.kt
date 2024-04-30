@@ -17,12 +17,12 @@ class ConvenienceDataRepositoryImpl @Inject constructor() : ConvenienceDataRepos
 
         convenienceData.value= arrayListOf(
             ConvenienceData(ConvenienceType.STORE_GS_25.title,
-                "GS25 대천점",
-                LatLng(37.514655, 979974.0),
+                "GS25 대천",
+                LatLng(37.514655, 126.979974),
                 ),
 
             ConvenienceData(ConvenienceType.STORE_SEVEN_ELEVEN.title,
-                "세븐 일레븐 대천2점",
+                "세븐 일레븐 대천2점12412414141411512515",
                 LatLng(37.516927,126.980288),
             )
         )
