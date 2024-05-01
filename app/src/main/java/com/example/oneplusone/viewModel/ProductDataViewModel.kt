@@ -63,6 +63,10 @@ class ProductDataViewModel @Inject constructor(
         Log.d("_clickProductData",_clickProductData.value.toString())
     }
 
+    fun loadFilterProductData(){
+
+    }
+
     companion object{
         const val MIN_HEIGHT_PERCENT=0.3
         const val MAX_HEIGHT_PERCENT=0.9

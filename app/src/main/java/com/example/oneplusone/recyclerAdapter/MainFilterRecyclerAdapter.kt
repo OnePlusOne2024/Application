@@ -1,5 +1,6 @@
 package com.example.oneplusone.recyclerAdapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -44,14 +45,16 @@ class MainFilterRecyclerAdapter(
         }
     }
 
-    fun updateFilterItem(filterData: FilterData) {
+    fun updateFilterItem(filterData: FilterData): List<MainFilterData> {
 
         val updatedList = currentList.map { currentItem ->
             if (currentItem.filterType == filterData.filterType) {
                 currentItem.copy(mainFilterImage = filterData.filterImage, mainFilterText = filterData.filterText)
             } else currentItem
         }
+        Log.d("updatedList", updatedList.toString())
         submitList(updatedList)
+        return updatedList
     }
 
 

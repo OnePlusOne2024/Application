@@ -1,6 +1,5 @@
 package com.example.oneplusone.repository
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.oneplusone.model.data.MainFilterData
 import com.example.oneplusone.model.data.enums.BenefitsType
@@ -10,13 +9,13 @@ import com.example.oneplusone.model.data.enums.ProductCategoryType
 import javax.inject.Inject
 
 
-class MainFilterRepositoryImpl @Inject constructor() : MainFilterRepository {
-    private val mainFilters = MutableLiveData<List<MainFilterData>>() // 직접 초기화
-    override fun getFilters(): LiveData<List<MainFilterData>> = mainFilters
+class MainFilterRepositoryImpl @Inject constructor()
+    : MainFilterRepository {
 
-    override fun loadFilters() {
+
+    override fun loadFilters(): List<MainFilterData> {
         // 필터 데이터 로드
-        mainFilters.value = listOf(
+        return listOf(
             MainFilterData(
                 ConvenienceType.ALL_CONVENIENCE_STORE.iconResId,
                 ConvenienceType.ALL_CONVENIENCE_STORE.title,

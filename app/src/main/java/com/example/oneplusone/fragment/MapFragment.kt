@@ -188,7 +188,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
             override fun onFilterClick(filterData: FilterData) {
 
-                mainFilterAdapter.updateFilterItem(filterData)
+//                mainFilterAdapter.updateFilterItem(filterData)
 
                 //세부 필터를 고르면 불러온 데이터를 제거함
                 filterDataViewModel.clearFilterData()

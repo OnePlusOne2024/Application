@@ -1,16 +1,13 @@
 package com.example.oneplusone.fragment
 
-import android.content.res.ColorStateList
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import com.example.oneplusone.R
 import com.example.oneplusone.databinding.FragmentHomeBinding
 import com.example.oneplusone.`interface`.FilterClickListener
 import com.example.oneplusone.`interface`.MainFilterClickListener
@@ -104,8 +101,7 @@ class HomeFragment : Fragment() {
 
                 selectMainFilter = itemView
                 filterDataViewModel.showFilter(mainFilter.filterType)
-
-
+//                Log.d("mainFilter", mainFilter.toString())
             }
         })
         binding.mainFilterViewer.adapter = mainFilterAdapter
@@ -117,12 +113,17 @@ class HomeFragment : Fragment() {
 
             override fun onFilterClick(filterData: FilterData) {
 
-                mainFilterAdapter.updateFilterItem(filterData)
+//                val currentMainFilter=mainFilterAdapter.updateFilterItem(filterData)
 
+                mainFilterViewModel.updateMainFilter(filterData)
+//
+//                Log.d("mainFilterAdapter", currentMainFilter.toString())
+//                mainFilterViewModel.currentMainFilterUpdate(currentMainFilter)
                 //세부 필터를 고르면 불러온 데이터를 제거함
                 filterDataViewModel.clearFilterData()
 
             }
+
         })
         binding.filterViewer.adapter = productFilterAdapter
     }
@@ -140,8 +141,15 @@ class HomeFragment : Fragment() {
 
     private fun observeMainFilterViewModel() {
         mainFilterViewModel.mainFilterDataList.observe(viewLifecycleOwner, Observer { data ->
+
             mainFilterAdapter.submitList(data)
+
         })
+
+//        mainFilterViewModel.currentMainFilterDataList.observe(viewLifecycleOwner, Observer { data ->
+//
+//
+//        })
 
     }
 
@@ -149,6 +157,7 @@ class HomeFragment : Fragment() {
         //여기서 변화를 감지하고 변경함
         filterDataViewModel.filterDataList.observe(viewLifecycleOwner, Observer { data ->
             productFilterAdapter.submitList(data)
+
         })
         filterDataViewModel.filterBar.observe(viewLifecycleOwner, Observer { isVisible  ->
             //사라질 때 시각적으로 버벅 거림이 느껴져서 애니메이션으로 부드럽게 바꿨음
