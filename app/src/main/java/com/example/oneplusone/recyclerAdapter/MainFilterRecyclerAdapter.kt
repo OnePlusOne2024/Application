@@ -45,17 +45,17 @@ class MainFilterRecyclerAdapter(
         }
     }
 
-    fun updateFilterItem(filterData: FilterData): List<MainFilterData> {
-
-        val updatedList = currentList.map { currentItem ->
-            if (currentItem.filterType == filterData.filterType) {
-                currentItem.copy(mainFilterImage = filterData.filterImage, mainFilterText = filterData.filterText)
-            } else currentItem
-        }
-        Log.d("updatedList", updatedList.toString())
-        submitList(updatedList)
-        return updatedList
-    }
+//    fun updateFilterItem(filterData: FilterData): List<MainFilterData> {
+//
+//        val updatedList = currentList.map { currentItem ->
+//            if (currentItem.filterType == filterData.filterType) {
+//                currentItem.copy(mainFilterImage = filterData.filterImage, mainFilterText = filterData.filterText)
+//            } else currentItem
+//        }
+//        Log.d("updatedList", updatedList.toString())
+//        submitList(updatedList)
+//        return updatedList
+//    }
 
 
     class MainFilterDiffCallback : DiffUtil.ItemCallback<MainFilterData>() {

@@ -35,6 +35,7 @@ class MainFilterViewModel @Inject internal constructor(
         _mainFilterDataList.value=mainFilterRepository.loadFilters()
     }
 
+    //메인필터 업데이트 로직을 여기로 옮김
     fun updateMainFilter(filterData: FilterData) {
         val currentList = _mainFilterDataList.value ?: listOf()
         val updatedList = currentList.toMutableList()

@@ -143,14 +143,8 @@ class HomeFragment : Fragment() {
         mainFilterViewModel.mainFilterDataList.observe(viewLifecycleOwner, Observer { data ->
 
             mainFilterAdapter.submitList(data)
-
+            productDataViewModel.loadFilteringProductData(data)
         })
-
-//        mainFilterViewModel.currentMainFilterDataList.observe(viewLifecycleOwner, Observer { data ->
-//
-//
-//        })
-
     }
 
     private fun observeFilterDataViewModel() {
@@ -159,11 +153,13 @@ class HomeFragment : Fragment() {
             productFilterAdapter.submitList(data)
 
         })
+
         filterDataViewModel.filterBar.observe(viewLifecycleOwner, Observer { isVisible  ->
             //사라질 때 시각적으로 버벅 거림이 느껴져서 애니메이션으로 부드럽게 바꿨음
             FilterAnimated().viewAnimated(isVisible,binding.filterBarDetail)
 
         })
+
         filterDataViewModel.selectFilterColorSwitch.observe(viewLifecycleOwner, Observer { switchState ->
 
             if(switchState){
@@ -181,9 +177,10 @@ class HomeFragment : Fragment() {
         })
 
         productDataViewModel.clickProductData.observe(viewLifecycleOwner, Observer { clickProductData ->
-
             DialogBuilder().showProductDetailDialog(requireContext(), clickProductData)
-
+        })
+        productDataViewModel.filterProductData.observe(viewLifecycleOwner, Observer { filterProductData ->
+            Log.d("filterProductData", filterProductData.toString())
         })
     }
 }
