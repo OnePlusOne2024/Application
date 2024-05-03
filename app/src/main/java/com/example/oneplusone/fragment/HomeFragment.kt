@@ -180,6 +180,7 @@ class HomeFragment : Fragment() {
             DialogBuilder().showProductDetailDialog(requireContext(), clickProductData)
         })
         productDataViewModel.filterProductData.observe(viewLifecycleOwner, Observer { filterProductData ->
+            productItemRecyclerAdapter.submitList(filterProductData)
             Log.d("filterProductData", filterProductData.toString())
         })
     }
