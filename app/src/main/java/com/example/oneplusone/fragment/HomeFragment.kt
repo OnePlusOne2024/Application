@@ -47,6 +47,7 @@ class HomeFragment : Fragment() {
     private var selectMainFilter:View?=null
 
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -67,7 +68,6 @@ class HomeFragment : Fragment() {
         setupDataBinding()
 
         observeSetting()
-
 
     }
 
@@ -90,6 +90,7 @@ class HomeFragment : Fragment() {
         observeFilterDataViewModel()
         observeProductDataViewModel()
     }
+
 
     private fun initMainFilterAdapter() {
         mainFilterAdapter = MainFilterRecyclerAdapter(object : MainFilterClickListener {
@@ -140,11 +141,12 @@ class HomeFragment : Fragment() {
     }
 
     private fun observeMainFilterViewModel() {
-        mainFilterViewModel.mainFilterDataList.observe(viewLifecycleOwner, Observer { data ->
+        mainFilterViewModel.mainFilterDataList.observe(viewLifecycleOwner, Observer { mainFilterData ->
 
-            mainFilterAdapter.submitList(data)
-            productDataViewModel.loadFilteringProductData(data)
+            mainFilterAdapter.submitList(mainFilterData)
+            productDataViewModel.loadFilteredProductData(mainFilterData)
         })
+
     }
 
     private fun observeFilterDataViewModel() {

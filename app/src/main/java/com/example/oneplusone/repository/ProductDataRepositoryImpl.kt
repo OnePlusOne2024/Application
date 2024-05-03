@@ -21,7 +21,8 @@ class ProductDataRepositoryImpl @Inject constructor() : ProductDataRepository {
                 "1+1",
                 R.drawable.example_product_image,
                 false,
-                "음료"
+                "음료",
+                false,
                 ),
             ProductData(2,
                 "펩시콜라",
@@ -30,7 +31,8 @@ class ProductDataRepositoryImpl @Inject constructor() : ProductDataRepository {
                 "1+1",
                 R.drawable.example_product_image,
                 false,
-                "음료"
+                "음료",
+                true
                 ),
             ProductData(3,
                 "a",
@@ -39,7 +41,8 @@ class ProductDataRepositoryImpl @Inject constructor() : ProductDataRepository {
                 "2+1",
                 R.drawable.example_product_image,
                 false,
-                "과자"
+                "과자",
+                false
                 ),
             ProductData(4,
                 "a",
@@ -48,7 +51,8 @@ class ProductDataRepositoryImpl @Inject constructor() : ProductDataRepository {
                 "1+1",
                 R.drawable.example_product_image,
                 false,
-                "식품"
+                "식품",
+                false
                 ),
             ProductData(5,
                 "a",
@@ -57,7 +61,8 @@ class ProductDataRepositoryImpl @Inject constructor() : ProductDataRepository {
                 "2+1",
                 R.drawable.example_product_image,
                 false,
-                "아이스 크림"
+                "아이스 크림",
+                false
                 ),
             ProductData(6,
                 "a",
@@ -66,7 +71,8 @@ class ProductDataRepositoryImpl @Inject constructor() : ProductDataRepository {
                 "1+1",
                 R.drawable.example_product_image,
                 false,
-                "생활 용품"
+                "생활 용품",
+                false
                 ),
             ProductData(7,
                 "a",
@@ -75,7 +81,8 @@ class ProductDataRepositoryImpl @Inject constructor() : ProductDataRepository {
                 "1+1",
                 R.drawable.example_product_image,
                 false,
-                "아이스 크림"
+                "아이스 크림",
+                true
                 ),
             ProductData(8,
                 "a",
@@ -84,7 +91,8 @@ class ProductDataRepositoryImpl @Inject constructor() : ProductDataRepository {
                 "1+1",
                 R.drawable.example_product_image,
                 false,
-                "아이스 크림"
+                "아이스 크림",
+                false
                 ),
             ProductData(9,
                 "a",
@@ -93,7 +101,8 @@ class ProductDataRepositoryImpl @Inject constructor() : ProductDataRepository {
                 "1+1",
                 R.drawable.example_product_image,
                 false,
-                "생활 용품"
+                "생활 용품",
+                true
                 ),
             ProductData(10,
                 "a",
@@ -102,7 +111,8 @@ class ProductDataRepositoryImpl @Inject constructor() : ProductDataRepository {
                 "할인",
                 R.drawable.example_product_image,
                 false,
-                "음료"
+                "음료",
+                false
                 ),
         )
     }

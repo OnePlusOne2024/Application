@@ -17,4 +17,6 @@ data class ProductData(
     var favorite: Boolean,
 
     var category: String,
+
+    var pb: Boolean,
 )

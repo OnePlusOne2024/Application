@@ -27,6 +27,7 @@ class MainFilterViewModel @Inject internal constructor(
 //    val currentMainFilterDataList: LiveData<List<MainFilterData>>
 //        get() = _currentMainFilterDataList
 
+
     init {
         loadMainFilters()
     }
@@ -56,5 +57,7 @@ class MainFilterViewModel @Inject internal constructor(
         _mainFilterDataList.value = updatedList
         Log.d("_mainFilterDataList", _mainFilterDataList.value.toString())
     }
+
+
 
 }
