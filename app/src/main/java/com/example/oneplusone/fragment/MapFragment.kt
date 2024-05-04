@@ -9,13 +9,10 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import com.example.oneplusone.R
 import com.example.oneplusone.databinding.FragmentMapBinding
 import com.example.oneplusone.`interface`.FilterClickListener
 import com.example.oneplusone.`interface`.MainFilterClickListener
@@ -33,17 +30,14 @@ import com.example.oneplusone.util.FilterAnimated
 import com.example.oneplusone.util.FilterStyle
 import com.example.oneplusone.util.ItemSpacingController
 import com.example.oneplusone.viewModel.FilterDataViewModel
-import com.example.oneplusone.viewModel.MainFilterViewModel
 import com.example.oneplusone.viewModel.MapDataViewModel
 import com.example.oneplusone.viewModel.MapMainFilterViewModel
 import com.example.oneplusone.viewModel.ProductDataViewModel
-import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -189,7 +183,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             override fun onFilterClick(filterData: FilterData) {
 
 //                mainFilterAdapter.updateFilterItem(filterData)
-
+                mapMainFilterViewModel.updateMainFilter(filterData)
                 //세부 필터를 고르면 불러온 데이터를 제거함
                 filterDataViewModel.clearFilterData()
 
@@ -213,8 +207,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
 
     private fun observeMainFilterViewModel() {
-        mapMainFilterViewModel.mainFilterDataList.observe(viewLifecycleOwner, Observer { data ->
-            mainFilterAdapter.submitList(data)
+        mapMainFilterViewModel.mainFilterDataList.observe(viewLifecycleOwner, Observer { mainFilterData ->
+            mainFilterAdapter.submitList(mainFilterData)
+            productDataViewModel.loadMapFilteredProductData(mainFilterData)
         })
     }
 
@@ -261,6 +256,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             binding.mapProductLayout.layoutParams = params
 
         })
+        productDataViewModel.filterProductData.observe(viewLifecycleOwner, Observer { filterProductData ->
+            productItemRecyclerAdapter.submitList(filterProductData)
+        })
+
+        productDataViewModel.convenienceProductData.observe(viewLifecycleOwner, Observer { convenienceProductData ->
+            productItemRecyclerAdapter.submitList(convenienceProductData)
+        })
     }
 
     @SuppressLint("InflateParams", "SetTextI18n")
@@ -273,17 +275,20 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         })
 
         mapDataViewModel.selectedMarkerData.observe(viewLifecycleOwner, Observer { selectedMarkerData ->
-
+            Log.d("selectedMarkerData", selectedMarkerData.toString())
             if(selectedMarkerData!=null){
                 binding.mapZipper.visibility=View.VISIBLE
                 binding.mapProductLayout.visibility=View.VISIBLE
                 binding.productFilter.text=("${selectedMarkerData.convenienceName}점")
 
+                //선택된 편의점의 종류에 맞게 상품 로드
+                productDataViewModel.loadConvenienceProductData(selectedMarkerData)
+                //메인필터를 초기화
+                mapMainFilterViewModel.initMainFilters()
             }else{
                 binding.mapZipper.visibility=View.GONE
                 binding.mapProductLayout.visibility=View.GONE
             }
-
 
             googleMap?.clear()
             mapDataViewModel.convenienceDataList.value?.forEach { convenienceData ->

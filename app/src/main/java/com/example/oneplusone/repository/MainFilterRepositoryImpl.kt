@@ -15,6 +15,7 @@ class MainFilterRepositoryImpl @Inject constructor()
 
 
     override fun loadFilters(): List<MainFilterData> {
+
         // 필터 데이터 로드
         return listOf(
             MainFilterData(
@@ -33,8 +34,8 @@ class MainFilterRepositoryImpl @Inject constructor()
                 FilterType.BENEFITS
             ),
             MainFilterData(
-                PbType.NOT_INCLUDING_PB.iconResId,
-                PbType.NOT_INCLUDING_PB.title,
+                PbType.INCLUDING_PB.iconResId,
+                PbType.INCLUDING_PB.title,
                 FilterType.PB
             )
         )

@@ -5,6 +5,5 @@ import androidx.lifecycle.MutableLiveData
 import com.example.oneplusone.model.data.MainFilterData
 
 interface MapMainFilterRepository {
-    fun getFilters(): LiveData<List<MainFilterData>>
-    fun loadFilters()
+    fun loadFilters(): List<MainFilterData>
 }

@@ -4,12 +4,12 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.oneplusone.model.data.ConvenienceData
 import com.example.oneplusone.model.data.MainFilterData
 import com.example.oneplusone.model.data.ProductData
 import com.example.oneplusone.model.data.enums.BenefitsType
 import com.example.oneplusone.model.data.enums.ConvenienceType
 import com.example.oneplusone.model.data.enums.FilterType
-import com.example.oneplusone.model.data.enums.PbType
 import com.example.oneplusone.model.data.enums.ProductCategoryType
 import com.example.oneplusone.repository.ProductDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,6 +34,7 @@ class ProductDataViewModel @Inject constructor(
 
     private var _filterProductData=MutableLiveData<List<ProductData>>()
 
+    private var _convenienceProductData=MutableLiveData<List<ProductData>>()
 
     //todo 서버에서 데이터를 가져왔을 경우를 생각해 레포지토리 생성하기
 
@@ -46,6 +47,8 @@ class ProductDataViewModel @Inject constructor(
     val filterProductData: LiveData<List<ProductData>>
         get() = _filterProductData
 
+    val convenienceProductData: LiveData<List<ProductData>>
+        get() = _convenienceProductData
 
     init{
         loadProductData()
@@ -79,6 +82,7 @@ class ProductDataViewModel @Inject constructor(
 
     //todo filter와 all 알아보기
     fun loadFilteredProductData(mainFilterData: List<MainFilterData>) {
+        Log.d("mainFilterData", mainFilterData.toString())
         productDataList.value?.let { productList ->
 
             // PB 필터를 적용한 결과에 메인 필터 적용
@@ -92,7 +96,7 @@ class ProductDataViewModel @Inject constructor(
                         FilterType.BENEFITS ->
                             filter.mainFilterText == BenefitsType.ALL_BENEFITS.title || product.benefits == filter.mainFilterText
                         FilterType.PB ->
-                            if (filter.mainFilterText == "PB 포함") {
+                            if (filter.mainFilterText == "PB 상품만") {
                                 product.pb
                             } else {
                                 true
@@ -101,10 +105,57 @@ class ProductDataViewModel @Inject constructor(
                     }
                 }
             }
+            Log.d("finalFilteredProductList", finalFilteredProductList.toString())
             _filterProductData.value = finalFilteredProductList
         }
     }
 
+    fun loadConvenienceProductData(selectedMarkerData: ConvenienceData) {
+        Log.d("selectedMarkerData", selectedMarkerData.toString())
+        productDataList.value?.let { productList ->
+
+            val convenienceFilteredProductList = productList.filter { product ->
+                when (selectedMarkerData.convenienceType) {
+                    ConvenienceType.STORE_CU.title -> product.brand == ConvenienceType.STORE_CU.title
+                    ConvenienceType.STORE_SEVEN_ELEVEN.title -> product.brand == ConvenienceType.STORE_SEVEN_ELEVEN.title
+                    ConvenienceType.STORE_GS_25.title -> product.brand == ConvenienceType.STORE_GS_25.title
+                    ConvenienceType.STORE_E_MART24.title -> product.brand == ConvenienceType.STORE_E_MART24.title
+                    else -> true
+                }
+            }
+
+            _convenienceProductData.value = convenienceFilteredProductList
+        }
+    }
+
+    fun loadMapFilteredProductData(mainFilterData: List<MainFilterData>) {
+        Log.d("mainFilterData", mainFilterData.toString())
+        _convenienceProductData.value?.let { productList ->
+
+            // PB 필터를 적용한 결과에 메인 필터 적용
+            val finalFilteredProductList = productList.filter { product ->
+                mainFilterData.all { filter ->
+                    when (filter.filterType) {
+                        FilterType.CONVENIENCE ->
+                            filter.mainFilterText == ConvenienceType.ALL_CONVENIENCE_STORE.title || product.brand == filter.mainFilterText
+                        FilterType.PRODUCT_CATEGORY ->
+                            filter.mainFilterText == ProductCategoryType.ALL_PRODUCT_CATEGORY.title || product.category == filter.mainFilterText
+                        FilterType.BENEFITS ->
+                            filter.mainFilterText == BenefitsType.ALL_BENEFITS.title || product.benefits == filter.mainFilterText
+                        FilterType.PB ->
+                            if (filter.mainFilterText == "PB 상품만") {
+                                product.pb
+                            } else {
+                                true
+                            }
+                        else -> true
+                    }
+                }
+            }
+            Log.d("finalFilteredProductList", finalFilteredProductList.toString())
+            _filterProductData.value = finalFilteredProductList
+        }
+    }
 
     companion object{
         const val MIN_HEIGHT_PERCENT=0.3

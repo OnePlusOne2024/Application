@@ -6,17 +6,17 @@ import com.example.oneplusone.model.data.MainFilterData
 import com.example.oneplusone.model.data.enums.BenefitsType
 import com.example.oneplusone.model.data.enums.ConvenienceType
 import com.example.oneplusone.model.data.enums.FilterType
+import com.example.oneplusone.model.data.enums.PbType
 import com.example.oneplusone.model.data.enums.ProductCategoryType
 import javax.inject.Inject
 
 
-class MapMainFilterRepositoryImpl @Inject constructor() : MapMainFilterRepository {
-    private val mainFilters = MutableLiveData<List<MainFilterData>>() // 직접 초기화
-    override fun getFilters(): LiveData<List<MainFilterData>> = mainFilters
+class MapMainFilterRepositoryImpl @Inject constructor()
+    : MapMainFilterRepository {
 
-    override fun loadFilters() {
+    override fun loadFilters(): List<MainFilterData> {
         // 필터 데이터 로드
-        mainFilters.value = listOf(
+        return listOf(
             MainFilterData(
                 ProductCategoryType.ALL_PRODUCT_CATEGORY.iconResId,
                 ProductCategoryType.ALL_PRODUCT_CATEGORY.title,
@@ -26,6 +26,11 @@ class MapMainFilterRepositoryImpl @Inject constructor() : MapMainFilterRepositor
                 BenefitsType.ALL_BENEFITS.iconResId,
                 BenefitsType.ALL_BENEFITS.title,
                 FilterType.BENEFITS
+            ),
+            MainFilterData(
+                PbType.INCLUDING_PB.iconResId,
+                PbType.INCLUDING_PB.title,
+                FilterType.PB
             )
         )
     }
