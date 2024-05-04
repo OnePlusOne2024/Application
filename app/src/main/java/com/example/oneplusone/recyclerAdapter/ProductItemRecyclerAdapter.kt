@@ -1,10 +1,13 @@
 package com.example.oneplusone.recyclerAdapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageButton
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.oneplusone.R
 
 import com.example.oneplusone.databinding.ProductViewerBinding
 import com.example.oneplusone.`interface`.ProductClickListener
@@ -45,13 +48,17 @@ class ProductItemRecyclerAdapter(
 
             binding.favorite.setOnClickListener {
                 productFavoriteClickListener.onFavoriteClick(product)
+                updateFavoriteButtonImage(binding.favorite, product.favorite)
+
             }
+        }
+        //일단 여기서 이미지를 바꾸기로
+    private fun updateFavoriteButtonImage(button: ImageButton, isFavorite: Boolean) {
+        button.setImageResource(if (isFavorite) R.drawable.favorite_on else R.drawable.favorite_off)
+        Log.d("isFavorite", isFavorite.toString())
         }
     }
 
-    override fun submitList(list: List<ProductData>?) {
-        super.submitList(list)
-    }
     class ProductDiffCallback : DiffUtil.ItemCallback<ProductData>() {
         override fun areItemsTheSame(oldItem: ProductData, newItem: ProductData): Boolean {
             return oldItem.productId == newItem.productId

@@ -1,14 +1,12 @@
 package com.example.oneplusone.fragment
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import com.example.oneplusone.R
 import com.example.oneplusone.databinding.FragmentHomeBinding
 import com.example.oneplusone.`interface`.FilterClickListener
 import com.example.oneplusone.`interface`.MainFilterClickListener
@@ -139,7 +137,7 @@ class HomeFragment : Fragment() {
             }
         }, object : ProductFavoriteClickListener {
             override fun onFavoriteClick(productData: ProductData) {
-                productDataViewModel.updateProductFavorite(productData)
+                productDataViewModel.toggleFavorite(productData)
             }
         })
         binding.productGridView.adapter = productItemRecyclerAdapter
@@ -193,12 +191,9 @@ class HomeFragment : Fragment() {
         })
 
         productDataViewModel.isFavorite.observe(viewLifecycleOwner, Observer { isFavorite ->
-            val index = productItemRecyclerAdapter.currentList.indexOf(isFavorite)
-            Log.d("filterProductData", isFavorite.favorite.toString())
-            if (index != -1) {
-                // 변경된 아이템만 업데이트
-                productItemRecyclerAdapter.notifyItemChanged(index)
-            }
+
+//            productItemRecyclerAdapter.submitList(isFavorite)
+
         })
     }
 }

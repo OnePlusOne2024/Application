@@ -201,8 +201,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     productDataViewModel.loadClickProductData(productData)
                 }
             }, object : ProductFavoriteClickListener {
-                override fun onFavoriteClick(favorite:Boolean) {
-                    Log.d("favorite", favorite.toString())
+                override fun onFavoriteClick(productData: ProductData) {
+//                    productDataViewModel.updateProductFavorite(productData)
                 }
             })
         binding.mapProductGridView.adapter = productItemRecyclerAdapter

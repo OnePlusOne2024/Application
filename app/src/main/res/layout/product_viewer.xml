@@ -9,6 +9,10 @@
         <variable
             name="productData"
             type="com.example.oneplusone.model.data.ProductData" />
+        <variable
+            name="productDataViewModel"
+            type="com.example.oneplusone.viewModel.ProductDataViewModel" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -97,8 +101,9 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="5dp"
             android:layout_marginBottom="7dp"
-            android:background="?attr/selectableItemBackground"
+            android:background="@android:color/transparent"
             favoriteImage="@{productData.favorite}"
+
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
