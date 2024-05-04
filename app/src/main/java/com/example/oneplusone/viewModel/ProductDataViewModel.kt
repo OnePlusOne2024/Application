@@ -36,6 +36,10 @@ class ProductDataViewModel @Inject constructor(
 
     private var _convenienceProductData=MutableLiveData<List<ProductData>>()
 
+    private val _isFavorite = MutableLiveData<ProductData>()
+    val isFavorite: LiveData<ProductData>
+        get()=_isFavorite
+
     //todo 서버에서 데이터를 가져왔을 경우를 생각해 레포지토리 생성하기
 
     val clickProductData: LiveData<ProductData>
@@ -52,6 +56,11 @@ class ProductDataViewModel @Inject constructor(
 
     init{
         loadProductData()
+    }
+
+    fun updateProductFavorite(productData: ProductData){
+        productData.favorite=!productData.favorite
+        _isFavorite.value=productData
     }
 
     fun updateLayoutHeight(

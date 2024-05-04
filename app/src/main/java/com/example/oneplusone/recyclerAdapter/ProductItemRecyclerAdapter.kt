@@ -8,10 +8,12 @@ import androidx.recyclerview.widget.RecyclerView
 
 import com.example.oneplusone.databinding.ProductViewerBinding
 import com.example.oneplusone.`interface`.ProductClickListener
+import com.example.oneplusone.`interface`.ProductFavoriteClickListener
 import com.example.oneplusone.model.data.ProductData
 
 class ProductItemRecyclerAdapter(
-    private val productClickListener: ProductClickListener
+    private val productClickListener: ProductClickListener,
+    private val productFavoriteClickListener: ProductFavoriteClickListener
 ): ListAdapter<ProductData, ProductItemRecyclerAdapter.Holder>(ProductDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
@@ -22,18 +24,27 @@ class ProductItemRecyclerAdapter(
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        holder.bind(getItem(position),productClickListener)
+        holder.bind(getItem(position),productClickListener,productFavoriteClickListener)
     }
 
     class Holder(private val binding: ProductViewerBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(product: ProductData,productClickListener:ProductClickListener) {
+        fun bind(
+            product: ProductData,
+            productClickListener: ProductClickListener,
+            productFavoriteClickListener: ProductFavoriteClickListener
+        ) {
 
             binding.productData=product
 
             itemView.setOnClickListener {
                 productClickListener.onItemClick(product)
+            }
+
+
+            binding.favorite.setOnClickListener {
+                productFavoriteClickListener.onFavoriteClick(product)
             }
         }
     }

@@ -17,6 +17,7 @@ import com.example.oneplusone.databinding.FragmentMapBinding
 import com.example.oneplusone.`interface`.FilterClickListener
 import com.example.oneplusone.`interface`.MainFilterClickListener
 import com.example.oneplusone.`interface`.ProductClickListener
+import com.example.oneplusone.`interface`.ProductFavoriteClickListener
 import com.example.oneplusone.model.data.ConvenienceData
 import com.example.oneplusone.model.data.FilterData
 import com.example.oneplusone.model.data.MainFilterData
@@ -194,13 +195,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun initProductItemRecyclerAdapter() {
-        productItemRecyclerAdapter = ProductItemRecyclerAdapter(object : ProductClickListener {
-            override fun onItemClick(productData: ProductData) {
-
-                productDataViewModel.loadClickProductData(productData)
-
-            }
-        })
+        productItemRecyclerAdapter = ProductItemRecyclerAdapter(
+            object : ProductClickListener {
+                override fun onItemClick(productData: ProductData) {
+                    productDataViewModel.loadClickProductData(productData)
+                }
+            }, object : ProductFavoriteClickListener {
+                override fun onFavoriteClick(favorite:Boolean) {
+                    Log.d("favorite", favorite.toString())
+                }
+            })
         binding.mapProductGridView.adapter = productItemRecyclerAdapter
         binding.mapProductGridView.addItemDecoration(productSpacingController)
     }
@@ -279,7 +283,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             if(selectedMarkerData!=null){
                 binding.mapZipper.visibility=View.VISIBLE
                 binding.mapProductLayout.visibility=View.VISIBLE
-                binding.productFilter.text=("${selectedMarkerData.convenienceName}점")
+                binding.productFilter.text=(selectedMarkerData.convenienceName)
 
                 //선택된 편의점의 종류에 맞게 상품 로드
                 productDataViewModel.loadConvenienceProductData(selectedMarkerData)
