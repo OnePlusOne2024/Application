@@ -24,6 +24,7 @@ import com.example.oneplusone.viewModel.ProductDataViewModel
 import com.example.oneplusone.util.ItemSpacingController
 import com.example.oneplusone.util.FilterAnimated
 import com.example.oneplusone.util.FilterStyle
+import com.example.oneplusone.viewModel.DataBaseViewModel
 import com.example.oneplusone.viewModel.MainFilterViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -35,6 +36,7 @@ class HomeFragment : Fragment() {
     private val productDataViewModel: ProductDataViewModel by viewModels()
     private val filterDataViewModel: FilterDataViewModel by viewModels()
     private val mainFilterViewModel: MainFilterViewModel by viewModels()
+    private val favoriteProductViewModel:DataBaseViewModel by viewModels()
 
     private lateinit var productFilterAdapter: ProductFilterRecyclerAdapter
     private lateinit var productItemRecyclerAdapter: ProductItemRecyclerAdapter
@@ -89,6 +91,7 @@ class HomeFragment : Fragment() {
         observeMainFilterViewModel()
         observeFilterDataViewModel()
         observeProductDataViewModel()
+        observeDataBaseViewModel()
     }
 
 
@@ -191,9 +194,14 @@ class HomeFragment : Fragment() {
         })
 
         productDataViewModel.isFavorite.observe(viewLifecycleOwner, Observer { isFavorite ->
-
-//            productItemRecyclerAdapter.submitList(isFavorite)
-
+            favoriteProductViewModel.favoriteProductJudgment(isFavorite)
         })
+    }
+
+    private fun observeDataBaseViewModel() {
+//        favoriteProductViewModel.favoriteProducts.observe(viewLifecycleOwner, Observer { _ ->
+//
+//        })
+
     }
 }

@@ -76,9 +76,12 @@ class ProductDataViewModel @Inject constructor(
         productData.favorite = !productData.favorite
         Log.d("productData12", productData.toString())
 
-        _productData.value = _productData.value
+
+        _isFavorite.value=productData
 
     }
+
+
 
     fun updateLayoutHeight(
         initialHeight: Int,
