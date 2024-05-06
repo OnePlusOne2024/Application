@@ -1,6 +1,7 @@
 package com.example.oneplusone.fragment
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -199,9 +200,9 @@ class HomeFragment : Fragment() {
     }
 
     private fun observeDataBaseViewModel() {
-//        favoriteProductViewModel.favoriteProducts.observe(viewLifecycleOwner, Observer { _ ->
-//
-//        })
+        favoriteProductViewModel.favoriteProducts.observe(viewLifecycleOwner, Observer { favoriteProductData ->
+            productDataViewModel.favoriteProductCheck(favoriteProductData)
+        })
 
     }
 }

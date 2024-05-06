@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "favoriteProduct")
-class FavoriteProductModel (
+data class FavoriteProductModel (
 
     @PrimaryKey(autoGenerate = true)
     val id: Int? =0,

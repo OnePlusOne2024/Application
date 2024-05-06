@@ -1,5 +1,6 @@
 package com.example.oneplusone.viewModel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -40,7 +41,7 @@ class DataBaseViewModel@Inject constructor(
     fun favoriteProductJudgment(product: ProductData){
 
         val favoriteProductModel = FavoriteProductModel(
-            id = product.productId,
+            id = product.id,
             productName=product.productName,
             productPrice=product.productPrice,
             brand=product.brand,
@@ -61,14 +62,12 @@ class DataBaseViewModel@Inject constructor(
 
     private fun insertFavoriteProduct(favoriteProductModel: FavoriteProductModel) {
         viewModelScope.launch {
-
             dbRepository.insertFavoriteProduct(favoriteProductModel)
         }
     }
 
     private fun deleteFavoriteProduct(favoriteProductModel: FavoriteProductModel) {
         viewModelScope.launch {
-
             dbRepository.deleteFavoriteProduct(favoriteProductModel)
         }
     }

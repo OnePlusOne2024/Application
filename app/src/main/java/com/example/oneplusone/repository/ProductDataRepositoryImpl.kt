@@ -13,14 +13,9 @@ class ProductDataRepositoryImpl @Inject constructor(
 
 ) : ProductDataRepository {
 
-    private val productDataList = MutableLiveData<List<ProductData>>()
+    override fun loadProductData():List<ProductData> {
 
-    override fun getProductData(): LiveData<List<ProductData>> = productDataList
-
-
-    override fun loadProductData() {
-
-        productDataList.value = arrayListOf(
+        return listOf(
             ProductData(1,
                 "스프라이트",
                 1000,

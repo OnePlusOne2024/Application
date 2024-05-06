@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.oneplusone.db.FavoriteProductModel
 import com.example.oneplusone.model.data.ConvenienceData
 import com.example.oneplusone.model.data.MainFilterData
 import com.example.oneplusone.model.data.ProductData
@@ -26,7 +27,7 @@ class ProductDataViewModel @Inject constructor(
 ):ViewModel() {
 
     //데이터를 UI에 보여주기 위한 담당
-    val productDataList: LiveData<List<ProductData>> = productDataRepository.getProductData()
+    private val _productDataList= MutableLiveData<List<ProductData>?>()
 
     private var _clickProductData=MutableLiveData<ProductData>()
 
@@ -43,6 +44,9 @@ class ProductDataViewModel @Inject constructor(
 
     val isFavorite: LiveData<ProductData>
         get()=_isFavorite
+
+    val productDataList:LiveData<List<ProductData>?>
+        get()=_productDataList
 
     val productData: LiveData<List<ProductData>>
         get() = _productData
@@ -61,9 +65,10 @@ class ProductDataViewModel @Inject constructor(
         get() = _convenienceProductData
 
 
-    init{
-        loadProductData()
-    }
+//    init{
+//
+//        loadProductData()
+//    }
 
 //    fun updateProductFavorite(productData: ProductData){
 //        productData.favorite=!productData.favorite
@@ -71,11 +76,8 @@ class ProductDataViewModel @Inject constructor(
 //    }
 
     fun toggleFavorite(productData: ProductData) {
-        Log.d("productData11", productData.toString())
 
         productData.favorite = !productData.favorite
-        Log.d("productData12", productData.toString())
-
 
         _isFavorite.value=productData
 
@@ -98,13 +100,41 @@ class ProductDataViewModel @Inject constructor(
         _layoutHeight.value = newHeight
     }
 
-    private  fun loadProductData(){
-        productDataRepository.loadProductData()
+    fun favoriteProductCheck(favoriteProduct: List<FavoriteProductModel>){
+
+        //처음 데이터를 불러와 화면에 바로 출력하는 대신에 db의 데이터와 대조하여 즐겨찾기한 아이템과 비교 후 화면에 출력
+        val initProductData=productDataRepository.loadProductData()
+
+        val convertProductDataList=convertProductDataType(favoriteProduct)
+
+        val updatedList = initProductData.map { originalProduct ->
+            convertProductDataList.find { it.id == originalProduct.id } ?: originalProduct
+        }
+        _productDataList.value=updatedList
     }
+
+    private fun convertProductDataType(favoriteProduct: List<FavoriteProductModel>): List<ProductData> {
+        return favoriteProduct.map { product ->
+            ProductData(
+                id = product.id!!,
+                productName = product.productName,
+                productPrice = product.productPrice,
+                brand = product.brand,
+                benefits = product.benefits,
+                productImage = product.productImage,
+                favorite = product.favorite,
+                category = product.category,
+                pb = product.pb
+            )
+        }
+    }
+
+//    private  fun loadProductData(){
+//        _productDataList.value=productDataRepository.loadProductData()
+//    }
 
     fun loadClickProductData(productData: ProductData){
         _clickProductData.value=productData
-        Log.d("_clickProductData",_clickProductData.value.toString())
     }
 
 

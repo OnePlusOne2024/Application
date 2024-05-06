@@ -61,7 +61,7 @@ class ProductItemRecyclerAdapter(
 
     class ProductDiffCallback : DiffUtil.ItemCallback<ProductData>() {
         override fun areItemsTheSame(oldItem: ProductData, newItem: ProductData): Boolean {
-            return oldItem.productId == newItem.productId
+            return oldItem.id == newItem.id
         }
 
         override fun areContentsTheSame(oldItem: ProductData, newItem: ProductData): Boolean {
