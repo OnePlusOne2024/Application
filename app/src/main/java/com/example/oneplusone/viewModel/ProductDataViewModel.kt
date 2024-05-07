@@ -48,8 +48,6 @@ class ProductDataViewModel @Inject constructor(
     val productDataList:LiveData<List<ProductData>?>
         get()=_productDataList
 
-    val productData: LiveData<List<ProductData>>
-        get() = _productData
     //todo 서버에서 데이터를 가져왔을 경우를 생각해 레포지토리 생성하기
 
     val clickProductData: LiveData<ProductData>
@@ -82,8 +80,6 @@ class ProductDataViewModel @Inject constructor(
         _isFavorite.value=productData
 
     }
-
-
 
     fun updateLayoutHeight(
         initialHeight: Int,

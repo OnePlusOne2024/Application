@@ -1,5 +1,9 @@
 package com.example.oneplusone.fragment
 
+import android.app.AlertDialog
+import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -8,7 +12,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.example.oneplusone.R
 import com.example.oneplusone.databinding.FragmentHomeBinding
+import com.example.oneplusone.databinding.ProductDetailViewerBinding
 import com.example.oneplusone.`interface`.FilterClickListener
 import com.example.oneplusone.`interface`.MainFilterClickListener
 import com.example.oneplusone.`interface`.ProductClickListener
@@ -181,13 +187,14 @@ class HomeFragment : Fragment() {
         })
     }
 
+    //todo 즐겨찾기 페이지 만들기
     private fun observeProductDataViewModel() {
         productDataViewModel.productDataList.observe(viewLifecycleOwner, Observer { data ->
             productItemRecyclerAdapter.submitList(data)
         })
 
         productDataViewModel.clickProductData.observe(viewLifecycleOwner, Observer { clickProductData ->
-            DialogBuilder().showProductDetailDialog(requireContext(), clickProductData)
+            showProductDetailDialog(clickProductData)
         })
         productDataViewModel.filterProductData.observe(viewLifecycleOwner, Observer { filterProductData ->
             productItemRecyclerAdapter.submitList(filterProductData)
@@ -198,7 +205,40 @@ class HomeFragment : Fragment() {
             favoriteProductViewModel.favoriteProductJudgment(isFavorite)
         })
     }
+    private fun showProductDetailDialog(productData: ProductData) {
+        val mDialogView = LayoutInflater.from(requireContext()).inflate(R.layout.product_detail_viewer, null)
+        val dialogBinding = ProductDetailViewerBinding.bind(mDialogView)
 
+        //어쩔 수 없이 notifyItemChanged로 업데이트 하기로 결정
+        val index = productItemRecyclerAdapter.currentList.indexOfFirst { it.id == productData.id }
+
+        dialogBinding.productData = productData
+
+
+
+        dialogBinding.favorite.setOnClickListener{
+            productDataViewModel.toggleFavorite(productData)
+
+            if (productData.favorite) {
+                dialogBinding.favorite.setImageResource(R.drawable.favorite_on)
+            } else {
+                dialogBinding.favorite.setImageResource(R.drawable.favorite_off)
+            }
+
+        }
+        val mBuilder = AlertDialog.Builder(requireContext())
+            .setView(mDialogView)
+
+
+        val dialog = mBuilder.show()
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        dialog.setOnDismissListener {
+            if (index != -1) {
+                productItemRecyclerAdapter.notifyItemChanged(index)
+            }
+        }
+    }
     private fun observeDataBaseViewModel() {
         favoriteProductViewModel.favoriteProducts.observe(viewLifecycleOwner, Observer { favoriteProductData ->
             productDataViewModel.favoriteProductCheck(favoriteProductData)
