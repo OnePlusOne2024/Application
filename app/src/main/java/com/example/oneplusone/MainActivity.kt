@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 
 import com.example.oneplusone.databinding.ActivityMainBinding
+import com.example.oneplusone.fragment.FavoriteFragment
 import com.example.oneplusone.fragment.HomeFragment
 import com.example.oneplusone.fragment.MapFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,11 +24,6 @@ class MainActivity : AppCompatActivity() {
 
         setBottomNavigation()
 
-//        setFragment("home",homeFragment)
-//        binding.navView.setOnItemSelectedListener{it->
-//            when(it.itemId) {
-//            }
-//        }
     }
     private fun setBottomNavigation() {
         binding.navView.selectedItemId = R.id.home_menu
@@ -37,6 +33,7 @@ class MainActivity : AppCompatActivity() {
             val fragment = when (it.itemId) {
                 R.id.home_menu -> HomeFragment()
                 R.id.map_menu -> MapFragment()
+                R.id.favorite_menu -> FavoriteFragment()
                 else -> HomeFragment()
             }
             replaceFragment(fragment)

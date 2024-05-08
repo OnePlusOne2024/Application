@@ -37,7 +37,6 @@ class ProductDataViewModel @Inject constructor(
 
     private var _convenienceProductData=MutableLiveData<List<ProductData>>()
 
-
     private val _isFavorite = MutableLiveData<ProductData>()
 
     private val _productData = MutableLiveData<List<ProductData>>()
@@ -107,6 +106,13 @@ class ProductDataViewModel @Inject constructor(
             convertProductDataList.find { it.id == originalProduct.id } ?: originalProduct
         }
         _productDataList.value=updatedList
+    }
+
+    fun loadFavoriteProduct(favoriteProduct: List<FavoriteProductModel>){
+
+        val convertProductDataList=convertProductDataType(favoriteProduct)
+
+        _productDataList.value=convertProductDataList
     }
 
     private fun convertProductDataType(favoriteProduct: List<FavoriteProductModel>): List<ProductData> {

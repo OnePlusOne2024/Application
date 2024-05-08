@@ -1,7 +1,10 @@
 package com.example.oneplusone.fragment
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.res.Resources
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -13,7 +16,9 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.example.oneplusone.R
 import com.example.oneplusone.databinding.FragmentMapBinding
+import com.example.oneplusone.databinding.ProductDetailViewerBinding
 import com.example.oneplusone.`interface`.FilterClickListener
 import com.example.oneplusone.`interface`.MainFilterClickListener
 import com.example.oneplusone.`interface`.ProductClickListener
@@ -30,6 +35,7 @@ import com.example.oneplusone.util.DialogBuilder
 import com.example.oneplusone.util.FilterAnimated
 import com.example.oneplusone.util.FilterStyle
 import com.example.oneplusone.util.ItemSpacingController
+import com.example.oneplusone.viewModel.DataBaseViewModel
 import com.example.oneplusone.viewModel.FilterDataViewModel
 import com.example.oneplusone.viewModel.MapDataViewModel
 import com.example.oneplusone.viewModel.MapMainFilterViewModel
@@ -55,6 +61,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val filterDataViewModel: FilterDataViewModel by viewModels()
     private val mapMainFilterViewModel: MapMainFilterViewModel by viewModels()
     private val mapDataViewModel: MapDataViewModel by viewModels()
+    private val favoriteProductViewModel: DataBaseViewModel by viewModels()
 
     private lateinit var productFilterAdapter: ProductFilterRecyclerAdapter
     private lateinit var productItemRecyclerAdapter: ProductItemRecyclerAdapter
@@ -130,7 +137,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         observeMainFilterViewModel()
         observeFilterDataViewModel()
         observeProductDataViewModel()
-//        observeConvenienceData()
+        observeDataBaseViewModel()
     }
 
 
@@ -202,7 +209,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 }
             }, object : ProductFavoriteClickListener {
                 override fun onFavoriteClick(productData: ProductData) {
-//                    productDataViewModel.updateProductFavorite(productData)
+                    productDataViewModel.toggleFavorite(productData)
                 }
             })
         binding.mapProductGridView.adapter = productItemRecyclerAdapter
@@ -247,8 +254,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         productDataViewModel.clickProductData.observe(viewLifecycleOwner, Observer { clickProductData ->
 
-            DialogBuilder().showProductDetailDialog(requireContext(), clickProductData)
-
+            showProductDetailDialog(clickProductData)
         })
 
         productDataViewModel.layoutHeight.observe(viewLifecycleOwner, Observer { height ->
@@ -267,6 +273,45 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         productDataViewModel.convenienceProductData.observe(viewLifecycleOwner, Observer { convenienceProductData ->
             productItemRecyclerAdapter.submitList(convenienceProductData)
         })
+
+        productDataViewModel.isFavorite.observe(viewLifecycleOwner, Observer { isFavorite ->
+            favoriteProductViewModel.favoriteProductJudgment(isFavorite)
+        })
+    }
+
+    private fun showProductDetailDialog(productData: ProductData) {
+        val mDialogView = LayoutInflater.from(requireContext()).inflate(R.layout.product_detail_viewer, null)
+        val dialogBinding = ProductDetailViewerBinding.bind(mDialogView)
+
+        //어쩔 수 없이 notifyItemChanged로 업데이트 하기로 결정
+        val index = productItemRecyclerAdapter.currentList.indexOfFirst { it.id == productData.id }
+
+        dialogBinding.productData = productData
+
+
+
+        dialogBinding.favorite.setOnClickListener{
+            productDataViewModel.toggleFavorite(productData)
+
+            if (productData.favorite) {
+                dialogBinding.favorite.setImageResource(R.drawable.favorite_on)
+            } else {
+                dialogBinding.favorite.setImageResource(R.drawable.favorite_off)
+            }
+
+        }
+        val mBuilder = AlertDialog.Builder(requireContext())
+            .setView(mDialogView)
+
+
+        val dialog = mBuilder.show()
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        dialog.setOnDismissListener {
+            if (index != -1) {
+                productItemRecyclerAdapter.notifyItemChanged(index)
+            }
+        }
     }
 
     @SuppressLint("InflateParams", "SetTextI18n")
@@ -330,6 +375,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             mapDataViewModel.selectMarker(convenienceData)
             true
         }
+    }
+
+    private fun observeDataBaseViewModel() {
+        favoriteProductViewModel.favoriteProducts.observe(viewLifecycleOwner, Observer { favoriteProductData ->
+            productDataViewModel.favoriteProductCheck(favoriteProductData)
+        })
     }
 
     override fun onResume() {

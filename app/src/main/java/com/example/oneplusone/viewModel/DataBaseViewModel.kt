@@ -30,7 +30,7 @@ class DataBaseViewModel@Inject constructor(
         loadFavoriteProducts()
     }
 
-    private fun loadFavoriteProducts() {
+    fun loadFavoriteProducts() {
         viewModelScope.launch {
 
             val products = dbRepository.getAllFavoriteProducts()

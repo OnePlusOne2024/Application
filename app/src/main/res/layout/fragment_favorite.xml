@@ -1,14 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragment.FavoriteFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+
+    <data>
+        <variable
+            name="filterDataViewModel"
+            type="com.example.oneplusone.viewModel.FilterDataViewModel" />
+
+        <variable
+            name="productDataViewModel"
+            type="com.example.oneplusone.viewModel.ProductDataViewModel" />
+
+        <variable
+            name="mainFilterViewModel"
+            type="com.example.oneplusone.viewModel.MainFilterViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:background="#E3E3E3"
+        android:id="@+id/favoriteFragment">
 
-</FrameLayout>
+        <TextView
+            android:id="@+id/product_filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:text="찜한 상품"
+            android:fontFamily="@font/scdream6"
+            android:textColor="#000000"
+            android:textSize="16dp"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/product_filter_bar"
+            android:layout_width="match_parent"
+            android:layout_height="85dp"
+            android:layout_marginTop="10dp"
+            android:background="#ffffff"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/product_filter" />
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/main_filter_viewer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_marginStart="8dp"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+
+            app:layout_constraintBottom_toBottomOf="@id/product_filter_bar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/product_filter_bar" />
+
+        <ImageView
+            android:id="@+id/filter_bar_detail"
+            android:layout_width="match_parent"
+            android:layout_height="85dp"
+            android:layout_marginTop="7dp"
+            android:background="#ffffff"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/product_grid_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/product_filter_bar" />
+        <!--            filterBar="@{filterDataViewModel.filterBar}"/>-->
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/filter_viewer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_marginStart="8dp"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+
+            app:layout_constraintBottom_toBottomOf="@id/filter_bar_detail"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/filter_bar_detail" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/product_grid_view"
+
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:paddingBottom="75dp"
+            app:layoutManager="GridLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/filter_bar_detail"
+            app:layout_constraintVertical_bias="0.0"
+            app:spanCount="2" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
