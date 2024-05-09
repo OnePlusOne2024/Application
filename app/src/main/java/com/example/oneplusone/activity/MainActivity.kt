@@ -1,10 +1,11 @@
-package com.example.oneplusone
+package com.example.oneplusone.activity
 
 
 import android.os.Bundle
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.example.oneplusone.R
 
 import com.example.oneplusone.databinding.ActivityMainBinding
 import com.example.oneplusone.fragment.FavoriteFragment
