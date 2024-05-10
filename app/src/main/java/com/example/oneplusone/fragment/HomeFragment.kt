@@ -1,7 +1,9 @@
 package com.example.oneplusone.fragment
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -10,9 +12,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.example.oneplusone.R
+import com.example.oneplusone.activity.SearchActivity
 import com.example.oneplusone.databinding.FragmentHomeBinding
 import com.example.oneplusone.databinding.ProductDetailViewerBinding
 import com.example.oneplusone.`interface`.FilterClickListener
@@ -34,6 +40,9 @@ import com.example.oneplusone.util.FilterStyle
 import com.example.oneplusone.viewModel.DataBaseViewModel
 import com.example.oneplusone.viewModel.MainFilterViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -44,6 +53,8 @@ class HomeFragment : Fragment() {
     private val filterDataViewModel: FilterDataViewModel by viewModels()
     private val mainFilterViewModel: MainFilterViewModel by viewModels()
     private val favoriteProductViewModel:DataBaseViewModel by viewModels()
+    private var productNameList= arrayListOf<String>()
+
 
     private lateinit var productFilterAdapter: ProductFilterRecyclerAdapter
     private lateinit var productItemRecyclerAdapter: ProductItemRecyclerAdapter
@@ -78,6 +89,7 @@ class HomeFragment : Fragment() {
 
         observeSetting()
 
+        moveSearchActivity()
     }
 
     private fun initAdapter() {
@@ -85,6 +97,19 @@ class HomeFragment : Fragment() {
         initProductFilterAdapter()
         initProductItemRecyclerAdapter()
     }
+
+    private fun moveSearchActivity() {
+
+        val searchActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        }
+
+        binding.searchIcon.setOnClickListener {
+            val searchActivityIntent = Intent(activity, SearchActivity::class.java)
+            searchActivityIntent.putStringArrayListExtra("productNameList",productNameList)
+            searchActivityResult.launch(searchActivityIntent)
+        }
+    }
+
 
     private fun setupDataBinding() {
         binding.apply {
@@ -102,21 +127,20 @@ class HomeFragment : Fragment() {
     }
 
 
+
     private fun initMainFilterAdapter() {
         mainFilterAdapter = MainFilterRecyclerAdapter(object : MainFilterClickListener {
             override fun onMainFilterClick(mainFilter: MainFilterData,itemView: View) {
 
-
-                //하나의 메인 필터를 터치한 상태에서 다른 메인필터를 터치하면 초기화
                 FilterStyle().resetPreviousFilterStyle(requireContext(),selectMainFilter)
 
                 selectMainFilter = itemView
                 filterDataViewModel.showFilter(mainFilter.filterType)
-//                Log.d("mainFilter", mainFilter.toString())
+
             }
         })
         binding.mainFilterViewer.adapter = mainFilterAdapter
-//        binding.mainFilterViewer.addItemDecoration(filterSpacingController)
+
     }
 
     private fun initProductFilterAdapter() {
@@ -124,12 +148,8 @@ class HomeFragment : Fragment() {
 
             override fun onFilterClick(filterData: FilterData) {
 
-//                val currentMainFilter=mainFilterAdapter.updateFilterItem(filterData)
-
                 mainFilterViewModel.updateMainFilter(filterData)
-//
-//                Log.d("mainFilterAdapter", currentMainFilter.toString())
-//                mainFilterViewModel.currentMainFilterUpdate(currentMainFilter)
+
                 //세부 필터를 고르면 불러온 데이터를 제거함
                 filterDataViewModel.clearFilterData()
 
@@ -203,6 +223,9 @@ class HomeFragment : Fragment() {
 
         productDataViewModel.isFavorite.observe(viewLifecycleOwner, Observer { isFavorite ->
             favoriteProductViewModel.favoriteProductJudgment(isFavorite)
+        })
+        productDataViewModel.productNameList.observe(viewLifecycleOwner, Observer { productNameList ->
+            this.productNameList=productNameList
         })
     }
     private fun showProductDetailDialog(productData: ProductData) {

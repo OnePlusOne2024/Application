@@ -78,4 +78,10 @@ object ProductBindingAdapter {
         }
     }
 
+    @JvmStatic
+    @BindingAdapter("recentSearchText")
+    fun setRecentSearch(view: TextView, resource: String) {
+        view.text=resource
+    }
+
 }

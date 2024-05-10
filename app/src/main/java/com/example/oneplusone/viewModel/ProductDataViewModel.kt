@@ -41,6 +41,9 @@ class ProductDataViewModel @Inject constructor(
 
     private val _productData = MutableLiveData<List<ProductData>>()
 
+
+    private val _productNameList=MutableLiveData<ArrayList<String>>()
+
     val isFavorite: LiveData<ProductData>
         get()=_isFavorite
 
@@ -61,16 +64,8 @@ class ProductDataViewModel @Inject constructor(
     val convenienceProductData: LiveData<List<ProductData>>
         get() = _convenienceProductData
 
-
-//    init{
-//
-//        loadProductData()
-//    }
-
-//    fun updateProductFavorite(productData: ProductData){
-//        productData.favorite=!productData.favorite
-//        _isFavorite.value=productData
-//    }
+    val productNameList: LiveData<ArrayList<String>>
+        get() = _productNameList
 
     fun toggleFavorite(productData: ProductData) {
 
@@ -106,6 +101,8 @@ class ProductDataViewModel @Inject constructor(
             convertProductDataList.find { it.id == originalProduct.id } ?: originalProduct
         }
         _productDataList.value=updatedList
+        //검색에 사용하기 위해 상품 목록의 이름만 따로 분리하여 저장
+        loadProductNameList(initProductData)
     }
 
     fun loadFavoriteProduct(favoriteProduct: List<FavoriteProductModel>){
@@ -131,9 +128,7 @@ class ProductDataViewModel @Inject constructor(
         }
     }
 
-//    private  fun loadProductData(){
-//        _productDataList.value=productDataRepository.loadProductData()
-//    }
+
 
     fun loadClickProductData(productData: ProductData){
         _clickProductData.value=productData
@@ -216,6 +211,13 @@ class ProductDataViewModel @Inject constructor(
             Log.d("finalFilteredProductList", finalFilteredProductList.toString())
             _filterProductData.value = finalFilteredProductList
         }
+    }
+
+//    private  fun loadProductData(): List<ProductData>{
+//        return productDataRepository.loadProductData()
+//    }
+    private fun loadProductNameList(initProductData: List<ProductData>) {
+        _productNameList.value=ArrayList(initProductData.map { it.productName })
     }
 
     companion object{

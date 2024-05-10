@@ -37,7 +37,7 @@ class ProductDataRepositoryImpl @Inject constructor(
                 true
                 ),
             ProductData(3,
-                "a",
+                "coke",
                 3000,
                 "세븐 일레븐",
                 "2+1",
@@ -47,7 +47,7 @@ class ProductDataRepositoryImpl @Inject constructor(
                 false
                 ),
             ProductData(4,
-                "a",
+                "apple",
                 1000,
                 "세븐 일레븐",
                 "1+1",
@@ -57,7 +57,7 @@ class ProductDataRepositoryImpl @Inject constructor(
                 false
                 ),
             ProductData(5,
-                "a",
+                "ball",
                 1500,
                 "GS 25",
                 "2+1",
@@ -67,7 +67,7 @@ class ProductDataRepositoryImpl @Inject constructor(
                 false
                 ),
             ProductData(6,
-                "a",
+                "cap",
                 1200,
                 "GS 25",
                 "1+1",
@@ -77,7 +77,7 @@ class ProductDataRepositoryImpl @Inject constructor(
                 false
                 ),
             ProductData(7,
-                "a",
+                "water",
                 111000,
                 "이마트 24",
                 "1+1",
@@ -97,7 +97,7 @@ class ProductDataRepositoryImpl @Inject constructor(
                 false
                 ),
             ProductData(9,
-                "a",
+                "bottle",
                 50000,
                 "세븐 일레븐",
                 "1+1",
@@ -107,7 +107,7 @@ class ProductDataRepositoryImpl @Inject constructor(
                 true
                 ),
             ProductData(10,
-                "a",
+                "cup",
                 600000,
                 "GS 25",
                 "할인",
