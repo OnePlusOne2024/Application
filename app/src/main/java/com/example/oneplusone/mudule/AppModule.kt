@@ -12,6 +12,8 @@ import com.example.oneplusone.repository.MapMainFilterRepository
 import com.example.oneplusone.repository.MapMainFilterRepositoryImpl
 import com.example.oneplusone.repository.ProductDataRepository
 import com.example.oneplusone.repository.ProductDataRepositoryImpl
+import com.example.oneplusone.repository.ProductRankingDataRepository
+import com.example.oneplusone.repository.ProductRankingDataRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,4 +38,7 @@ object AppModule {
 
     @Provides
     fun provideMapMainFilterRepository(): MapMainFilterRepository = MapMainFilterRepositoryImpl()
+
+    @Provides
+    fun provideProductRankingRepository(): ProductRankingDataRepository = ProductRankingDataRepositoryImpl()
 }
