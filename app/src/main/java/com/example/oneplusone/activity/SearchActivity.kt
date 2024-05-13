@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.View
 import android.widget.Adapter
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
@@ -14,8 +15,13 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.oneplusone.R
 import com.example.oneplusone.databinding.ActivitySearchBinding
+import com.example.oneplusone.`interface`.MainFilterClickListener
+import com.example.oneplusone.`interface`.RankingProductTextClickListener
+import com.example.oneplusone.`interface`.RecentSearchTextClickListener
+import com.example.oneplusone.model.data.MainFilterData
 import com.example.oneplusone.recyclerAdapter.ProductRankingRecyclerAdapter
 import com.example.oneplusone.recyclerAdapter.RecentSearchRecyclerAdapter
+import com.example.oneplusone.util.FilterStyle
 import com.example.oneplusone.viewModel.SearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -45,6 +51,10 @@ class SearchActivity : AppCompatActivity() {
         observeSetting()
 
 
+        binding.searchIcon.setOnClickListener {
+            moveSearchResultActivity()
+        }
+//        moveSearchResultActivity()
 //        addTextChangedListener()
     }
 
@@ -68,13 +78,21 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun initProductRankingAdapter(){
-        productRankingAdapter=ProductRankingRecyclerAdapter()
+        productRankingAdapter=ProductRankingRecyclerAdapter(object : RankingProductTextClickListener {
+            override fun onRankingProductTextClick(rankingText: String) {
+                moveSearchResultActivity(rankingText)
+            }
+        })
         binding.productRanking.adapter=productRankingAdapter
         searchViewModel.loadProductRankingList()
     }
 
     private fun initRecentSearchAdapter(){
-        recentSearchRecyclerAdapter= RecentSearchRecyclerAdapter()
+        recentSearchRecyclerAdapter= RecentSearchRecyclerAdapter(object : RecentSearchTextClickListener {
+            override fun onRecentSearchTextClick(recentSearchText: String) {
+                moveSearchResultActivity(recentSearchText)
+            }
+        })
         binding.recentSearches.adapter=recentSearchRecyclerAdapter
         searchViewModel.loadRecentSearchList(context = this)
     }
@@ -82,12 +100,19 @@ class SearchActivity : AppCompatActivity() {
     private fun observeProductNameList(){
         searchViewModel.productNameList.observe(this) { productNames ->
 
+            //AutoCompleteTextView를 사용해 연관 검색어를 보여줌
             val adapter =
                 ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, productNames)
 
             binding.searchBar.setAdapter(adapter)
             binding.searchBar.threshold = 1
 
+
+            //연관검색어 터치시 바로 검색
+            binding.searchBar.setOnItemClickListener { parent, _, position, _ ->
+                val selectedSearchText = parent.getItemAtPosition(position) as String
+                moveSearchResultActivity(selectedSearchText)
+            }
         }
     }
     private fun observeProductRanking(){
@@ -101,15 +126,14 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    private fun moveSearchResultActivity(searchText:String){
-        val searchActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        }
+    //최근검색어,인기검색어,직접입력한 검색어,연관상품을 검색했을때 다른 엑티비티로 데이터를 전송하는 기능을함
+    private fun moveSearchResultActivity(searchText: String? = null) {
+        val finalSearchText = searchText ?: binding.searchBar.text.toString()
 
-        binding.searchIcon.setOnClickListener {
-            val searchActivityIntent = Intent(this, SearchResultActivity::class.java)
-            searchActivityIntent.putExtra("searchText",searchText)
-            searchActivityResult.launch(searchActivityIntent)
-            searchViewModel.saveSearchText(context = this,searchText)
+        val searchActivityIntent = Intent(this, SearchResultActivity::class.java).apply {
+            putExtra("searchText", finalSearchText)
         }
+        startActivity(searchActivityIntent)
+        searchViewModel.saveSearchText(context = this, finalSearchText)
     }
 }

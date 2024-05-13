@@ -14,10 +14,11 @@ import com.example.oneplusone.databinding.ProductRankingBinding
 import com.example.oneplusone.databinding.ProductViewerBinding
 import com.example.oneplusone.`interface`.ProductClickListener
 import com.example.oneplusone.`interface`.ProductFavoriteClickListener
+import com.example.oneplusone.`interface`.RankingProductTextClickListener
 import com.example.oneplusone.model.data.ProductData
 
 class ProductRankingRecyclerAdapter(
-
+    private val rankingProductTextClickListener: RankingProductTextClickListener,
 ): ListAdapter<String, ProductRankingRecyclerAdapter.Holder>(ProductDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
@@ -31,7 +32,7 @@ class ProductRankingRecyclerAdapter(
         //10개 미만이면 공백으로 채움
         val productName = if (position < currentList.size) getItem(position) else ""
 
-        holder.bind(productName)
+        holder.bind(productName,rankingProductTextClickListener)
     }
     override fun getItemCount(): Int {
         //강제로 10개 채우려고 작성
@@ -41,10 +42,13 @@ class ProductRankingRecyclerAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         @SuppressLint("SetTextI18n")
-        fun bind(productName: String) {
+        fun bind(productName: String,rankingProductTextClickListener: RankingProductTextClickListener) {
 
             binding.productName.text="${getBindingAdapterPosition()+1}. $productName"
 
+            itemView.setOnClickListener {
+                rankingProductTextClickListener.onRankingProductTextClick(productName)
+            }
         }
 
     }

@@ -9,10 +9,12 @@ import androidx.recyclerview.widget.RecyclerView
 
 import com.example.oneplusone.databinding.ProductViewerBinding
 import com.example.oneplusone.databinding.RecentSearchBinding
+import com.example.oneplusone.`interface`.RankingProductTextClickListener
+import com.example.oneplusone.`interface`.RecentSearchTextClickListener
 import com.example.oneplusone.model.data.ProductData
 
 class RecentSearchRecyclerAdapter(
-
+    private val recentSearchTextClickListener: RecentSearchTextClickListener,
 ): ListAdapter<String, RecentSearchRecyclerAdapter.Holder>(ProductDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
@@ -26,7 +28,7 @@ class RecentSearchRecyclerAdapter(
 
         val productName = if (position < currentList.size) getItem(position) else ""
 
-        holder.bind(productName)
+        holder.bind(productName,recentSearchTextClickListener)
     }
     override fun getItemCount(): Int {
 
@@ -36,13 +38,13 @@ class RecentSearchRecyclerAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         @SuppressLint("SetTextI18n")
-        fun bind(productName: String) {
+        fun bind(productName: String,recentSearchTextClickListener: RecentSearchTextClickListener) {
 
             binding.productName.text="${getBindingAdapterPosition()+1}. $productName"
 
-//            itemView.setOnClickListener {
-//
-//            }
+            itemView.setOnClickListener {
+                recentSearchTextClickListener.onRecentSearchTextClick(productName)
+            }
 
         }
 
