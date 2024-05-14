@@ -90,14 +90,19 @@ class ProductDataViewModel @Inject constructor(
         _layoutHeight.value = newHeight
     }
 
-    fun favoriteProductCheck(favoriteProduct: List<FavoriteProductModel>){
+    fun favoriteProductCheck(favoriteProduct: List<FavoriteProductModel>,searchText: String?=null){
 
-        //처음 데이터를 불러와 화면에 바로 출력하는 대신에 db의 데이터와 대조하여 즐겨찾기한 아이템과 비교 후 화면에 출력
+        //처음 데이터를 불러와 화면에 바로 출력하는 대신에 db의 데이터와 대조하여 즐겨찾기한 아이템과 비교 후 화면에 출력,
         val initProductData=productDataRepository.loadProductData()
 
         val convertProductDataList=convertProductDataType(favoriteProduct)
 
-        val updatedList = initProductData.map { originalProduct ->
+        //서치텍스트가 있다면 서치결과를 필터링하고 아니라면 그냥 받음
+        val searchResult=searchText?.let{
+            loadSearchProductList(searchText,initProductData)
+        }?:initProductData
+
+        val updatedList = searchResult.map { originalProduct ->
             convertProductDataList.find { it.id == originalProduct.id } ?: originalProduct
         }
         _productDataList.value=updatedList
@@ -211,6 +216,14 @@ class ProductDataViewModel @Inject constructor(
             Log.d("finalFilteredProductList", finalFilteredProductList.toString())
             _filterProductData.value = finalFilteredProductList
         }
+    }
+
+    //ignoreCase = true면 대소문자 구분 안하는거
+    private fun loadSearchProductList(searchText: String,initProductData: List<ProductData>):List<ProductData> {
+        val filterProductData = initProductData.filter  { originalProduct ->
+            originalProduct.productName.contains(searchText, ignoreCase = true)
+        }
+        return filterProductData
     }
 
 //    private  fun loadProductData(): List<ProductData>{

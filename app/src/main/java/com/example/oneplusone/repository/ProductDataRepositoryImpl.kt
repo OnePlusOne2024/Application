@@ -87,7 +87,7 @@ class ProductDataRepositoryImpl @Inject constructor(
                 true
                 ),
             ProductData(8,
-                "a",
+                "pepsi",
                 11000,
                 "이마트 24",
                 "1+1",
