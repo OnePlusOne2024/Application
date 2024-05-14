@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.ArrayAdapter
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.oneplusone.R
@@ -29,6 +30,7 @@ import com.example.oneplusone.viewModel.DataBaseViewModel
 import com.example.oneplusone.viewModel.FilterDataViewModel
 import com.example.oneplusone.viewModel.MainFilterViewModel
 import com.example.oneplusone.viewModel.ProductDataViewModel
+import com.example.oneplusone.viewModel.SearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
 //todo 재검색, 잘못된 검색어(빈칸,특수문자?,글자수?)제어 팝업 만들어야함
 @AndroidEntryPoint
@@ -45,8 +47,8 @@ class SearchResultActivity : AppCompatActivity() {
     private lateinit var productFilterAdapter: ProductFilterRecyclerAdapter
     private lateinit var productItemRecyclerAdapter: ProductItemRecyclerAdapter
     private lateinit var mainFilterAdapter: MainFilterRecyclerAdapter
-    private var productNameList= arrayListOf<String>()
-    private var searchText:String? = null
+
+
     private val productSpacingController = ItemSpacingController(25, 25, 40)
 
     private var selectMainFilter: View?=null
@@ -60,9 +62,12 @@ class SearchResultActivity : AppCompatActivity() {
 
         observeSetting()
 
-//        moveSearchActivity()
-        searchText=intent.getStringExtra("searchText")
-        Log.d("searchText",intent.getStringExtra("searchText").toString())
+
+        intent.getStringExtra("searchText")?.let { productDataViewModel.setSearchText(it) }
+
+        binding.searchIcon.setOnClickListener {
+            productDataViewModel.setSearchText( binding.searchBar.text.toString())
+        }
     }
 
     private fun initAdapter() {
@@ -76,6 +81,7 @@ class SearchResultActivity : AppCompatActivity() {
             mainFilterViewModel = this@SearchResultActivity.mainFilterViewModel
             filterDataViewModel = this@SearchResultActivity.filterDataViewModel
             productDataViewModel = this@SearchResultActivity.productDataViewModel
+
             lifecycleOwner = this@SearchResultActivity
         }
     }
@@ -85,6 +91,7 @@ class SearchResultActivity : AppCompatActivity() {
         observeFilterDataViewModel()
         observeProductDataViewModel()
         observeDataBaseViewModel()
+//        observeProductNameList()
     }
 
     private fun initMainFilterAdapter() {
@@ -183,8 +190,28 @@ class SearchResultActivity : AppCompatActivity() {
             favoriteProductViewModel.favoriteProductJudgment(isFavorite)
         }
         productDataViewModel.productNameList.observe(this) { productNameList ->
-            this.productNameList=productNameList
+            showProductNames(productNameList)
         }
+        productDataViewModel.searchText.observe(this) { searchText ->
+
+        }
+
+    }
+    private fun showProductNames(productNameList: ArrayList<String>) {
+
+            //AutoCompleteTextView를 사용해 연관 검색어를 보여줌
+            val adapter =
+                ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, productNameList)
+
+            binding.searchBar.setAdapter(adapter)
+            binding.searchBar.threshold = 1
+
+
+            //연관검색어 터치시 바로 검색
+            binding.searchBar.setOnItemClickListener { parent, _, position, _ ->
+                val newSearchText = parent.getItemAtPosition(position) as String
+                productDataViewModel.setSearchText(newSearchText)
+            }
     }
 
     private fun showProductDetailDialog(productData: ProductData) {
@@ -195,7 +222,6 @@ class SearchResultActivity : AppCompatActivity() {
         val index = productItemRecyclerAdapter.currentList.indexOfFirst { it.id == productData.id }
 
         dialogBinding.productData = productData
-
 
 
         dialogBinding.favorite.setOnClickListener{
@@ -224,8 +250,7 @@ class SearchResultActivity : AppCompatActivity() {
 
     private fun observeDataBaseViewModel() {
         favoriteProductViewModel.favoriteProducts.observe(this){ favoriteProductData ->
-            productDataViewModel.favoriteProductCheck(favoriteProductData, searchText)
+            productDataViewModel.favoriteProductCheck(favoriteProductData)
         }
-
     }
 }
