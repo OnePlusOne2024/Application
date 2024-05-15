@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.Adapter
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 
@@ -52,7 +53,7 @@ class SearchActivity : AppCompatActivity() {
 
 
         binding.searchIcon.setOnClickListener {
-            moveSearchResultActivity()
+            searchViewModel.setSearchText(binding.searchBar.text.toString())
         }
 //        moveSearchResultActivity()
 //        addTextChangedListener()
@@ -75,12 +76,14 @@ class SearchActivity : AppCompatActivity() {
         observeProductNameList()
         observeProductRanking()
         observeRecentSearchList()
+        observeSearchText()
+        observeSearchTextCheckResult()
     }
 
     private fun initProductRankingAdapter(){
         productRankingAdapter=ProductRankingRecyclerAdapter(object : RankingProductTextClickListener {
             override fun onRankingProductTextClick(rankingText: String) {
-                moveSearchResultActivity(rankingText)
+                searchViewModel.setSearchText( rankingText)
             }
         })
         binding.productRanking.adapter=productRankingAdapter
@@ -90,7 +93,7 @@ class SearchActivity : AppCompatActivity() {
     private fun initRecentSearchAdapter(){
         recentSearchRecyclerAdapter= RecentSearchRecyclerAdapter(object : RecentSearchTextClickListener {
             override fun onRecentSearchTextClick(recentSearchText: String) {
-                moveSearchResultActivity(recentSearchText)
+                searchViewModel.setSearchText( recentSearchText)
             }
         })
         binding.recentSearches.adapter=recentSearchRecyclerAdapter
@@ -125,15 +128,30 @@ class SearchActivity : AppCompatActivity() {
             recentSearchRecyclerAdapter.submitList(recentSearchList)
         }
     }
+    private fun observeSearchText(){
+        searchViewModel.searchText.observe(this) { searchText ->
+            Log.d("searchText2", searchText.toString())
+            moveSearchResultActivity(searchText)
+        }
+    }
+    private fun observeSearchTextCheckResult(){
+        searchViewModel.searchTextCheckResult.observe(this) { searchTextCheckResult ->
+            Log.d("searchTextResult", searchTextCheckResult.toString())
+            if(!searchTextCheckResult){
+                Toast.makeText(this@SearchActivity, "올바른 검색어를 입력해 주세요.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
     //최근검색어,인기검색어,직접입력한 검색어,연관상품을 검색했을때 다른 엑티비티로 데이터를 전송하는 기능을함
     private fun moveSearchResultActivity(searchText: String? = null) {
-        val finalSearchText = searchText ?: binding.searchBar.text.toString()
+        searchText?.let{
 
-        val searchActivityIntent = Intent(this, SearchResultActivity::class.java).apply {
-            putExtra("searchText", finalSearchText)
+            val searchActivityIntent = Intent(this, SearchResultActivity::class.java).apply {
+                putExtra("searchText", searchText)
+            }
+            startActivity(searchActivityIntent)
+            searchViewModel.saveSearchText(context = this, searchText)
         }
-        startActivity(searchActivityIntent)
-        searchViewModel.saveSearchText(context = this, finalSearchText)
     }
 }

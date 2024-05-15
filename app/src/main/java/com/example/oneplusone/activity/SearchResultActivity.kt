@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.oneplusone.R
@@ -32,7 +33,7 @@ import com.example.oneplusone.viewModel.MainFilterViewModel
 import com.example.oneplusone.viewModel.ProductDataViewModel
 import com.example.oneplusone.viewModel.SearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
-//todo 재검색, 잘못된 검색어(빈칸,특수문자?,글자수?)제어 팝업 만들어야함
+//todo 잘못된 검색어(빈칸,특수문자?,글자수?)제어 팝업 만들어야함
 @AndroidEntryPoint
 class SearchResultActivity : AppCompatActivity() {
 
@@ -42,12 +43,13 @@ class SearchResultActivity : AppCompatActivity() {
     private val filterDataViewModel: FilterDataViewModel by viewModels()
     private val mainFilterViewModel: MainFilterViewModel by viewModels()
     private val favoriteProductViewModel: DataBaseViewModel by viewModels()
-
+    private val searchViewModel:SearchViewModel by viewModels()
 
     private lateinit var productFilterAdapter: ProductFilterRecyclerAdapter
     private lateinit var productItemRecyclerAdapter: ProductItemRecyclerAdapter
     private lateinit var mainFilterAdapter: MainFilterRecyclerAdapter
 
+    private var oldSearchText:String?=null
 
     private val productSpacingController = ItemSpacingController(25, 25, 40)
 
@@ -62,11 +64,13 @@ class SearchResultActivity : AppCompatActivity() {
 
         observeSetting()
 
+        oldSearchText=intent.getStringExtra("searchText")
+        oldSearchText?.let { searchViewModel.setSearchText(it) }
 
-        intent.getStringExtra("searchText")?.let { productDataViewModel.setSearchText(it) }
+        binding.searchBar.setText(oldSearchText)
 
         binding.searchIcon.setOnClickListener {
-            productDataViewModel.setSearchText( binding.searchBar.text.toString())
+            searchViewModel.setSearchText( binding.searchBar.text.toString())
         }
     }
 
@@ -81,7 +85,7 @@ class SearchResultActivity : AppCompatActivity() {
             mainFilterViewModel = this@SearchResultActivity.mainFilterViewModel
             filterDataViewModel = this@SearchResultActivity.filterDataViewModel
             productDataViewModel = this@SearchResultActivity.productDataViewModel
-
+            searchViewModel = this@SearchResultActivity.searchViewModel
             lifecycleOwner = this@SearchResultActivity
         }
     }
@@ -91,7 +95,7 @@ class SearchResultActivity : AppCompatActivity() {
         observeFilterDataViewModel()
         observeProductDataViewModel()
         observeDataBaseViewModel()
-//        observeProductNameList()
+        observeSearchViewModel()
     }
 
     private fun initMainFilterAdapter() {
@@ -183,7 +187,6 @@ class SearchResultActivity : AppCompatActivity() {
         }
         productDataViewModel.filterProductData.observe(this){ filterProductData ->
             productItemRecyclerAdapter.submitList(filterProductData)
-
         }
 
         productDataViewModel.isFavorite.observe(this) { isFavorite ->
@@ -192,10 +195,29 @@ class SearchResultActivity : AppCompatActivity() {
         productDataViewModel.productNameList.observe(this) { productNameList ->
             showProductNames(productNameList)
         }
-        productDataViewModel.searchText.observe(this) { searchText ->
 
+    }
+
+    private fun observeDataBaseViewModel() {
+        favoriteProductViewModel.favoriteProducts.observe(this){ favoriteProductData ->
+            productDataViewModel.favoriteProductCheck(favoriteProductData, oldSearchText)
         }
+    }
 
+    private fun observeSearchViewModel(){
+        searchViewModel.searchText.observe(this) { newSearchText ->
+            Log.d("searchText",newSearchText)
+            //새로운 검색을 했다면 검색된 상품만 다시 불러옴
+            productDataViewModel.favoriteProductCheck(null,newSearchText)
+            //검색한 데이터를 저장함
+            searchViewModel.saveSearchText(this@SearchResultActivity,newSearchText)
+        }
+        searchViewModel.searchTextCheckResult.observe(this) { searchTextCheckResult ->
+            Log.d("searchTextResult", searchTextCheckResult.toString())
+            if(!searchTextCheckResult){
+                Toast.makeText(this@SearchResultActivity, "올바른 검색어를 입력해 주세요.", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
     private fun showProductNames(productNameList: ArrayList<String>) {
 
@@ -210,7 +232,7 @@ class SearchResultActivity : AppCompatActivity() {
             //연관검색어 터치시 바로 검색
             binding.searchBar.setOnItemClickListener { parent, _, position, _ ->
                 val newSearchText = parent.getItemAtPosition(position) as String
-                productDataViewModel.setSearchText(newSearchText)
+                searchViewModel.setSearchText(newSearchText)
             }
     }
 
@@ -248,9 +270,5 @@ class SearchResultActivity : AppCompatActivity() {
         }
     }
 
-    private fun observeDataBaseViewModel() {
-        favoriteProductViewModel.favoriteProducts.observe(this){ favoriteProductData ->
-            productDataViewModel.favoriteProductCheck(favoriteProductData)
-        }
-    }
+
 }

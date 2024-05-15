@@ -43,9 +43,9 @@ class ProductDataViewModel @Inject constructor(
 
     private val _productNameList=MutableLiveData<ArrayList<String>>()
 
-    private val _searchText=MutableLiveData<String>()
 
     private val _favoriteProductData=MutableLiveData<List<FavoriteProductModel>?>()
+
     val isFavorite: LiveData<ProductData>
         get()=_isFavorite
 
@@ -68,10 +68,6 @@ class ProductDataViewModel @Inject constructor(
 
     val productNameList: LiveData<ArrayList<String>>
         get() = _productNameList
-
-    val searchText: LiveData<String>
-        get() = _searchText
-
 
     fun toggleFavorite(productData: ProductData) {
 
@@ -96,7 +92,7 @@ class ProductDataViewModel @Inject constructor(
         _layoutHeight.value = newHeight
     }
 
-    fun favoriteProductCheck(favoriteProduct: List<FavoriteProductModel>?=null,){
+    fun favoriteProductCheck(favoriteProduct: List<FavoriteProductModel>?=null,searchText: String?=null){
 
         _favoriteProductData.value=favoriteProduct
         //처음 데이터를 불러와 화면에 바로 출력하는 대신에 db의 데이터와 대조하여 즐겨찾기한 아이템과 비교 후 화면에 출력,
@@ -105,8 +101,8 @@ class ProductDataViewModel @Inject constructor(
         val convertProductDataList= _favoriteProductData.value?.let { convertProductDataType(it) }
 
         //서치텍스트가 있다면 서치결과를 필터링하고 아니라면 그냥 받음
-        val searchResult=_searchText.value?.let{
-            loadSearchProductList(initProductData)
+        val searchResult=searchText?.let{
+            loadSearchProductList(initProductData,searchText)
         }?:initProductData
 
         val updatedList = searchResult.map { originalProduct ->
@@ -116,7 +112,6 @@ class ProductDataViewModel @Inject constructor(
         //검색에 사용하기 위해 상품 목록의 이름만 따로 분리하여 저장
         loadProductNameList(initProductData)
     }
-
 
 
     fun loadFavoriteProduct(favoriteProduct: List<FavoriteProductModel>){
@@ -228,17 +223,22 @@ class ProductDataViewModel @Inject constructor(
     }
 
     //ignoreCase = true면 대소문자 구분 안하는거
-    private fun loadSearchProductList(initProductData: List<ProductData>):List<ProductData> {
+    private fun loadSearchProductList(initProductData: List<ProductData>, searchText: String):List<ProductData> {
         val filterProductData = initProductData.filter  { originalProduct ->
-            originalProduct.productName.contains(_searchText.value.toString(), ignoreCase = true)
+            originalProduct.productName.contains(searchText, ignoreCase = true)
         }
         return filterProductData
     }
-    fun setSearchText(searchText: String){
-        this._searchText.value=searchText
-        //일단 새로 불러오도록 했음 근데 이게 맞는방법인지는 다시 알아봐야함
-        favoriteProductCheck()
-    }
+//    fun setSearchText(searchText: String){
+//
+//        _searchTextCheckResult.value=SearchTextCheck().searchTextCheck(searchText)
+//        if(_searchTextCheckResult.value==true){
+//            //일단 새로 불러오도록 했음 근데 이게 맞는방법인지는 다시 알아봐야함
+//            this._searchText.value=searchText
+//            favoriteProductCheck()
+//        }
+//    }
+
 
 //    private  fun loadProductData(): List<ProductData>{
 //        return productDataRepository.loadProductData()

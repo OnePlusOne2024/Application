@@ -17,6 +17,10 @@
             name="mainFilterViewModel"
             type="com.example.oneplusone.viewModel.MainFilterViewModel" />
 
+        <variable
+            name="searchViewModel"
+            type="com.example.oneplusone.viewModel.SearchViewModel" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
