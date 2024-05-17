@@ -22,10 +22,13 @@ class SearchViewModel @Inject constructor(
 
     private val _productNameList=MutableLiveData<ArrayList<String>>()
     private val _productRanking=MutableLiveData<List<String>>()
-    private val _recentSearchList=MutableLiveData<MutableList<String>>()
+    private val _recentSearchList=MutableLiveData<MutableList<String>?>()
     private val _inputText=MutableLiveData<String>()
     private val _searchText=MutableLiveData<String>()
     private val _searchTextCheckResult=MutableLiveData<Boolean>()
+
+
+
 
     val productNameList: LiveData<ArrayList<String>>
         get() = _productNameList
@@ -33,7 +36,7 @@ class SearchViewModel @Inject constructor(
     val productRanking: LiveData<List<String>>
         get() = _productRanking
 
-    val recentSearchList: LiveData<MutableList<String>>
+    val recentSearchList: LiveData<MutableList<String>?>
         get() = _recentSearchList
 
     val inputText: LiveData<String>
@@ -52,35 +55,76 @@ class SearchViewModel @Inject constructor(
         _productRanking.value=productRankingDataRepository.loadProductRankingData()
     }
 
+
     fun loadRecentSearchList(context: Context){
         val sharedPreferences = context.getSharedPreferences("RecentSearchText", Context.MODE_PRIVATE)
         val savedString = sharedPreferences.getString("recentSearchText", null)
-        val recentSearchList = savedString?.split(",")?.toMutableList() ?: mutableListOf()
+
+        val recentSearchList = if (!savedString.isNullOrEmpty()) {
+            savedString.split(",").toMutableList()
+        } else {
+            mutableListOf()
+        }
 
         _recentSearchList.value=recentSearchList
-        Log.d("recentSearchList.value",_recentSearchList.value.toString())
     }
 
     //todo 최근 검색어 삭제하는 로직 구현하기
-    @SuppressLint("CommitPrefEdits")
     fun saveSearchText(context: Context, searchText: String){
         val sharedPreferences = context.getSharedPreferences("RecentSearchText", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
 
-        val savedString = sharedPreferences.getString("recentSearchText", "")
-        val recentSearchList = savedString?.split(",")?.toMutableList() ?: mutableListOf()
+        val savedString = sharedPreferences.getString("recentSearchText", null)
+        //빈문자열을 split할때 이것까지 아이템에 포함되어 나왔기 때문에 수정
+        val recentSearchList = if (!savedString.isNullOrEmpty()) {
+            savedString.split(",").toMutableList()
+        } else {
+            mutableListOf()
+        }
 
         if (!recentSearchList.contains(searchText)) {
             recentSearchList.add(0, searchText)
 
-            while (recentSearchList.size > 10) {
+            while (recentSearchList.size > 20) {
                 recentSearchList.removeAt(recentSearchList.size - 1)
             }
 
             val newSavedString = recentSearchList.joinToString(",")
             editor.putString("recentSearchText", newSavedString)
             editor.apply()
+            _recentSearchList.value=recentSearchList
         }
+    }
+
+
+    fun deleteRecentSearchText(context: Context, searchText: String){
+        val sharedPreferences = context.getSharedPreferences("RecentSearchText", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+
+
+        val savedString = sharedPreferences.getString("recentSearchText", "")
+
+        val recentSearchList = savedString?.split(",")?.toMutableList() ?: mutableListOf()
+
+        if (recentSearchList.contains(searchText)) {
+            recentSearchList.remove(searchText)
+
+            val newSavedString = recentSearchList.joinToString(",")
+            editor.putString("recentSearchText", newSavedString)
+            editor.apply()
+            _recentSearchList.value=recentSearchList
+
+        }
+    }
+
+
+    fun deleteAllRecentSearchText(context: Context){
+        val sharedPreferences = context.getSharedPreferences("RecentSearchText", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+
+        editor.putString("recentSearchText", null)
+        editor.apply()
+        _recentSearchList.value=null
     }
 
     fun setSearchText(searchText: String){

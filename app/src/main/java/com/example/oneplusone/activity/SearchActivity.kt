@@ -1,5 +1,6 @@
 package com.example.oneplusone.activity
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -16,10 +17,13 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.oneplusone.R
 import com.example.oneplusone.databinding.ActivitySearchBinding
+import com.example.oneplusone.`interface`.DeleteRecentSearchClickListener
 import com.example.oneplusone.`interface`.MainFilterClickListener
+import com.example.oneplusone.`interface`.ProductFavoriteClickListener
 import com.example.oneplusone.`interface`.RankingProductTextClickListener
 import com.example.oneplusone.`interface`.RecentSearchTextClickListener
 import com.example.oneplusone.model.data.MainFilterData
+import com.example.oneplusone.model.data.ProductData
 import com.example.oneplusone.recyclerAdapter.ProductRankingRecyclerAdapter
 import com.example.oneplusone.recyclerAdapter.RecentSearchRecyclerAdapter
 import com.example.oneplusone.util.FilterStyle
@@ -55,8 +59,11 @@ class SearchActivity : AppCompatActivity() {
         binding.searchIcon.setOnClickListener {
             searchViewModel.setSearchText(binding.searchBar.text.toString())
         }
-//        moveSearchResultActivity()
-//        addTextChangedListener()
+
+        binding.allResetRecentSearch.setOnClickListener{
+            searchViewModel.deleteAllRecentSearchText(this@SearchActivity)
+        }
+
     }
 
 
@@ -91,9 +98,15 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun initRecentSearchAdapter(){
-        recentSearchRecyclerAdapter= RecentSearchRecyclerAdapter(object : RecentSearchTextClickListener {
+        recentSearchRecyclerAdapter= RecentSearchRecyclerAdapter(
+            object : RecentSearchTextClickListener {
             override fun onRecentSearchTextClick(recentSearchText: String) {
                 searchViewModel.setSearchText( recentSearchText)
+            }
+        },object : DeleteRecentSearchClickListener{
+            override fun onDeleteRecentSearchClick(recentSearchText: String) {
+                searchViewModel.deleteRecentSearchText(this@SearchActivity,recentSearchText)
+
             }
         })
         binding.recentSearches.adapter=recentSearchRecyclerAdapter
@@ -123,9 +136,14 @@ class SearchActivity : AppCompatActivity() {
             productRankingAdapter.submitList(productRanking)
         }
     }
+    @SuppressLint("SetTextI18n")
     private fun observeRecentSearchList(){
         searchViewModel.recentSearchList.observe(this) { recentSearchList ->
             recentSearchRecyclerAdapter.submitList(recentSearchList)
+
+            //최근검색어의 수를 표시
+            binding.recentSearchCount.text= "${recentSearchList?.size}/20"
+
         }
     }
     private fun observeSearchText(){
