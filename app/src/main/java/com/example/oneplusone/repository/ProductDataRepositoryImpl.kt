@@ -1,18 +1,16 @@
 package com.example.oneplusone.repository
 
-import android.content.Context
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.example.oneplusone.R
-import com.example.oneplusone.db.ProductDataBase
 import com.example.oneplusone.model.data.ProductData
 import com.example.oneplusone.serverConnection.RetrofitBuilder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 
 import retrofit2.Response
-import retrofit2.http.GET
 
 import javax.inject.Inject
 
@@ -127,67 +125,71 @@ class ProductDataRepositoryImpl @Inject constructor(
         )
     }
 
-    override fun getUpdateInfoCheck(){
-        //최종 접속시간 가져와야함,만약 최종 접속시간이 없다면 새로 들어온거라는걸 인지하기
-        RetrofitBuilder.api.updateInfoCheck(lastConnectTime = 0f).enqueue(object : Callback<Int> {
-            override fun onResponse(call: Call<Int>, response: Response<Int>) {
-                if (response.isSuccessful) {
-                    val checkResult = response.body()
-                }
+//고차함수 제대로 이해하기
+    override fun getUpdateInfoCheck(lastConnectTime: Int?, callback: (Int?) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = try {
+                val response = RetrofitBuilder.api.updateInfoCheck(lastConnectTime)
+                if (response.isSuccessful){
+                    response.body()
+                } else null
+            } catch (e: Exception) {
+                null
             }
-
-            override fun onFailure(call: Call<Int>, t: Throwable) {
+            withContext(Dispatchers.Main) {
+                callback(result)
             }
-        })
-    }
-    override fun getGS25ProductList() {
-        RetrofitBuilder.api.getGS25ProductData().enqueue(object : Callback<List<ProductData>> {
-            override fun onResponse(call: Call<List<ProductData>>, response: Response<List<ProductData>>) {
-                if (response.isSuccessful) {
-                    val gs25ProductDataList = response.body()
-                }
-            }
-
-            override fun onFailure(call: Call<List<ProductData>>, t: Throwable) {
-            }
-        })
+        }
     }
 
-    override fun getCUProductList() {
-        RetrofitBuilder.api.getCUProductData().enqueue(object : Callback<List<ProductData>> {
-            override fun onResponse(call: Call<List<ProductData>>, response: Response<List<ProductData>>) {
-                if (response.isSuccessful) {
-                    val cuProductDataList = response.body()
-                }
-            }
-
-            override fun onFailure(call: Call<List<ProductData>>, t: Throwable) {
-            }
-        })
-    }
-    override fun getSevenElevenProductList() {
-        RetrofitBuilder.api.getSevenElevenProductData().enqueue(object : Callback<List<ProductData>> {
-            override fun onResponse(call: Call<List<ProductData>>, response: Response<List<ProductData>>) {
-                if (response.isSuccessful) {
-                    val sevenElevenProductDataList = response.body()
-                }
-            }
-
-            override fun onFailure(call: Call<List<ProductData>>, t: Throwable) {
-            }
-        })
-    }
-    override fun getEmart24ProductList() {
-        RetrofitBuilder.api.getEmart24ProductData().enqueue(object : Callback<List<ProductData>> {
-            override fun onResponse(call: Call<List<ProductData>>, response: Response<List<ProductData>>) {
-                if (response.isSuccessful) {
-                    val emart24ProductDataList = response.body()
-                }
-            }
-
-            override fun onFailure(call: Call<List<ProductData>>, t: Throwable) {
-
-            }
-        })
-    }
+//    override fun getGS25ProductList() {
+//        RetrofitBuilder.api.getGS25ProductData().enqueue(object : Callback<List<ProductData>> {
+//            override fun onResponse(call: Call<List<ProductData>>, response: Response<List<ProductData>>) {
+//                if (response.isSuccessful) {
+//                    val gs25ProductDataList = response.body()
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<List<ProductData>>, t: Throwable) {
+//            }
+//        })
+//    }
+//
+//    override fun getCUProductList() {
+//        RetrofitBuilder.api.getCUProductData().enqueue(object : Callback<List<ProductData>> {
+//            override fun onResponse(call: Call<List<ProductData>>, response: Response<List<ProductData>>) {
+//                if (response.isSuccessful) {
+//                    val cuProductDataList = response.body()
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<List<ProductData>>, t: Throwable) {
+//            }
+//        })
+//    }
+//    override fun getSevenElevenProductList() {
+//        RetrofitBuilder.api.getSevenElevenProductData().enqueue(object : Callback<List<ProductData>> {
+//            override fun onResponse(call: Call<List<ProductData>>, response: Response<List<ProductData>>) {
+//                if (response.isSuccessful) {
+//                    val sevenElevenProductDataList = response.body()
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<List<ProductData>>, t: Throwable) {
+//            }
+//        })
+//    }
+//    override fun getEmart24ProductList() {
+//        RetrofitBuilder.api.getEmart24ProductData().enqueue(object : Callback<List<ProductData>> {
+//            override fun onResponse(call: Call<List<ProductData>>, response: Response<List<ProductData>>) {
+//                if (response.isSuccessful) {
+//                    val emart24ProductDataList = response.body()
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<List<ProductData>>, t: Throwable) {
+//
+//            }
+//        })
+//    }
 }

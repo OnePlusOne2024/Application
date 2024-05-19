@@ -1,5 +1,7 @@
 package com.example.oneplusone.viewModel
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,6 +16,8 @@ import com.example.oneplusone.model.data.enums.FilterType
 import com.example.oneplusone.model.data.enums.ProductCategoryType
 import com.example.oneplusone.repository.ProductDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
 import javax.inject.Inject
 
 
@@ -46,6 +50,9 @@ class ProductDataViewModel @Inject constructor(
 
     private val _favoriteProductData=MutableLiveData<List<FavoriteProductModel>?>()
 
+    private val _connectTime=MutableLiveData<Int?>()
+
+    private val _updateCheckResult=MutableLiveData<Int?>()
     val isFavorite: LiveData<ProductData>
         get()=_isFavorite
 
@@ -69,6 +76,11 @@ class ProductDataViewModel @Inject constructor(
     val productNameList: LiveData<ArrayList<String>>
         get() = _productNameList
 
+    val connectTime: LiveData<Int?>
+        get()=_connectTime
+
+    val updateCheckResult: LiveData<Int?>
+        get()=_updateCheckResult
     fun toggleFavorite(productData: ProductData) {
 
         productData.favorite = !productData.favorite
@@ -113,6 +125,10 @@ class ProductDataViewModel @Inject constructor(
         loadProductNameList(initProductData)
     }
 
+    //서버에서 받아온 데이터를 db에 저장해야함
+    fun saveProductData(){
+
+    }
 
     fun loadFavoriteProduct(favoriteProduct: List<FavoriteProductModel>){
 
@@ -245,6 +261,51 @@ class ProductDataViewModel @Inject constructor(
 //    }
     private fun loadProductNameList(initProductData: List<ProductData>) {
         _productNameList.value=ArrayList(initProductData.map { it.productName })
+    }
+
+
+    fun loadConnectTime(context: Context){
+        val sharedPreferences = context.getSharedPreferences("LastConnectTime", Context.MODE_PRIVATE)
+        val lastConnectTime = sharedPreferences.getString("lastConnectTime",null)
+        val editor = sharedPreferences.edit()
+
+        //접속했으면 현재 날짜를 등록
+        editor.putString("lastConnectTime", getCurrentDate())
+        editor.apply()
+        //서버와 통신해서 데이터를 가져와야함, 만약 null이라면 처음 접속한것이기 때문에 다가져와야함
+
+        _connectTime.value=lastConnectTime?.toInt()
+
+    }
+
+    fun updateCheckResult(connectTime:Int?){
+        productDataRepository.getUpdateInfoCheck(connectTime) { updateCheckResult ->
+            if (updateCheckResult != null) {
+                _updateCheckResult.value=updateCheckResult
+
+            } else {
+
+            }
+        }
+    }
+    //todo 최근 검색어 삭제하는 로직 구현하기
+
+//    fun saveConnectTime(context: Context){
+//        val sharedPreferences = context.getSharedPreferences("LastConnectTime", Context.MODE_PRIVATE)
+//        val editor = sharedPreferences.edit()
+//
+//        val currentDate=getCurrentDate()
+//
+//        editor.putString("lastConnectTime", currentDate)
+//        editor.apply()
+//
+//    }
+
+    @SuppressLint("SimpleDateFormat")
+    fun getCurrentDate():String{
+        val currentDate = Date()
+        val dateFormat = SimpleDateFormat("yyyyMMdd")
+        return dateFormat.format(currentDate)
     }
 
     companion object{
