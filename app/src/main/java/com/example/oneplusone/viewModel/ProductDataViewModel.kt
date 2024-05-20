@@ -16,8 +16,7 @@ import com.example.oneplusone.model.data.enums.FilterType
 import com.example.oneplusone.model.data.enums.ProductCategoryType
 import com.example.oneplusone.repository.ProductDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.text.SimpleDateFormat
-import java.util.Date
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 
@@ -50,9 +49,9 @@ class ProductDataViewModel @Inject constructor(
 
     private val _favoriteProductData=MutableLiveData<List<FavoriteProductModel>?>()
 
-    private val _connectTime=MutableLiveData<Int?>()
+    private val _connectTime=MutableLiveData<String?>()
 
-    private val _updateCheckResult=MutableLiveData<Int?>()
+    private val _updateCheckResult=MutableLiveData<Boolean?>()
     val isFavorite: LiveData<ProductData>
         get()=_isFavorite
 
@@ -76,10 +75,10 @@ class ProductDataViewModel @Inject constructor(
     val productNameList: LiveData<ArrayList<String>>
         get() = _productNameList
 
-    val connectTime: LiveData<Int?>
+    val connectTime: LiveData<String?>
         get()=_connectTime
 
-    val updateCheckResult: LiveData<Int?>
+    val updateCheckResult: LiveData<Boolean?>
         get()=_updateCheckResult
     fun toggleFavorite(productData: ProductData) {
 
@@ -87,6 +86,11 @@ class ProductDataViewModel @Inject constructor(
 
         _isFavorite.value=productData
 
+    }
+
+    init{
+        Log.d("처음실행","실행")
+        getProductDataFromServer()
     }
 
     fun updateLayoutHeight(
@@ -104,7 +108,7 @@ class ProductDataViewModel @Inject constructor(
         _layoutHeight.value = newHeight
     }
 
-    fun favoriteProductCheck(favoriteProduct: List<FavoriteProductModel>?=null,searchText: String?=null){
+    fun loadProductData(favoriteProduct: List<FavoriteProductModel>?=null,searchText: String?=null){
 
         _favoriteProductData.value=favoriteProduct
         //처음 데이터를 불러와 화면에 바로 출력하는 대신에 db의 데이터와 대조하여 즐겨찾기한 아이템과 비교 후 화면에 출력,
@@ -270,16 +274,18 @@ class ProductDataViewModel @Inject constructor(
         val editor = sharedPreferences.edit()
 
         //접속했으면 현재 날짜를 등록
-        editor.putString("lastConnectTime", getCurrentDate())
+        editor.putString("lastConnectTime", getCurrentDate().toString())
         editor.apply()
         //서버와 통신해서 데이터를 가져와야함, 만약 null이라면 처음 접속한것이기 때문에 다가져와야함
-
-        _connectTime.value=lastConnectTime?.toInt()
+        if (lastConnectTime != null) {
+            Log.d("lastConnectTime",lastConnectTime)
+        }
+        _connectTime.value=lastConnectTime
 
     }
 
     fun updateCheckResult(connectTime:Int?){
-        productDataRepository.getUpdateInfoCheck(connectTime) { updateCheckResult ->
+        productDataRepository.getUpdateInfoCheck(connectTime.toString()) { updateCheckResult ->
             if (updateCheckResult != null) {
                 _updateCheckResult.value=updateCheckResult
 
@@ -288,6 +294,15 @@ class ProductDataViewModel @Inject constructor(
             }
         }
     }
+
+    private fun getProductDataFromServer(){
+        Log.d("실행됨", "serverProductData.toString()")
+
+        productDataRepository.getProductDataList() { serverProductData ->
+            Log.d("serverProductData", serverProductData.toString())
+        }
+    }
+
     //todo 최근 검색어 삭제하는 로직 구현하기
 
 //    fun saveConnectTime(context: Context){
@@ -302,10 +317,9 @@ class ProductDataViewModel @Inject constructor(
 //    }
 
     @SuppressLint("SimpleDateFormat")
-    fun getCurrentDate():String{
-        val currentDate = Date()
-        val dateFormat = SimpleDateFormat("yyyyMMdd")
-        return dateFormat.format(currentDate)
+    fun getCurrentDate(): LocalDateTime {
+
+        return LocalDateTime.now()
     }
 
     companion object{

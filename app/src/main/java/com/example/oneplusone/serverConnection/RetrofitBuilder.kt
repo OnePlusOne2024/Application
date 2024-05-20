@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitBuilder {
     var api: API = Retrofit.Builder()
-        .baseUrl("http://jsonplaceholder.typicode.com/")
+        .baseUrl("http://10.0.2.2:8080")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
         .create(API::class.java)

@@ -379,7 +379,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun observeDataBaseViewModel() {
         favoriteProductViewModel.favoriteProducts.observe(viewLifecycleOwner, Observer { favoriteProductData ->
-            productDataViewModel.favoriteProductCheck(favoriteProductData)
+            productDataViewModel.loadProductData(favoriteProductData)
         })
     }
 

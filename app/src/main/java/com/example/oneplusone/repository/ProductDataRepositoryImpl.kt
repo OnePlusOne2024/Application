@@ -1,8 +1,11 @@
 package com.example.oneplusone.repository
 
+import android.util.Log
 import com.example.oneplusone.R
 import com.example.oneplusone.model.data.ProductData
+import com.example.oneplusone.model.data.ServerProductData
 import com.example.oneplusone.serverConnection.RetrofitBuilder
+import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -126,7 +129,7 @@ class ProductDataRepositoryImpl @Inject constructor(
     }
 
 //고차함수 제대로 이해하기
-    override fun getUpdateInfoCheck(lastConnectTime: Int?, callback: (Int?) -> Unit) {
+    override fun getUpdateInfoCheck(lastConnectTime: String?, callback: (Boolean) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val result = try {
                 val response = RetrofitBuilder.api.updateInfoCheck(lastConnectTime)
@@ -134,6 +137,31 @@ class ProductDataRepositoryImpl @Inject constructor(
                     response.body()
                 } else null
             } catch (e: Exception) {
+                null
+            }
+            withContext(Dispatchers.Main) {
+                if (result != null) {
+                    callback(result)
+                }
+            }
+        }
+    }
+
+    override fun getProductDataList(callback: (List<ServerProductData>?) -> Unit) {
+
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = try {
+                val response = RetrofitBuilder.api.getProductList()
+                if (response.isSuccessful){
+                    Log.d("연결 성공","성공")
+                    response.body()?.result
+                } else {
+                    Log.d("연결 실패","실패")
+                    null
+                }
+            } catch (e: Exception) {
+                Log.d("연결 실패", e.toString())
                 null
             }
             withContext(Dispatchers.Main) {

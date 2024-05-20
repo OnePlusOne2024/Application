@@ -6,5 +6,5 @@ interface ProductRankingDataRepository {
 
     fun loadProductRankingData(): List<String>
 
-    fun loadProductRanking()
+//    fun loadProductRanking()
 }

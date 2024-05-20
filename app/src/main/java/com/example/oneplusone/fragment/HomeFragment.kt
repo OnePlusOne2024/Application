@@ -90,6 +90,8 @@ class HomeFragment : Fragment() {
         observeSetting()
 
         moveSearchActivity()
+
+        productDataViewModel.loadConnectTime(requireContext())
     }
 
     private fun initAdapter() {
@@ -264,7 +266,7 @@ class HomeFragment : Fragment() {
     }
     private fun observeDataBaseViewModel() {
         favoriteProductViewModel.favoriteProducts.observe(viewLifecycleOwner, Observer { favoriteProductData ->
-            productDataViewModel.favoriteProductCheck(favoriteProductData)
+            productDataViewModel.loadProductData(favoriteProductData)
         })
 
     }

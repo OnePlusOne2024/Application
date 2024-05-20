@@ -25,10 +25,14 @@ class MainActivity : AppCompatActivity() {
 
         setBottomNavigation()
 
+
     }
+
+
+
     private fun setBottomNavigation() {
         binding.navView.selectedItemId = R.id.home_menu
-        replaceFragment(HomeFragment())
+
 
         binding.navView.setOnItemSelectedListener {
             val fragment = when (it.itemId) {

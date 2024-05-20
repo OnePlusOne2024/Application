@@ -10,5 +10,5 @@ enum class ProductCategoryType(val iconResId: Int, val title: String) {
     PRODUCT_CATEGORY_FOOD(R.drawable.doshirak, "식품"),
     PRODUCT_CATEGORY_ICE_CREAM(R.drawable.ice_cream, "아이스 크림"),
     PRODUCT_CATEGORY_HOUSEHOLD_SUPPLIES(R.drawable.soap, "생활 용품"),
-
+    PRODUCT_CATEGORY_UNDEFINED(R.drawable.all_product_category, "미정"),
 }

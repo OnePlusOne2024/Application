@@ -200,7 +200,7 @@ class SearchResultActivity : AppCompatActivity() {
 
     private fun observeDataBaseViewModel() {
         favoriteProductViewModel.favoriteProducts.observe(this){ favoriteProductData ->
-            productDataViewModel.favoriteProductCheck(favoriteProductData, oldSearchText)
+            productDataViewModel.loadProductData(favoriteProductData, oldSearchText)
         }
     }
 
@@ -208,7 +208,7 @@ class SearchResultActivity : AppCompatActivity() {
         searchViewModel.searchText.observe(this) { newSearchText ->
             Log.d("searchText",newSearchText)
             //새로운 검색을 했다면 검색된 상품만 다시 불러옴
-            productDataViewModel.favoriteProductCheck(null,newSearchText)
+            productDataViewModel.loadProductData(null,newSearchText)
             //검색한 데이터를 저장함
             searchViewModel.saveSearchText(this@SearchResultActivity,newSearchText)
         }
