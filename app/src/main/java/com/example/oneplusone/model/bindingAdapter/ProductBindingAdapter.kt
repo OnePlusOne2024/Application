@@ -41,8 +41,8 @@ object ProductBindingAdapter {
 
     @JvmStatic
     @BindingAdapter("productImage")
-    fun setProductImage(imageView: ImageView, resource: Int) {
-        imageView.setImageResource(resource)
+    fun setProductImage(imageView: ImageView, resource: String) {
+//        imageView.setImageResource(resource)
     }
 
     @JvmStatic

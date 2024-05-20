@@ -11,7 +11,7 @@ import androidx.room.Query
 interface FavoriteProductDao {
 
     @Query("SELECT * FROM favoriteProduct")
-    suspend fun getAll(): List<FavoriteProductModel>
+    suspend fun getAllFavoriteProduct(): List<FavoriteProductModel>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFavoriteProduct(productData: FavoriteProductModel): Long

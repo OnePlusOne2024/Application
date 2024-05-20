@@ -30,7 +30,7 @@ class ProductDataRepositoryImpl @Inject constructor(
                 1000,
                 "CU",
                 "1+1",
-                R.drawable.example_product_image,
+                "",
                 false,
                 "음료",
                 false,
@@ -40,7 +40,7 @@ class ProductDataRepositoryImpl @Inject constructor(
                 2000,
                 "CU",
                 "1+1",
-                R.drawable.example_product_image,
+                "",
                 false,
                 "음료",
                 true
@@ -50,7 +50,7 @@ class ProductDataRepositoryImpl @Inject constructor(
                 3000,
                 "세븐 일레븐",
                 "2+1",
-                R.drawable.example_product_image,
+                "",
                 false,
                 "과자",
                 false
@@ -60,7 +60,7 @@ class ProductDataRepositoryImpl @Inject constructor(
                 1000,
                 "세븐 일레븐",
                 "1+1",
-                R.drawable.example_product_image,
+                "",
                 false,
                 "식품",
                 false
@@ -70,7 +70,7 @@ class ProductDataRepositoryImpl @Inject constructor(
                 1500,
                 "GS 25",
                 "2+1",
-                R.drawable.example_product_image,
+                "",
                 false,
                 "아이스 크림",
                 false
@@ -80,7 +80,7 @@ class ProductDataRepositoryImpl @Inject constructor(
                 1200,
                 "GS 25",
                 "1+1",
-                R.drawable.example_product_image,
+                "",
                 false,
                 "생활 용품",
                 false
@@ -90,7 +90,7 @@ class ProductDataRepositoryImpl @Inject constructor(
                 111000,
                 "이마트 24",
                 "1+1",
-                R.drawable.example_product_image,
+                "",
                 false,
                 "아이스 크림",
                 true
@@ -100,7 +100,7 @@ class ProductDataRepositoryImpl @Inject constructor(
                 11000,
                 "이마트 24",
                 "1+1",
-                R.drawable.example_product_image,
+                "",
                 false,
                 "아이스 크림",
                 false
@@ -110,7 +110,7 @@ class ProductDataRepositoryImpl @Inject constructor(
                 50000,
                 "세븐 일레븐",
                 "1+1",
-                R.drawable.example_product_image,
+                "",
                 false,
                 "생활 용품",
                 true
@@ -120,7 +120,7 @@ class ProductDataRepositoryImpl @Inject constructor(
                 600000,
                 "GS 25",
                 "할인",
-                R.drawable.example_product_image,
+                "",
                 false,
                 "음료",
                 false

@@ -4,11 +4,11 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "favoriteProduct")
-data class FavoriteProductModel (
+@Entity(tableName = "productData")
+data class ProductModel (
 
     @PrimaryKey(autoGenerate = true)
-    val id: Int =0,
+    val id: Int? =0,
 
     @ColumnInfo(name="productName")
     var productName: String,

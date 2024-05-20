@@ -6,7 +6,7 @@ import com.example.oneplusone.db.FavoriteProductModel
 class FavoriteProductRepositoryImpl(private val favoriteProductDao: FavoriteProductDao) : FavoriteProductRepository {
 
     override suspend fun getAllFavoriteProducts(): List<FavoriteProductModel> {
-        return favoriteProductDao.getAll()
+        return favoriteProductDao.getAllFavoriteProduct()
     }
 
     override suspend fun insertFavoriteProduct(productData: FavoriteProductModel) {

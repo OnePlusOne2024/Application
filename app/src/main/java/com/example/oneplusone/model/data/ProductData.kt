@@ -12,7 +12,7 @@ data class ProductData(
 
     var benefits: String,
 
-    var productImage : Int,
+    var productImage : String,
 
     var favorite: Boolean,
 

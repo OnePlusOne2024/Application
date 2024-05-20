@@ -6,11 +6,14 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.oneplusone.model.data.ProductData
 
-@Database(entities = [FavoriteProductModel::class], version = 1, exportSchema = false)
+@Database(entities = [FavoriteProductModel::class,ProductModel::class], version = 2, exportSchema = false)
 abstract class ProductDataBase: RoomDatabase() {
 
     abstract fun favoriteProductDao(): FavoriteProductDao
+
+    abstract fun productDataDao(): ProductDao
 
 
 //    companion object {
