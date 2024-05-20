@@ -2,7 +2,7 @@ package com.example.oneplusone.model.data
 
 data class ProductData(
 
-    var id:Int,
+    var id:Int?,
 
     var productName: String,
 

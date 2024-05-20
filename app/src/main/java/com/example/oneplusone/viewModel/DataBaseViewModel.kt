@@ -41,7 +41,7 @@ class DataBaseViewModel@Inject constructor(
     fun favoriteProductJudgment(product: ProductData){
 
         val favoriteProductModel = FavoriteProductModel(
-            id = product.id,
+            id = product.id!!,
             productName=product.productName,
             productPrice=product.productPrice,
             brand=product.brand,

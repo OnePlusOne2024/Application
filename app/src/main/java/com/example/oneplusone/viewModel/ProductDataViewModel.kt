@@ -10,6 +10,7 @@ import com.example.oneplusone.db.FavoriteProductModel
 import com.example.oneplusone.model.data.ConvenienceData
 import com.example.oneplusone.model.data.MainFilterData
 import com.example.oneplusone.model.data.ProductData
+import com.example.oneplusone.model.data.ServerProductData
 import com.example.oneplusone.model.data.enums.BenefitsType
 import com.example.oneplusone.model.data.enums.ConvenienceType
 import com.example.oneplusone.model.data.enums.FilterType
@@ -298,8 +299,27 @@ class ProductDataViewModel @Inject constructor(
     private fun getProductDataFromServer(){
         Log.d("실행됨", "serverProductData.toString()")
 
-        productDataRepository.getProductDataList() { serverProductData ->
-            Log.d("serverProductData", serverProductData.toString())
+        productDataRepository.getProductDataList { serverProductData ->
+            if (serverProductData != null) {
+                val convertResult=convertServerProductData(serverProductData)
+                Log.d("convertResult", convertResult.toString())
+            }
+        }
+    }
+
+    private fun convertServerProductData(serverProductDate:List<ServerProductData>): List<ProductData> {
+        return serverProductDate.map { product ->
+            ProductData(
+                id = null,
+                productName = product.name,
+                productPrice = product.price,
+                brand = product.convname,
+                benefits = product.event,
+                productImage = product.image,
+                favorite = false,
+                category = product.category,
+                pb = product.pb
+            )
         }
     }
 
