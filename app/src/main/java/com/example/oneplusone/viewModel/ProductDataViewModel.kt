@@ -53,6 +53,9 @@ class ProductDataViewModel @Inject constructor(
     private val _connectTime=MutableLiveData<String?>()
 
     private val _updateCheckResult=MutableLiveData<Boolean?>()
+
+    private val _serverProductDataList=MutableLiveData<List<ServerProductData>?>()
+
     val isFavorite: LiveData<ProductData>
         get()=_isFavorite
 
@@ -81,6 +84,11 @@ class ProductDataViewModel @Inject constructor(
 
     val updateCheckResult: LiveData<Boolean?>
         get()=_updateCheckResult
+
+    val serverProductDataList: LiveData<List<ServerProductData>?>
+        get() = _serverProductDataList
+
+
     fun toggleFavorite(productData: ProductData) {
 
         productData.favorite = !productData.favorite
@@ -90,8 +98,19 @@ class ProductDataViewModel @Inject constructor(
     }
 
     init{
-        Log.d("처음실행","실행")
-        getProductDataFromServer()
+
+
+        //아직 서버에서 업데이트 체크 기능을 만들지 않았기 때문에 한번만 실행함
+//        getProductDataFromServer()
+    }
+
+    fun isFirstRun(context: Context): Boolean {
+        val sharedPreferences = context.getSharedPreferences("FirstRunCheck", Context.MODE_PRIVATE)
+        if (sharedPreferences.getBoolean("isFirstRun", true)) {
+            sharedPreferences.edit().putBoolean("isFirstRun", false).apply()
+            return true
+        }
+        return false
     }
 
     fun updateLayoutHeight(
@@ -285,43 +304,31 @@ class ProductDataViewModel @Inject constructor(
 
     }
 
-    fun updateCheckResult(connectTime:Int?){
-        productDataRepository.getUpdateInfoCheck(connectTime.toString()) { updateCheckResult ->
-            if (updateCheckResult != null) {
-                _updateCheckResult.value=updateCheckResult
 
-            } else {
 
-            }
+    fun updateCheckResult(connectTime:String?){
+        productDataRepository.getUpdateInfoCheck(connectTime) { updateCheckResult ->
+
+            _updateCheckResult.value=updateCheckResult
+
         }
+//        getProductDataFromServer()
     }
 
-    private fun getProductDataFromServer(){
+    //서버에서 상품 목록을 가져옴
+    fun getProductDataFromServer(){
         Log.d("실행됨", "serverProductData.toString()")
 
         productDataRepository.getProductDataList { serverProductData ->
             if (serverProductData != null) {
-                val convertResult=convertServerProductData(serverProductData)
-                Log.d("convertResult", convertResult.toString())
+                _serverProductDataList.value=serverProductData
             }
         }
     }
 
-    private fun convertServerProductData(serverProductDate:List<ServerProductData>): List<ProductData> {
-        return serverProductDate.map { product ->
-            ProductData(
-                id = null,
-                productName = product.name,
-                productPrice = product.price,
-                brand = product.convname,
-                benefits = product.event,
-                productImage = product.image,
-                favorite = false,
-                category = product.category,
-                pb = product.pb
-            )
-        }
-    }
+
+
+
 
     //todo 최근 검색어 삭제하는 로직 구현하기
 

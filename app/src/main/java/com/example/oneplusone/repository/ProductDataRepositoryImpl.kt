@@ -2,6 +2,7 @@ package com.example.oneplusone.repository
 
 import android.util.Log
 import com.example.oneplusone.R
+import com.example.oneplusone.db.FavoriteProductDao
 import com.example.oneplusone.model.data.ProductData
 import com.example.oneplusone.model.data.ServerProductData
 import com.example.oneplusone.serverConnection.RetrofitBuilder
@@ -169,6 +170,7 @@ class ProductDataRepositoryImpl @Inject constructor(
             }
         }
     }
+
 
 //    override fun getGS25ProductList() {
 //        RetrofitBuilder.api.getGS25ProductData().enqueue(object : Callback<List<ProductData>> {

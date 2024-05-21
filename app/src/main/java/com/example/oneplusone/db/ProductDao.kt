@@ -14,8 +14,8 @@ interface ProductDao {
     suspend fun getAllProductData(): List<ProductModel>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertProductData(productData: ProductModel): Long
+    suspend fun insertProductData(productData: List<ProductModel>)
 
-    @Delete
-    suspend fun deleteProductData(productData: ProductModel)
+    @Query("DELETE FROM productData")
+    suspend fun deleteAllProductData()
 }

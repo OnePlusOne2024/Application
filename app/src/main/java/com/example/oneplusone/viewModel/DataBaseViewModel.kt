@@ -6,8 +6,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.oneplusone.db.FavoriteProductModel
+import com.example.oneplusone.db.ProductModel
 import com.example.oneplusone.model.data.ProductData
-import com.example.oneplusone.repository.FavoriteProductRepository
+import com.example.oneplusone.model.data.ServerProductData
+import com.example.oneplusone.repository.DataBaseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -16,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DataBaseViewModel@Inject constructor(
 
-    private val dbRepository: FavoriteProductRepository
+    private val dbRepository: DataBaseRepository
 
 ):ViewModel(){
     private val _favoriteProducts = MutableLiveData<List<FavoriteProductModel>>()
@@ -28,6 +30,8 @@ class DataBaseViewModel@Inject constructor(
 
     init {
         loadFavoriteProducts()
+        //db의 상품정보 데이터를 모두 지움
+//        deleteAllDBProductList()
     }
 
     fun loadFavoriteProducts() {
@@ -59,7 +63,37 @@ class DataBaseViewModel@Inject constructor(
         }
     }
 
+    private fun convertServerProductData(serverProductDate:List<ServerProductData>): List<ProductData> {
+        return serverProductDate.map { product ->
+            ProductData(
+                id = null,
+                productName = product.name,
+                productPrice = product.price,
+                brand = product.convname,
+                benefits = product.event,
+                productImage = product.image,
+                favorite = false,
+                category = product.category,
+                pb = product.pb
+            )
+        }
+    }
 
+    private fun convertServerProductDataToDBData(serverProductDate:List<ServerProductData>): List<ProductModel> {
+        return serverProductDate.map { product ->
+            ProductModel(
+                id = null,
+                productName = product.name,
+                productPrice = product.price,
+                brand = product.convname,
+                benefits = product.event,
+                productImage = product.image,
+                favorite = false,
+                category = product.category,
+                pb = product.pb
+            )
+        }
+    }
     private fun insertFavoriteProduct(favoriteProductModel: FavoriteProductModel) {
         viewModelScope.launch {
             dbRepository.insertFavoriteProduct(favoriteProductModel)
@@ -72,4 +106,18 @@ class DataBaseViewModel@Inject constructor(
         }
     }
 
+    fun insertServerProductDataList(productDataList:List<ServerProductData>){
+        val convertResult=convertServerProductDataToDBData(productDataList)
+
+        Log.d("convertResult", convertResult.toString())
+        viewModelScope.launch {
+            dbRepository.insertServerProductDataList(convertResult)
+        }
+    }
+
+    fun deleteAllDBProductList(){
+        viewModelScope.launch {
+            dbRepository.deleteServerProductDataList()
+        }
+    }
 }

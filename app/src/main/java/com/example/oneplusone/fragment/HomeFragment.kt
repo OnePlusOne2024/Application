@@ -52,7 +52,7 @@ class HomeFragment : Fragment() {
     private val productDataViewModel: ProductDataViewModel by viewModels()
     private val filterDataViewModel: FilterDataViewModel by viewModels()
     private val mainFilterViewModel: MainFilterViewModel by viewModels()
-    private val favoriteProductViewModel:DataBaseViewModel by viewModels()
+    private val dbViewModel:DataBaseViewModel by viewModels()
     private var productNameList= arrayListOf<String>()
 
 
@@ -71,8 +71,10 @@ class HomeFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
+
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
+
 
 
         return binding.root
@@ -82,7 +84,6 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-
         initAdapter()
 
         setupDataBinding()
@@ -90,6 +91,9 @@ class HomeFragment : Fragment() {
         observeSetting()
 
         moveSearchActivity()
+
+
+
 
         productDataViewModel.loadConnectTime(requireContext())
     }
@@ -224,11 +228,18 @@ class HomeFragment : Fragment() {
         })
 
         productDataViewModel.isFavorite.observe(viewLifecycleOwner, Observer { isFavorite ->
-            favoriteProductViewModel.favoriteProductJudgment(isFavorite)
+            dbViewModel.favoriteProductJudgment(isFavorite)
         })
         productDataViewModel.productNameList.observe(viewLifecycleOwner, Observer { productNameList ->
             this.productNameList=productNameList
         })
+
+//        productDataViewModel.serverProductDataList.observe(viewLifecycleOwner, Observer { serverProductDataList ->
+//            //서버에서 가져온 데이터를 넣는 코드 일단 일시정지
+//            if (serverProductDataList != null) {
+//                dbViewModel.insertServerProductDataList(serverProductDataList)
+//            }
+//        })
     }
     private fun showProductDetailDialog(productData: ProductData) {
         val mDialogView = LayoutInflater.from(requireContext()).inflate(R.layout.product_detail_viewer, null)
@@ -265,7 +276,7 @@ class HomeFragment : Fragment() {
         }
     }
     private fun observeDataBaseViewModel() {
-        favoriteProductViewModel.favoriteProducts.observe(viewLifecycleOwner, Observer { favoriteProductData ->
+        dbViewModel.favoriteProducts.observe(viewLifecycleOwner, Observer { favoriteProductData ->
             productDataViewModel.loadProductData(favoriteProductData)
         })
 

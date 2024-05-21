@@ -1,5 +1,6 @@
 package com.example.oneplusone.repository
 
+import com.example.oneplusone.db.FavoriteProductModel
 import com.example.oneplusone.model.data.ProductData
 import com.example.oneplusone.model.data.ServerProductData
 
@@ -12,6 +13,9 @@ interface ProductDataRepository {
     fun getUpdateInfoCheck(lastConnectTime: String?, callback: (Boolean) -> Unit)
 
     fun getProductDataList(callback: (List<ServerProductData>?) -> Unit)
+
+
+
 
 //    fun getGS25ProductList()
 //

@@ -5,9 +5,10 @@ import androidx.room.Room
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.oneplusone.db.FavoriteProductDao
+import com.example.oneplusone.db.ProductDao
 import com.example.oneplusone.db.ProductDataBase
-import com.example.oneplusone.repository.FavoriteProductRepository
-import com.example.oneplusone.repository.FavoriteProductRepositoryImpl
+import com.example.oneplusone.repository.DataBaseRepository
+import com.example.oneplusone.repository.DataBaseRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -73,7 +74,9 @@ object DataBaseModule {
     fun provideProduct(productDataBase: ProductDataBase) = productDataBase.productDataDao()
 
     @Provides
-    fun provideFavoriteProductRepository(favoriteProductDao: FavoriteProductDao): FavoriteProductRepository {
-        return FavoriteProductRepositoryImpl(favoriteProductDao)
+    fun provideFavoriteProductRepository(favoriteProductDao: FavoriteProductDao,serverProductDao:ProductDao)
+    : DataBaseRepository {
+        return DataBaseRepositoryImpl(favoriteProductDao,serverProductDao)
     }
+
 }
