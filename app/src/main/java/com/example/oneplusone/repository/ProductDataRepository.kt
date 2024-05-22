@@ -5,7 +5,7 @@ import com.example.oneplusone.model.data.ServerProductData
 
 interface ProductDataRepository {
 
-    fun loadProductData(): List<ProductData>
+//    fun loadProductData(): List<ProductData>
 
 
 

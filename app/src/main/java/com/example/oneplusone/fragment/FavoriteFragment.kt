@@ -221,7 +221,7 @@ class FavoriteFragment : Fragment() {
     }
     private fun observeDataBaseViewModel() {
         favoriteProductViewModel.favoriteProducts.observe(viewLifecycleOwner, Observer { favoriteProductData ->
-            productDataViewModel.loadFavoriteProduct(favoriteProductData)
+            productDataViewModel.loadFavoriteProductInFavoriteProductFragment(favoriteProductData)
         })
 
     }

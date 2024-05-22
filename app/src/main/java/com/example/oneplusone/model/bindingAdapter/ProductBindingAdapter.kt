@@ -1,9 +1,17 @@
 package com.example.oneplusone.model.bindingAdapter
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
+import com.bumptech.glide.Glide
+
 import com.example.oneplusone.R
+
+import java.net.URL
+import java.util.concurrent.Executors
 
 //보류
 object ProductBindingAdapter {
@@ -38,14 +46,18 @@ object ProductBindingAdapter {
     @JvmStatic
     @BindingAdapter("productImage")
     fun setProductImage(imageView: ImageView, resource: String) {
-//        imageView.setImageResource(resource)
+        Log.d("resource",resource)
+        Glide.with(imageView.context)
+            .load(resource)
+            .into(imageView)
+//        imageView.setImageResource(image)
     }
 
     @JvmStatic
     @BindingAdapter("brandImage")
     fun setBrandImage(imageView: ImageView, resource: String) {
         when (resource) {
-            "GS 25" -> imageView.setImageResource(R.drawable.gs25_product_icon)
+            "GS25" -> imageView.setImageResource(R.drawable.gs25_product_icon)
             "CU" -> imageView.setImageResource(R.drawable.cu_product_icon)
             "세븐 일레븐" -> imageView.setImageResource(R.drawable.seven_eleven_product_icon)
             "이마트 24" -> imageView.setImageResource(R.drawable.emart24_product_icon)

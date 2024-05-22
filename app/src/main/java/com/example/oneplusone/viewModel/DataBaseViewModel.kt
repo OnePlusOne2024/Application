@@ -22,14 +22,17 @@ class DataBaseViewModel@Inject constructor(
 
 ):ViewModel(){
     private val _favoriteProducts = MutableLiveData<List<FavoriteProductModel>>()
-
+    private val _DBProductDataList = MutableLiveData<List<ProductData>>()
 
     val favoriteProducts: LiveData<List<FavoriteProductModel>>
         get()=_favoriteProducts
 
+    val DBProductDataList:LiveData<List<ProductData>>
+        get()=_DBProductDataList
 
     init {
         loadFavoriteProducts()
+        loadProductDataList()
         //db의 상품정보 데이터를 모두 지움
 //        deleteAllDBProductList()
     }
@@ -39,6 +42,14 @@ class DataBaseViewModel@Inject constructor(
 
             val products = dbRepository.getAllFavoriteProducts()
             _favoriteProducts.value = products
+        }
+    }
+
+    fun loadProductDataList() {
+        viewModelScope.launch {
+
+            val productsDataList = dbRepository.getAllServerProductDataList()
+            _DBProductDataList.value= productsDataList
         }
     }
 

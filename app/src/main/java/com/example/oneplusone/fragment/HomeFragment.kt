@@ -225,6 +225,11 @@ class HomeFragment : Fragment() {
             this.productNameList=productNameList
         })
 
+        productDataViewModel._mergeData.observe(viewLifecycleOwner, Observer { (favoriteProducts, dbProducts) ->
+            if (favoriteProducts != null && dbProducts != null) {
+                productDataViewModel.loadProductData()
+            }
+        })
 //        productDataViewModel.serverProductDataList.observe(viewLifecycleOwner, Observer { serverProductDataList ->
 //            //서버에서 가져온 데이터를 넣는 코드 일단 일시정지
 //            if (serverProductDataList != null) {
@@ -268,8 +273,10 @@ class HomeFragment : Fragment() {
     }
     private fun observeDataBaseViewModel() {
         dbViewModel.favoriteProducts.observe(viewLifecycleOwner, Observer { favoriteProductData ->
-            productDataViewModel.loadProductData(favoriteProductData)
+            productDataViewModel.loadFavoriteProduct(favoriteProductData)
         })
-
+        dbViewModel.DBProductDataList.observe(viewLifecycleOwner, Observer { DBProductDataList ->
+            productDataViewModel.loadDBProductData(DBProductDataList)
+        })
     }
 }

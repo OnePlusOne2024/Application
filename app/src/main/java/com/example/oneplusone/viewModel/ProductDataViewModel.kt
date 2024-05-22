@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.example.oneplusone.db.FavoriteProductModel
 import com.example.oneplusone.db.ProductData
@@ -48,13 +50,20 @@ class ProductDataViewModel @Inject constructor(
     private val _productNameList=MutableLiveData<ArrayList<String>>()
 
 
-    private val _favoriteProductData=MutableLiveData<List<FavoriteProductModel>?>()
+    private val _favoriteProductData=MutableLiveData<List<ProductData>?>()
 
     private val _connectTime=MutableLiveData<String?>()
 
     private val _updateCheckResult=MutableLiveData<Boolean?>()
 
     private val _serverProductDataList=MutableLiveData<List<ServerProductData>?>()
+
+    private val _DBProductDataList=MutableLiveData<List<ProductData>>()
+
+    //MediatorLiveData를 사용해 여러개의 라이브데이터를 하나로 합침
+    val _mergeData = MediatorLiveData<Pair<List<ProductData>?, List<ProductData>?>>().apply {
+        value = Pair(null, null)
+    }
 
     val isFavorite: LiveData<ProductData>
         get()=_isFavorite
@@ -88,7 +97,10 @@ class ProductDataViewModel @Inject constructor(
     val serverProductDataList: LiveData<List<ServerProductData>?>
         get() = _serverProductDataList
 
-
+    val favoriteProductData:LiveData<List<ProductData>?>
+        get() = _favoriteProductData
+    val DBProductDataList:LiveData<List<ProductData>>
+        get() = _DBProductDataList
     fun toggleFavorite(productData: ProductData) {
 
         productData.favorite = !productData.favorite
@@ -97,21 +109,29 @@ class ProductDataViewModel @Inject constructor(
 
     }
 
+    init {
+
+        //좋아요한 상품목록, 일반상품목록 모두 db에서 가져와 비교해야 하는데 두 데이터가 모두 준비됐을때만 productData의 값을
+        //변경해야 하기 때문에 MediatorLiveData를 사용했음
+        _mergeData.addSource(favoriteProductData) { favoriteProducts ->
+            val dbProducts = _mergeData.value?.second
+            _mergeData.value = Pair(favoriteProducts, dbProducts)
+        }
+
+        _mergeData.addSource(DBProductDataList) { dbProductDataList ->
+            val favoriteProducts = _mergeData.value?.first
+            _mergeData.value = Pair(favoriteProducts, dbProductDataList)
+        }
+
+    }
+
     init{
 
-
+//        loadProductData()
         //아직 서버에서 업데이트 체크 기능을 만들지 않았기 때문에 한번만 실행함
 //        getProductDataFromServer()
     }
 
-    fun isFirstRun(context: Context): Boolean {
-        val sharedPreferences = context.getSharedPreferences("FirstRunCheck", Context.MODE_PRIVATE)
-        if (sharedPreferences.getBoolean("isFirstRun", true)) {
-            sharedPreferences.edit().putBoolean("isFirstRun", false).apply()
-            return true
-        }
-        return false
-    }
 
     fun updateLayoutHeight(
         initialHeight: Int,
@@ -130,37 +150,46 @@ class ProductDataViewModel @Inject constructor(
 
     fun loadProductData(favoriteProduct: List<FavoriteProductModel>?=null,searchText: String?=null){
 
-        _favoriteProductData.value=favoriteProduct
-        //처음 데이터를 불러와 화면에 바로 출력하는 대신에 db의 데이터와 대조하여 즐겨찾기한 아이템과 비교 후 화면에 출력,
-        val initProductData=productDataRepository.loadProductData()
 
-        val convertProductDataList= _favoriteProductData.value?.let { convertProductDataType(it) }
+        //처음 데이터를 불러와 화면에 바로 출력하는 대신에 db의 데이터와 대조하여 즐겨찾기한 아이템과 비교 후 화면에 출력,
+        val DBProductData=_DBProductDataList.value
+
 
         //서치텍스트가 있다면 서치결과를 필터링하고 아니라면 그냥 받음
         val searchResult=searchText?.let{
-            loadSearchProductList(initProductData,searchText)
-        }?:initProductData
+            loadSearchProductList(DBProductData!!,searchText)
+        }?:DBProductData
 
-        val updatedList = searchResult.map { originalProduct ->
-            convertProductDataList?.find { it.id == originalProduct.id } ?: originalProduct
+        val updatedList = searchResult?.map { originalProduct ->
+            _favoriteProductData.value?.find { it.id == originalProduct.id } ?: originalProduct
         }
         _productDataList.value=updatedList
         //검색에 사용하기 위해 상품 목록의 이름만 따로 분리하여 저장
-        loadProductNameList(initProductData)
+        if (DBProductData != null) {
+            loadProductNameList(DBProductData)
+        }
     }
 
     //서버에서 받아온 데이터를 db에 저장해야함
-    fun saveProductData(){
 
+
+    fun loadDBProductData(productDataList:List<ProductData>){
+        _DBProductDataList.value=productDataList
+
+        Log.d("_DBProductDataList.value", _DBProductDataList.value.toString())
     }
 
     fun loadFavoriteProduct(favoriteProduct: List<FavoriteProductModel>){
 
         val convertProductDataList=convertProductDataType(favoriteProduct)
 
-        _productDataList.value=convertProductDataList
+        _favoriteProductData.value=convertProductDataList
     }
 
+    fun loadFavoriteProductInFavoriteProductFragment(favoriteProduct: List<FavoriteProductModel>){
+        val convertProductDataList=convertProductDataType(favoriteProduct)
+        _productDataList.value=convertProductDataList
+    }
     private fun convertProductDataType(favoriteProduct: List<FavoriteProductModel>): List<ProductData> {
         return favoriteProduct.map { product ->
             ProductData(
