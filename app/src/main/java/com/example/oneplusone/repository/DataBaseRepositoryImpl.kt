@@ -3,8 +3,8 @@ package com.example.oneplusone.repository
 import com.example.oneplusone.db.FavoriteProductDao
 import com.example.oneplusone.db.FavoriteProductModel
 import com.example.oneplusone.db.ProductDao
-import com.example.oneplusone.db.ProductModel
-import com.example.oneplusone.model.data.ProductData
+import com.example.oneplusone.db.ProductData
+
 
 class DataBaseRepositoryImpl(
     private val favoriteProductDao: FavoriteProductDao,
@@ -23,11 +23,11 @@ class DataBaseRepositoryImpl(
         favoriteProductDao.deleteFavoriteProduct(productData)
     }
 
-    override suspend fun getAllServerProductDataList(): List<ProductModel> {
+    override suspend fun getAllServerProductDataList(): List<ProductData> {
         return serverProductDao.getAllProductData()
     }
 
-    override suspend fun insertServerProductDataList(productDataList: List<ProductModel>) {
+    override suspend fun insertServerProductDataList(productDataList: List<ProductData>) {
         serverProductDao.insertProductData(productDataList)
     }
 

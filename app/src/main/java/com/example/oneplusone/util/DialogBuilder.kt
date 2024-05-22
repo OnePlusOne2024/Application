@@ -7,7 +7,7 @@ import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import com.example.oneplusone.R
 import com.example.oneplusone.databinding.ProductDetailViewerBinding
-import com.example.oneplusone.model.data.ProductData
+import com.example.oneplusone.db.ProductData
 
 class DialogBuilder {
     fun showProductDetailDialog(context: Context, productData: ProductData) {

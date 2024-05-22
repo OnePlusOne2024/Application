@@ -3,30 +3,18 @@ package com.example.oneplusone.activity
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
-import android.view.View
-import android.widget.Adapter
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 
 import androidx.appcompat.app.AppCompatActivity
-import com.example.oneplusone.R
 import com.example.oneplusone.databinding.ActivitySearchBinding
 import com.example.oneplusone.`interface`.DeleteRecentSearchClickListener
-import com.example.oneplusone.`interface`.MainFilterClickListener
-import com.example.oneplusone.`interface`.ProductFavoriteClickListener
 import com.example.oneplusone.`interface`.RankingProductTextClickListener
 import com.example.oneplusone.`interface`.RecentSearchTextClickListener
-import com.example.oneplusone.model.data.MainFilterData
-import com.example.oneplusone.model.data.ProductData
 import com.example.oneplusone.recyclerAdapter.ProductRankingRecyclerAdapter
 import com.example.oneplusone.recyclerAdapter.RecentSearchRecyclerAdapter
-import com.example.oneplusone.util.FilterStyle
 import com.example.oneplusone.viewModel.SearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
 

@@ -1,7 +1,6 @@
 package com.example.oneplusone.repository
 
-import com.example.oneplusone.db.FavoriteProductModel
-import com.example.oneplusone.model.data.ProductData
+import com.example.oneplusone.db.ProductData
 import com.example.oneplusone.model.data.ServerProductData
 
 interface ProductDataRepository {

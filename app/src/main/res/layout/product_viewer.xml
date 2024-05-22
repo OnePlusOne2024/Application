@@ -8,7 +8,7 @@
     <data>
         <variable
             name="productData"
-            type="com.example.oneplusone.model.data.ProductData" />
+            type="com.example.oneplusone.db.ProductData" />
         <variable
             name="productDataViewModel"
             type="com.example.oneplusone.viewModel.ProductDataViewModel" />

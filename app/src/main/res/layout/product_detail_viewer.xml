@@ -8,7 +8,7 @@
     <data>
         <variable
             name="productData"
-            type="com.example.oneplusone.model.data.ProductData" />
+            type="com.example.oneplusone.db.ProductData" />
     </data>
 
 <androidx.constraintlayout.widget.ConstraintLayout

@@ -6,8 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.oneplusone.db.FavoriteProductModel
-import com.example.oneplusone.db.ProductModel
-import com.example.oneplusone.model.data.ProductData
+import com.example.oneplusone.db.ProductData
+
 import com.example.oneplusone.model.data.ServerProductData
 import com.example.oneplusone.repository.DataBaseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -45,7 +45,7 @@ class DataBaseViewModel@Inject constructor(
     fun favoriteProductJudgment(product: ProductData){
 
         val favoriteProductModel = FavoriteProductModel(
-            id = product.id!!,
+            id = product.id!!.toInt(),
             productName=product.productName,
             productPrice=product.productPrice,
             brand=product.brand,
@@ -79,9 +79,9 @@ class DataBaseViewModel@Inject constructor(
         }
     }
 
-    private fun convertServerProductDataToDBData(serverProductDate:List<ServerProductData>): List<ProductModel> {
+    private fun convertServerProductDataToDBData(serverProductDate:List<ServerProductData>): List<ProductData> {
         return serverProductDate.map { product ->
-            ProductModel(
+            ProductData(
                 id = null,
                 productName = product.name,
                 productPrice = product.price,

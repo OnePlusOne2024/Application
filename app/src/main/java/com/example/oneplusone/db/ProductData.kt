@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "productData")
-data class ProductModel (
+data class ProductData (
 
     @PrimaryKey(autoGenerate = true)
     val id: Long? =0,

@@ -1,19 +1,15 @@
 package com.example.oneplusone.recyclerAdapter
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
-import com.example.oneplusone.databinding.ProductViewerBinding
 import com.example.oneplusone.databinding.RecentSearchBinding
 import com.example.oneplusone.`interface`.DeleteRecentSearchClickListener
-import com.example.oneplusone.`interface`.RankingProductTextClickListener
 import com.example.oneplusone.`interface`.RecentSearchTextClickListener
-import com.example.oneplusone.model.data.ProductData
 
 class RecentSearchRecyclerAdapter(
     private val recentSearchTextClickListener: RecentSearchTextClickListener,

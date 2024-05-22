@@ -14,13 +14,13 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.oneplusone.R
 import com.example.oneplusone.databinding.ActivitySearchResultBinding
 import com.example.oneplusone.databinding.ProductDetailViewerBinding
+import com.example.oneplusone.db.ProductData
 import com.example.oneplusone.`interface`.FilterClickListener
 import com.example.oneplusone.`interface`.MainFilterClickListener
 import com.example.oneplusone.`interface`.ProductClickListener
 import com.example.oneplusone.`interface`.ProductFavoriteClickListener
 import com.example.oneplusone.model.data.FilterData
 import com.example.oneplusone.model.data.MainFilterData
-import com.example.oneplusone.model.data.ProductData
 import com.example.oneplusone.recyclerAdapter.MainFilterRecyclerAdapter
 import com.example.oneplusone.recyclerAdapter.ProductFilterRecyclerAdapter
 import com.example.oneplusone.recyclerAdapter.ProductItemRecyclerAdapter

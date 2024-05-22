@@ -1,37 +1,31 @@
 package com.example.oneplusone.fragment
 
-import android.app.Activity
 import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import com.example.oneplusone.R
 import com.example.oneplusone.activity.SearchActivity
 import com.example.oneplusone.databinding.FragmentHomeBinding
 import com.example.oneplusone.databinding.ProductDetailViewerBinding
+import com.example.oneplusone.db.ProductData
 import com.example.oneplusone.`interface`.FilterClickListener
 import com.example.oneplusone.`interface`.MainFilterClickListener
 import com.example.oneplusone.`interface`.ProductClickListener
 import com.example.oneplusone.`interface`.ProductFavoriteClickListener
 import com.example.oneplusone.model.data.FilterData
 import com.example.oneplusone.model.data.MainFilterData
-import com.example.oneplusone.model.data.ProductData
 import com.example.oneplusone.recyclerAdapter.MainFilterRecyclerAdapter
 import com.example.oneplusone.recyclerAdapter.ProductFilterRecyclerAdapter
 import com.example.oneplusone.recyclerAdapter.ProductItemRecyclerAdapter
-import com.example.oneplusone.util.DialogBuilder
 import com.example.oneplusone.viewModel.FilterDataViewModel
 import com.example.oneplusone.viewModel.ProductDataViewModel
 import com.example.oneplusone.util.ItemSpacingController
@@ -40,9 +34,6 @@ import com.example.oneplusone.util.FilterStyle
 import com.example.oneplusone.viewModel.DataBaseViewModel
 import com.example.oneplusone.viewModel.MainFilterViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {

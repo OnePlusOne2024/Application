@@ -7,9 +7,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.oneplusone.db.FavoriteProductModel
+import com.example.oneplusone.db.ProductData
 import com.example.oneplusone.model.data.ConvenienceData
 import com.example.oneplusone.model.data.MainFilterData
-import com.example.oneplusone.model.data.ProductData
 import com.example.oneplusone.model.data.ServerProductData
 import com.example.oneplusone.model.data.enums.BenefitsType
 import com.example.oneplusone.model.data.enums.ConvenienceType
@@ -164,7 +164,7 @@ class ProductDataViewModel @Inject constructor(
     private fun convertProductDataType(favoriteProduct: List<FavoriteProductModel>): List<ProductData> {
         return favoriteProduct.map { product ->
             ProductData(
-                id = product.id!!,
+                id = product.id.toLong(),
                 productName = product.productName,
                 productPrice = product.productPrice,
                 brand = product.brand,

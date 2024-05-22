@@ -10,9 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.oneplusone.R
 
 import com.example.oneplusone.databinding.ProductViewerBinding
+import com.example.oneplusone.db.ProductData
 import com.example.oneplusone.`interface`.ProductClickListener
 import com.example.oneplusone.`interface`.ProductFavoriteClickListener
-import com.example.oneplusone.model.data.ProductData
 
 class ProductItemRecyclerAdapter(
     private val productClickListener: ProductClickListener,

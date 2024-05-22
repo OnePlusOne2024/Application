@@ -1,6 +1,6 @@
 package com.example.oneplusone.`interface`
 
-import com.example.oneplusone.model.data.ProductData
+import com.example.oneplusone.db.ProductData
 
 interface ProductClickListener {
     fun onItemClick(productData: ProductData)

@@ -1,20 +1,13 @@
 package com.example.oneplusone.repository
 
 import android.util.Log
-import com.example.oneplusone.R
-import com.example.oneplusone.db.FavoriteProductDao
-import com.example.oneplusone.model.data.ProductData
+import com.example.oneplusone.db.ProductData
 import com.example.oneplusone.model.data.ServerProductData
 import com.example.oneplusone.serverConnection.RetrofitBuilder
-import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.Call
-import retrofit2.Callback
-
-import retrofit2.Response
 
 import javax.inject.Inject
 
