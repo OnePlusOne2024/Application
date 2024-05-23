@@ -23,6 +23,7 @@ class DataBaseViewModel@Inject constructor(
 ):ViewModel(){
     private val _favoriteProducts = MutableLiveData<List<FavoriteProductModel>>()
     private val _DBProductDataList = MutableLiveData<List<ProductData>>()
+    private val _productNameList=MutableLiveData<List<String>>()
 
     val favoriteProducts: LiveData<List<FavoriteProductModel>>
         get()=_favoriteProducts
@@ -30,9 +31,11 @@ class DataBaseViewModel@Inject constructor(
     val DBProductDataList:LiveData<List<ProductData>>
         get()=_DBProductDataList
 
+    val productNameList:LiveData<List<String>>
+        get()=_productNameList
     init {
-        loadFavoriteProducts()
-        loadProductDataList()
+//        loadFavoriteProducts()
+//        loadProductDataList()
         //db의 상품정보 데이터를 모두 지움
 //        deleteAllDBProductList()
     }
@@ -53,6 +56,31 @@ class DataBaseViewModel@Inject constructor(
         }
     }
 
+    fun loadSearchFavoriteProducts(newSearchText: String) {
+        viewModelScope.launch {
+
+            val products = dbRepository.getSearchFavoriteProductList(newSearchText)
+            Log.d("loadSearchFavoriteProducts", products.toString())
+            _favoriteProducts.value = products
+        }
+    }
+
+    fun loadSearchProductDataList(newSearchText: String) {
+        viewModelScope.launch {
+
+            val productsDataList = dbRepository.getSearchProductList(newSearchText)
+            Log.d("loadSearchFavoriteProducts", productsDataList.toString())
+            _DBProductDataList.value= productsDataList
+        }
+    }
+
+    fun loadProductNameList(){
+        viewModelScope.launch {
+
+            val productsNameList = dbRepository.getProductNameList()
+            _productNameList.value = productsNameList
+        }
+    }
     fun favoriteProductJudgment(product: ProductData){
 
         val favoriteProductModel = FavoriteProductModel(

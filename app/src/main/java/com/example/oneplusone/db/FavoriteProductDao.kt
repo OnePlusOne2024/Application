@@ -18,4 +18,7 @@ interface FavoriteProductDao {
 
     @Delete
     suspend fun deleteFavoriteProduct(productData: FavoriteProductModel)
+
+    @Query("SELECT * FROM favoriteProduct WHERE LOWER(productName) LIKE LOWER(:searchProductText)")
+    suspend fun getSearchProduct(searchProductText: String): List<FavoriteProductModel>
 }

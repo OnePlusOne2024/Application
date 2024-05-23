@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -41,7 +42,7 @@ class FavoriteFragment : Fragment() {
     private val productDataViewModel: ProductDataViewModel by viewModels()
     private val filterDataViewModel: FilterDataViewModel by viewModels()
     private val mainFilterViewModel: MainFilterViewModel by viewModels()
-    private val favoriteProductViewModel: DataBaseViewModel by viewModels()
+    private val dbViewModel: DataBaseViewModel by viewModels()
 
     private lateinit var productFilterAdapter: ProductFilterRecyclerAdapter
     private lateinit var productItemRecyclerAdapter: ProductItemRecyclerAdapter
@@ -64,6 +65,7 @@ class FavoriteFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        dbViewModel.loadFavoriteProducts()
 
         initAdapter()
 
@@ -130,8 +132,6 @@ class FavoriteFragment : Fragment() {
             }, object : ProductFavoriteClickListener {
                 override fun onFavoriteClick(productData: ProductData) {
                     productDataViewModel.toggleFavorite(productData)
-                    favoriteProductViewModel.loadFavoriteProducts()
-
                 }
             })
         binding.productGridView.adapter = productItemRecyclerAdapter
@@ -172,6 +172,7 @@ class FavoriteFragment : Fragment() {
     private fun observeProductDataViewModel() {
         productDataViewModel.productDataList.observe(viewLifecycleOwner, Observer { data ->
             productItemRecyclerAdapter.submitList(data)
+            Log.d("data", data.toString())
         })
 
         productDataViewModel.clickProductData.observe(viewLifecycleOwner, Observer { clickProductData ->
@@ -183,7 +184,8 @@ class FavoriteFragment : Fragment() {
         })
 
         productDataViewModel.isFavorite.observe(viewLifecycleOwner, Observer { isFavorite ->
-            favoriteProductViewModel.favoriteProductJudgment(isFavorite)
+            dbViewModel.favoriteProductJudgment(isFavorite)
+            productDataViewModel.favoriteProductJudgment(isFavorite)
         })
     }
     private fun showProductDetailDialog(productData: ProductData) {
@@ -216,11 +218,12 @@ class FavoriteFragment : Fragment() {
                 productItemRecyclerAdapter.notifyItemChanged(index)
             }
             //일단 db에서 다시 꺼내오기로 결정
-            favoriteProductViewModel.loadFavoriteProducts()
+
         }
     }
     private fun observeDataBaseViewModel() {
-        favoriteProductViewModel.favoriteProducts.observe(viewLifecycleOwner, Observer { favoriteProductData ->
+        dbViewModel.favoriteProducts.observe(viewLifecycleOwner, Observer { favoriteProductData ->
+            Log.d("favoriteProductData", favoriteProductData.toString())
             productDataViewModel.loadFavoriteProductInFavoriteProductFragment(favoriteProductData)
         })
 

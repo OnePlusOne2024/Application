@@ -9,12 +9,14 @@ import android.widget.Toast
 import androidx.activity.viewModels
 
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.viewModels
 import com.example.oneplusone.databinding.ActivitySearchBinding
 import com.example.oneplusone.`interface`.DeleteRecentSearchClickListener
 import com.example.oneplusone.`interface`.RankingProductTextClickListener
 import com.example.oneplusone.`interface`.RecentSearchTextClickListener
 import com.example.oneplusone.recyclerAdapter.ProductRankingRecyclerAdapter
 import com.example.oneplusone.recyclerAdapter.RecentSearchRecyclerAdapter
+import com.example.oneplusone.viewModel.DataBaseViewModel
 import com.example.oneplusone.viewModel.SearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -24,7 +26,7 @@ class SearchActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivitySearchBinding.inflate(layoutInflater) }
     private val searchViewModel:SearchViewModel by viewModels()
-
+    private val dbViewModel: DataBaseViewModel by viewModels()
 
     private lateinit var productRankingAdapter: ProductRankingRecyclerAdapter
     private lateinit var recentSearchRecyclerAdapter: RecentSearchRecyclerAdapter
@@ -33,16 +35,13 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        val productNameList=intent.getStringArrayListExtra("productNameList")
-
-        if (productNameList != null) {
-            searchViewModel.updateProductNameList(productNameList)
-        }
 
         initAdapter()
         setupDataBinding()
         observeSetting()
+        observeDBData()
 
+        dbViewModel.loadProductNameList()
 
         binding.searchIcon.setOnClickListener {
             searchViewModel.setSearchText(binding.searchBar.text.toString())
@@ -145,6 +144,15 @@ class SearchActivity : AppCompatActivity() {
             Log.d("searchTextResult", searchTextCheckResult.toString())
             if(!searchTextCheckResult){
                 Toast.makeText(this@SearchActivity, "올바른 검색어를 입력해 주세요.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private fun observeDBData(){
+        dbViewModel.productNameList.observe(this) { productNameList ->
+
+            if(productNameList!=null){
+                searchViewModel.updateProductNameList(productNameList)
             }
         }
     }

@@ -42,7 +42,7 @@ class SearchResultActivity : AppCompatActivity() {
     private val productDataViewModel: ProductDataViewModel by viewModels()
     private val filterDataViewModel: FilterDataViewModel by viewModels()
     private val mainFilterViewModel: MainFilterViewModel by viewModels()
-    private val favoriteProductViewModel: DataBaseViewModel by viewModels()
+    private val dbViewModel: DataBaseViewModel by viewModels()
     private val searchViewModel:SearchViewModel by viewModels()
 
     private lateinit var productFilterAdapter: ProductFilterRecyclerAdapter
@@ -64,10 +64,13 @@ class SearchResultActivity : AppCompatActivity() {
 
         observeSetting()
 
+        dbViewModel.loadProductNameList()
+
         oldSearchText=intent.getStringExtra("searchText")
         oldSearchText?.let { searchViewModel.setSearchText(it) }
 
         binding.searchBar.setText(oldSearchText)
+
 
         binding.searchIcon.setOnClickListener {
             searchViewModel.setSearchText( binding.searchBar.text.toString())
@@ -190,25 +193,42 @@ class SearchResultActivity : AppCompatActivity() {
         }
 
         productDataViewModel.isFavorite.observe(this) { isFavorite ->
-            favoriteProductViewModel.favoriteProductJudgment(isFavorite)
-        }
-        productDataViewModel.productNameList.observe(this) { productNameList ->
-            showProductNames(productNameList)
+            dbViewModel.favoriteProductJudgment(isFavorite)
         }
 
+        productDataViewModel._mergeData.observe(this)  { (favoriteProducts, dbProducts) ->
+            if (favoriteProducts != null && dbProducts != null) {
+                productDataViewModel.loadProductData()
+            }
+        }
     }
 
     private fun observeDataBaseViewModel() {
-        favoriteProductViewModel.favoriteProducts.observe(this){ favoriteProductData ->
-            productDataViewModel.loadProductData(favoriteProductData, oldSearchText)
+        dbViewModel.favoriteProducts.observe(this) { favoriteProductData ->
+            productDataViewModel.loadFavoriteProduct(favoriteProductData)
+        }
+        dbViewModel.DBProductDataList.observe(this) { DBProductDataList ->
+            Log.d("DBProductDataList", DBProductDataList.toString())
+            productDataViewModel.loadDBProductData(DBProductDataList)
+        }
+        dbViewModel.productNameList.observe(this) { productNameList ->
+            if(productNameList!=null){
+                searchViewModel.updateProductNameList(productNameList)
+            }
         }
     }
 
     private fun observeSearchViewModel(){
         searchViewModel.searchText.observe(this) { newSearchText ->
-            Log.d("searchText",newSearchText)
+
+
+            val convertSearchText="%${newSearchText}%"
+            dbViewModel.loadSearchFavoriteProducts(convertSearchText)
+            dbViewModel.loadSearchProductDataList(convertSearchText)
+
+
             //새로운 검색을 했다면 검색된 상품만 다시 불러옴
-            productDataViewModel.loadProductData(null,newSearchText)
+//            productDataViewModel.loadProductData(null,newSearchText)
             //검색한 데이터를 저장함
             searchViewModel.saveSearchText(this@SearchResultActivity,newSearchText)
         }
@@ -218,12 +238,11 @@ class SearchResultActivity : AppCompatActivity() {
                 Toast.makeText(this@SearchResultActivity, "올바른 검색어를 입력해 주세요.", Toast.LENGTH_SHORT).show();
             }
         }
-    }
-    private fun showProductNames(productNameList: ArrayList<String>) {
+        searchViewModel.productNameList.observe(this) { productNames ->
 
             //AutoCompleteTextView를 사용해 연관 검색어를 보여줌
             val adapter =
-                ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, productNameList)
+                ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, productNames)
 
             binding.searchBar.setAdapter(adapter)
             binding.searchBar.threshold = 1
@@ -231,10 +250,12 @@ class SearchResultActivity : AppCompatActivity() {
 
             //연관검색어 터치시 바로 검색
             binding.searchBar.setOnItemClickListener { parent, _, position, _ ->
-                val newSearchText = parent.getItemAtPosition(position) as String
-                searchViewModel.setSearchText(newSearchText)
+                val selectedSearchText = parent.getItemAtPosition(position) as String
+                searchViewModel.setSearchText(selectedSearchText)
             }
+        }
     }
+
 
     private fun showProductDetailDialog(productData: ProductData) {
         val mDialogView = LayoutInflater.from(this@SearchResultActivity).inflate(R.layout.product_detail_viewer, null)

@@ -16,4 +16,10 @@ interface ProductDao {
 
     @Query("DELETE FROM productData")
     suspend fun deleteAllProductData()
+
+    @Query("SELECT productName FROM productData")
+    suspend fun getProductNameList(): List<String>
+
+    @Query("SELECT * FROM productData WHERE LOWER(productName) LIKE LOWER(:searchProductText)")
+    suspend fun getSearchProduct(searchProductText: String): List<ProductData>
 }

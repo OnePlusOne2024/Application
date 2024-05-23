@@ -20,7 +20,7 @@ class SearchViewModel @Inject constructor(
     private val productRankingDataRepository: ProductRankingDataRepository
 ): ViewModel() {
 
-    private val _productNameList=MutableLiveData<ArrayList<String>>()
+    private val _productNameList=MutableLiveData<List<String>>()
     private val _productRanking=MutableLiveData<List<String>>()
     private val _recentSearchList=MutableLiveData<MutableList<String>?>()
     private val _inputText=MutableLiveData<String>()
@@ -30,7 +30,7 @@ class SearchViewModel @Inject constructor(
 
 
 
-    val productNameList: LiveData<ArrayList<String>>
+    val productNameList: LiveData<List<String>>
         get() = _productNameList
 
     val productRanking: LiveData<List<String>>
@@ -47,8 +47,8 @@ class SearchViewModel @Inject constructor(
     val searchTextCheckResult: LiveData<Boolean>
         get() = _searchTextCheckResult
 
-    fun updateProductNameList(productNames: ArrayList<String>) {
-        _productNameList.value = productNames
+    fun updateProductNameList(productNamesList: List<String>) {
+        _productNameList.value = productNamesList
     }
 
     fun loadProductRankingList(){
@@ -130,6 +130,7 @@ class SearchViewModel @Inject constructor(
     fun setSearchText(searchText: String){
         _searchTextCheckResult.value= SearchTextCheck().searchTextCheck(searchText)
         if(_searchTextCheckResult.value==true){
+
             this._searchText.value=searchText
         }
     }

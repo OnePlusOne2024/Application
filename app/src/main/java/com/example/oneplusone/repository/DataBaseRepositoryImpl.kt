@@ -23,6 +23,10 @@ class DataBaseRepositoryImpl(
         favoriteProductDao.deleteFavoriteProduct(productData)
     }
 
+    override suspend fun getSearchFavoriteProductList(searchText: String): List<FavoriteProductModel> {
+        return favoriteProductDao.getSearchProduct(searchText)
+    }
+
     override suspend fun getAllServerProductDataList(): List<ProductData> {
         return serverProductDao.getAllProductData()
     }
@@ -33,5 +37,13 @@ class DataBaseRepositoryImpl(
 
     override suspend fun deleteServerProductDataList() {
         serverProductDao.deleteAllProductData()
+    }
+
+    override suspend fun getProductNameList(): List<String> {
+        return serverProductDao.getProductNameList()
+    }
+
+    override suspend fun getSearchProductList(searchText: String): List<ProductData> {
+        return serverProductDao.getSearchProduct(searchText)
     }
 }

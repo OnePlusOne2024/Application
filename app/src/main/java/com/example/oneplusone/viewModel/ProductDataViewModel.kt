@@ -108,11 +108,16 @@ class ProductDataViewModel @Inject constructor(
         _isFavorite.value=productData
 
     }
+    fun favoriteProductJudgment(productData: ProductData){
 
+        if(!productData.favorite){
+            _productDataList.value = _productDataList.value?.filter { it != productData }
+        }
+    }
     init {
 
         //좋아요한 상품목록, 일반상품목록 모두 db에서 가져와 비교해야 하는데 두 데이터가 모두 준비됐을때만 productData의 값을
-        //변경해야 하기 때문에 MediatorLiveData를 사용했음
+        //변경해야 하기 때문에 MediatorLiveData를 사용했음남기다
         _mergeData.addSource(favoriteProductData) { favoriteProducts ->
             val dbProducts = _mergeData.value?.second
             _mergeData.value = Pair(favoriteProducts, dbProducts)
@@ -124,6 +129,7 @@ class ProductDataViewModel @Inject constructor(
         }
 
     }
+
 
     init{
 
@@ -148,19 +154,19 @@ class ProductDataViewModel @Inject constructor(
         _layoutHeight.value = newHeight
     }
 
-    fun loadProductData(favoriteProduct: List<FavoriteProductModel>?=null,searchText: String?=null){
+    fun loadProductData(){
 
 
         //처음 데이터를 불러와 화면에 바로 출력하는 대신에 db의 데이터와 대조하여 즐겨찾기한 아이템과 비교 후 화면에 출력,
         val DBProductData=_DBProductDataList.value
-
+        Log.d("DBProductData", DBProductData.toString())
 
         //서치텍스트가 있다면 서치결과를 필터링하고 아니라면 그냥 받음
-        val searchResult=searchText?.let{
-            loadSearchProductList(DBProductData!!,searchText)
-        }?:DBProductData
+//        val searchResult=searchText?.let{
+//            loadSearchProductList(DBProductData!!,searchText)
+//        }?:DBProductData
 
-        val updatedList = searchResult?.map { originalProduct ->
+        val updatedList = DBProductData?.map { originalProduct ->
             _favoriteProductData.value?.find { it.id == originalProduct.id } ?: originalProduct
         }
         _productDataList.value=updatedList
@@ -190,6 +196,8 @@ class ProductDataViewModel @Inject constructor(
         val convertProductDataList=convertProductDataType(favoriteProduct)
         _productDataList.value=convertProductDataList
     }
+
+
     private fun convertProductDataType(favoriteProduct: List<FavoriteProductModel>): List<ProductData> {
         return favoriteProduct.map { product ->
             ProductData(
@@ -246,6 +254,8 @@ class ProductDataViewModel @Inject constructor(
 
     fun loadConvenienceProductData(selectedMarkerData: ConvenienceData) {
         Log.d("selectedMarkerData", selectedMarkerData.toString())
+        Log.d("productDataList", productDataList.value.toString())
+
         productDataList.value?.let { productList ->
 
             val convenienceFilteredProductList = productList.filter { product ->

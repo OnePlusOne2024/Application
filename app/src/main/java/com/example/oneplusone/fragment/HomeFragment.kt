@@ -74,6 +74,8 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        dbViewModel.loadProductDataList()
+        dbViewModel.loadFavoriteProducts()
 
         initAdapter()
 
@@ -81,13 +83,11 @@ class HomeFragment : Fragment() {
 
         observeSetting()
 
+
         moveSearchActivity()
 
-
-
-
-        productDataViewModel.loadConnectTime(requireContext())
     }
+
 
     private fun initAdapter() {
         initMainFilterAdapter()
@@ -272,6 +272,9 @@ class HomeFragment : Fragment() {
         }
     }
     private fun observeDataBaseViewModel() {
+
+
+
         dbViewModel.favoriteProducts.observe(viewLifecycleOwner, Observer { favoriteProductData ->
             productDataViewModel.loadFavoriteProduct(favoriteProductData)
         })

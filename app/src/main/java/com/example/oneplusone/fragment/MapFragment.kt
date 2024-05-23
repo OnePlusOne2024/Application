@@ -60,7 +60,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val filterDataViewModel: FilterDataViewModel by viewModels()
     private val mapMainFilterViewModel: MapMainFilterViewModel by viewModels()
     private val mapDataViewModel: MapDataViewModel by viewModels()
-    private val favoriteProductViewModel: DataBaseViewModel by viewModels()
+    private val dbViewModel: DataBaseViewModel by viewModels()
 
     private lateinit var productFilterAdapter: ProductFilterRecyclerAdapter
     private lateinit var productItemRecyclerAdapter: ProductItemRecyclerAdapter
@@ -102,6 +102,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        dbViewModel.loadProductDataList()
+        dbViewModel.loadFavoriteProducts()
 
         initAdapter()
         setupDataBinding()
@@ -274,8 +277,15 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         })
 
         productDataViewModel.isFavorite.observe(viewLifecycleOwner, Observer { isFavorite ->
-            favoriteProductViewModel.favoriteProductJudgment(isFavorite)
+            dbViewModel.favoriteProductJudgment(isFavorite)
         })
+        productDataViewModel._mergeData.observe(viewLifecycleOwner, Observer { (favoriteProducts, dbProducts) ->
+            Log.d("favoriteProducts", favoriteProducts.toString())
+            if (favoriteProducts != null && dbProducts != null) {
+                productDataViewModel.loadProductData()
+            }
+        })
+
     }
 
     private fun showProductDetailDialog(productData: ProductData) {
@@ -377,8 +387,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun observeDataBaseViewModel() {
-        favoriteProductViewModel.favoriteProducts.observe(viewLifecycleOwner, Observer { favoriteProductData ->
-            productDataViewModel.loadProductData(favoriteProductData)
+        dbViewModel.favoriteProducts.observe(viewLifecycleOwner, Observer { favoriteProductData ->
+            productDataViewModel.loadFavoriteProduct(favoriteProductData)
+        })
+
+        dbViewModel.DBProductDataList.observe(viewLifecycleOwner, Observer { DBProductDataList ->
+            productDataViewModel.loadDBProductData(DBProductDataList)
         })
     }
 
