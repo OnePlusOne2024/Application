@@ -60,6 +60,8 @@ class ProductDataViewModel @Inject constructor(
 
     private val _DBProductDataList=MutableLiveData<List<ProductData>>()
 
+    private val _mainFilterDataList=MutableLiveData<List<MainFilterData>>()
+
     //MediatorLiveData를 사용해 여러개의 라이브데이터를 하나로 합침
     val _mergeData = MediatorLiveData<Pair<List<ProductData>?, List<ProductData>?>>().apply {
         value = Pair(null, null)
@@ -75,6 +77,9 @@ class ProductDataViewModel @Inject constructor(
 
     val clickProductData: LiveData<ProductData>
         get() = _clickProductData
+
+    val mainFilterDataList: LiveData<List<MainFilterData>>
+        get() = _mainFilterDataList
 
     val layoutHeight: LiveData<Int>
         get() = _layoutHeight
@@ -156,27 +161,19 @@ class ProductDataViewModel @Inject constructor(
 
     fun loadProductData(){
 
-
         //처음 데이터를 불러와 화면에 바로 출력하는 대신에 db의 데이터와 대조하여 즐겨찾기한 아이템과 비교 후 화면에 출력,
         val DBProductData=_DBProductDataList.value
-        Log.d("DBProductData", DBProductData.toString())
-
-        //서치텍스트가 있다면 서치결과를 필터링하고 아니라면 그냥 받음
-//        val searchResult=searchText?.let{
-//            loadSearchProductList(DBProductData!!,searchText)
-//        }?:DBProductData
+        val DBfavoriteProductData=_favoriteProductData.value
 
         val updatedList = DBProductData?.map { originalProduct ->
-            _favoriteProductData.value?.find { it.id == originalProduct.id } ?: originalProduct
+            DBfavoriteProductData?.find { it.id == originalProduct.id } ?: originalProduct
         }
         _productDataList.value=updatedList
-        //검색에 사용하기 위해 상품 목록의 이름만 따로 분리하여 저장
-        if (DBProductData != null) {
-            loadProductNameList(DBProductData)
+
+        if(_mainFilterDataList.value!=null){
+            loadFilteredProductData(_mainFilterDataList.value!!)
         }
     }
-
-    //서버에서 받아온 데이터를 db에 저장해야함
 
 
     fun loadDBProductData(productDataList:List<ProductData>){
@@ -225,7 +222,7 @@ class ProductDataViewModel @Inject constructor(
     //todo filter와 all 알아보기
     fun loadFilteredProductData(mainFilterData: List<MainFilterData>) {
         Log.d("mainFilterData", mainFilterData.toString())
-        productDataList.value?.let { productList ->
+        _productDataList.value?.let { productList ->
 
             // PB 필터를 적용한 결과에 메인 필터 적용
             val finalFilteredProductList = productList.filter { product ->
@@ -386,6 +383,10 @@ class ProductDataViewModel @Inject constructor(
     fun getCurrentDate(): LocalDateTime {
 
         return LocalDateTime.now()
+    }
+
+    fun setMainFilterData(mainFilterDataList: List<MainFilterData>) {
+        _mainFilterDataList.value=mainFilterDataList
     }
 
     companion object{

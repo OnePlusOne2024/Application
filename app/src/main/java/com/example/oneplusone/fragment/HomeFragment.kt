@@ -175,7 +175,8 @@ class HomeFragment : Fragment() {
         mainFilterViewModel.mainFilterDataList.observe(viewLifecycleOwner, Observer { mainFilterData ->
 
             mainFilterAdapter.submitList(mainFilterData)
-            productDataViewModel.loadFilteredProductData(mainFilterData)
+            productDataViewModel.setMainFilterData(mainFilterData)
+//            productDataViewModel.loadFilteredProductData(mainFilterData)
         })
 
     }
@@ -206,9 +207,9 @@ class HomeFragment : Fragment() {
 
     //todo 즐겨찾기 페이지 만들기
     private fun observeProductDataViewModel() {
-        productDataViewModel.productDataList.observe(viewLifecycleOwner, Observer { data ->
-            productItemRecyclerAdapter.submitList(data)
-        })
+//        productDataViewModel.productDataList.observe(viewLifecycleOwner, Observer { data ->
+//            productItemRecyclerAdapter.submitList(data)
+//        })
 
         productDataViewModel.clickProductData.observe(viewLifecycleOwner, Observer { clickProductData ->
             showProductDetailDialog(clickProductData)
@@ -230,6 +231,10 @@ class HomeFragment : Fragment() {
                 productDataViewModel.loadProductData()
             }
         })
+        productDataViewModel.mainFilterDataList.observe(viewLifecycleOwner, Observer { mainFilterDataList ->
+            productDataViewModel.loadFilteredProductData(mainFilterDataList)
+        })
+
 //        productDataViewModel.serverProductDataList.observe(viewLifecycleOwner, Observer { serverProductDataList ->
 //            //서버에서 가져온 데이터를 넣는 코드 일단 일시정지
 //            if (serverProductDataList != null) {
