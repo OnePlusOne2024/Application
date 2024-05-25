@@ -4,13 +4,18 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.example.oneplusone.db.FavoriteProductModel
 import com.example.oneplusone.db.ProductData
 
 import com.example.oneplusone.model.data.ServerProductData
 import com.example.oneplusone.repository.DataBaseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,13 +27,22 @@ class DataBaseViewModel@Inject constructor(
 
 ):ViewModel(){
     private val _favoriteProducts = MutableLiveData<List<FavoriteProductModel>>()
-    private val _DBProductDataList = MutableLiveData<List<ProductData>>()
+    private val _DBProductDataList = MutableLiveData<Flow<PagingData<ProductData>>>()
     private val _productNameList=MutableLiveData<List<String>>()
+
+//    val favoritePagingBooks: StateFlow<PagingData<ProductData>> =
+//        dbRepository.getAllServerProductDataList()
+//            .cachedIn(viewModelScope) // 코루틴이 데이터흐름을 캐시하고 공유 가능하게 만든다.
+//            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), PagingData.empty())
+//
+
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> get() = _isLoading
 
     val favoriteProducts: LiveData<List<FavoriteProductModel>>
         get()=_favoriteProducts
 
-    val DBProductDataList:LiveData<List<ProductData>>
+    val DBProductDataList:LiveData<Flow<PagingData<ProductData>>>
         get()=_DBProductDataList
 
     val productNameList:LiveData<List<String>>
@@ -40,6 +54,8 @@ class DataBaseViewModel@Inject constructor(
 //        deleteAllDBProductList()
     }
 
+
+
     fun loadFavoriteProducts() {
         viewModelScope.launch {
 
@@ -49,11 +65,14 @@ class DataBaseViewModel@Inject constructor(
     }
 
     fun loadProductDataList() {
-        viewModelScope.launch {
 
-            val productsDataList = dbRepository.getAllServerProductDataList()
-            _DBProductDataList.value= productsDataList
-        }
+        _DBProductDataList.value=dbRepository.getAllServerProductDataList()
+
+    }
+
+    fun toggleLoadingBar(loadingValue: Boolean) {
+        _isLoading.value=loadingValue
+//        _isLoading.value=!_isLoading.value!!
     }
 
     fun loadSearchFavoriteProducts(newSearchText: String) {
@@ -66,12 +85,12 @@ class DataBaseViewModel@Inject constructor(
     }
 
     fun loadSearchProductDataList(newSearchText: String) {
-        viewModelScope.launch {
-
-            val productsDataList = dbRepository.getSearchProductList(newSearchText)
-            Log.d("loadSearchFavoriteProducts", productsDataList.toString())
-            _DBProductDataList.value= productsDataList
-        }
+//        viewModelScope.launch {
+//
+//            val productsDataList = dbRepository.getSearchProductList(newSearchText)
+//            Log.d("loadSearchFavoriteProducts", productsDataList.toString())
+//            _DBProductDataList.value= productsDataList
+//        }
     }
 
     fun loadProductNameList(){

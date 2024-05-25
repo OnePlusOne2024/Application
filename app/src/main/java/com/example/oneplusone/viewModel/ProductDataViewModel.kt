@@ -6,7 +6,6 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.example.oneplusone.db.FavoriteProductModel
 import com.example.oneplusone.db.ProductData
@@ -33,7 +32,7 @@ class ProductDataViewModel @Inject constructor(
 ):ViewModel() {
 
     //데이터를 UI에 보여주기 위한 담당
-    private val _productDataList= MutableLiveData<List<ProductData>?>()
+    private val _productDataList= MutableLiveData<ProductData?>()
 
     private var _clickProductData=MutableLiveData<ProductData>()
 
@@ -58,19 +57,19 @@ class ProductDataViewModel @Inject constructor(
 
     private val _serverProductDataList=MutableLiveData<List<ServerProductData>?>()
 
-    private val _DBProductDataList=MutableLiveData<List<ProductData>>()
+    private val _DBProductDataList=MutableLiveData<ProductData>()
 
     private val _mainFilterDataList=MutableLiveData<List<MainFilterData>>()
 
     //MediatorLiveData를 사용해 여러개의 라이브데이터를 하나로 합침
-    val _mergeData = MediatorLiveData<Pair<List<ProductData>?, List<ProductData>?>>().apply {
+    val _mergeData = MediatorLiveData<Pair<List<ProductData>?, ProductData?>>().apply {
         value = Pair(null, null)
     }
 
     val isFavorite: LiveData<ProductData>
         get()=_isFavorite
 
-    val productDataList:LiveData<List<ProductData>?>
+    val productDataList:LiveData<ProductData?>
         get()=_productDataList
 
     //todo 서버에서 데이터를 가져왔을 경우를 생각해 레포지토리 생성하기
@@ -104,7 +103,7 @@ class ProductDataViewModel @Inject constructor(
 
     val favoriteProductData:LiveData<List<ProductData>?>
         get() = _favoriteProductData
-    val DBProductDataList:LiveData<List<ProductData>>
+    val DBProductDataList:LiveData<ProductData>
         get() = _DBProductDataList
     fun toggleFavorite(productData: ProductData) {
 
@@ -115,9 +114,9 @@ class ProductDataViewModel @Inject constructor(
     }
     fun favoriteProductJudgment(productData: ProductData){
 
-        if(!productData.favorite){
-            _productDataList.value = _productDataList.value?.filter { it != productData }
-        }
+//        if(!productData.favorite){
+//            _productDataList.value = _productDataList.value?.filter { it != productData }
+//        }
     }
     init {
 
@@ -165,21 +164,38 @@ class ProductDataViewModel @Inject constructor(
         val DBProductData=_DBProductDataList.value
         val DBfavoriteProductData=_favoriteProductData.value
 
-        val updatedList = DBProductData?.map { originalProduct ->
-            DBfavoriteProductData?.find { it.id == originalProduct.id } ?: originalProduct
-        }
+
+        Log.d("DBfavoriteProductData", _favoriteProductData.value.toString())
+        Log.d("DBfavoriteProductData2", _DBProductDataList.value.toString())
+
+
+        val updatedList=DBfavoriteProductData?.find{
+            it.id== DBProductData?.id
+        }?:DBProductData
+
+
+        Log.d("updatedList", updatedList.toString())
         _productDataList.value=updatedList
 
-        if(_mainFilterDataList.value!=null){
-            loadFilteredProductData(_mainFilterDataList.value!!)
-        }
+        //상품 로드시 일단 무조건 한번 현재필터 상태에 대한 필터링을 적용하도록 했음
+//        loadFilteredProductData(_mainFilterDataList.value!!)
+
     }
 
 
-    fun loadDBProductData(productDataList:List<ProductData>){
+    fun loadDBProductData(productDataList: ProductData){
         _DBProductDataList.value=productDataList
 
         Log.d("_DBProductDataList.value", _DBProductDataList.value.toString())
+    }
+
+    fun isProductFavorite(productData: ProductData): ProductData {
+        val favoriteProducts = _favoriteProductData.value
+        val updatedList=_favoriteProductData.value?.find{
+            it.id== productData.id
+        }?:productData
+
+        return updatedList
     }
 
     fun loadFavoriteProduct(favoriteProduct: List<FavoriteProductModel>){
@@ -191,7 +207,7 @@ class ProductDataViewModel @Inject constructor(
 
     fun loadFavoriteProductInFavoriteProductFragment(favoriteProduct: List<FavoriteProductModel>){
         val convertProductDataList=convertProductDataType(favoriteProduct)
-        _productDataList.value=convertProductDataList
+//        _productDataList.value=convertProductDataList
     }
 
 
@@ -220,32 +236,29 @@ class ProductDataViewModel @Inject constructor(
 
 
     //todo filter와 all 알아보기
-    fun loadFilteredProductData(mainFilterData: List<MainFilterData>) {
-        Log.d("mainFilterData", mainFilterData.toString())
-        _productDataList.value?.let { productList ->
+    fun loadFilteredProductData(productData: ProductData): Boolean {
 
-            // PB 필터를 적용한 결과에 메인 필터 적용
-            val finalFilteredProductList = productList.filter { product ->
-                mainFilterData.all { filter ->
+        productData.let { productList ->
+
+            val finalFilteredProductList =
+                _mainFilterDataList.value!!.all { filter ->
                     when (filter.filterType) {
                         FilterType.CONVENIENCE ->
-                            filter.mainFilterText == ConvenienceType.ALL_CONVENIENCE_STORE.title || product.brand == filter.mainFilterText
+                            filter.mainFilterText == ConvenienceType.ALL_CONVENIENCE_STORE.title || productList.brand == filter.mainFilterText
                         FilterType.PRODUCT_CATEGORY ->
-                            filter.mainFilterText == ProductCategoryType.ALL_PRODUCT_CATEGORY.title || product.category == filter.mainFilterText
+                            filter.mainFilterText == ProductCategoryType.ALL_PRODUCT_CATEGORY.title || productList.category == filter.mainFilterText
                         FilterType.BENEFITS ->
-                            filter.mainFilterText == BenefitsType.ALL_BENEFITS.title || product.benefits == filter.mainFilterText
+                            filter.mainFilterText == BenefitsType.ALL_BENEFITS.title || productList.benefits == filter.mainFilterText
                         FilterType.PB ->
                             if (filter.mainFilterText == "PB 상품만") {
-                                product.pb
+                                productList.pb
                             } else {
                                 true
                             }
-                        else -> true
+                        else -> false
                     }
-                }
             }
-            Log.d("finalFilteredProductList", finalFilteredProductList.toString())
-            _filterProductData.value = finalFilteredProductList
+            return finalFilteredProductList
         }
     }
 
@@ -253,20 +266,20 @@ class ProductDataViewModel @Inject constructor(
         Log.d("selectedMarkerData", selectedMarkerData.toString())
         Log.d("productDataList", productDataList.value.toString())
 
-        productDataList.value?.let { productList ->
-
-            val convenienceFilteredProductList = productList.filter { product ->
-                when (selectedMarkerData.convenienceType) {
-                    ConvenienceType.STORE_CU.title -> product.brand == ConvenienceType.STORE_CU.title
-                    ConvenienceType.STORE_SEVEN_ELEVEN.title -> product.brand == ConvenienceType.STORE_SEVEN_ELEVEN.title
-                    ConvenienceType.STORE_GS_25.title -> product.brand == ConvenienceType.STORE_GS_25.title
-                    ConvenienceType.STORE_E_MART24.title -> product.brand == ConvenienceType.STORE_E_MART24.title
-                    else -> true
-                }
-            }
-
-            _convenienceProductData.value = convenienceFilteredProductList
-        }
+//        productDataList.value?.let { productList ->
+//
+//            val convenienceFilteredProductList = productList.filter { product ->
+//                when (selectedMarkerData.convenienceType) {
+//                    ConvenienceType.STORE_CU.title -> product.brand == ConvenienceType.STORE_CU.title
+//                    ConvenienceType.STORE_SEVEN_ELEVEN.title -> product.brand == ConvenienceType.STORE_SEVEN_ELEVEN.title
+//                    ConvenienceType.STORE_GS_25.title -> product.brand == ConvenienceType.STORE_GS_25.title
+//                    ConvenienceType.STORE_E_MART24.title -> product.brand == ConvenienceType.STORE_E_MART24.title
+//                    else -> true
+//                }
+//            }
+//
+//            _convenienceProductData.value = convenienceFilteredProductList
+//        }
     }
 
     fun loadMapFilteredProductData(mainFilterData: List<MainFilterData>) {
@@ -340,7 +353,9 @@ class ProductDataViewModel @Inject constructor(
 
     }
 
-
+    fun loadCurrentMainFilter(mainFilterData: List<MainFilterData>){
+        _mainFilterDataList.value=mainFilterData
+    }
 
     fun updateCheckResult(connectTime:String?){
         productDataRepository.getUpdateInfoCheck(connectTime) { updateCheckResult ->
@@ -385,7 +400,7 @@ class ProductDataViewModel @Inject constructor(
         return LocalDateTime.now()
     }
 
-    fun setMainFilterData(mainFilterDataList: List<MainFilterData>) {
+    fun setCurrentMainFilterData(mainFilterDataList: List<MainFilterData>) {
         _mainFilterDataList.value=mainFilterDataList
     }
 

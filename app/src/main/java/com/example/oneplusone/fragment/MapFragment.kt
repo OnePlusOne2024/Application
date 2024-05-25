@@ -251,7 +251,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun observeProductDataViewModel() {
         productDataViewModel.productDataList.observe(viewLifecycleOwner, Observer { data ->
-            productItemRecyclerAdapter.submitList(data)
+//            productItemRecyclerAdapter.submitList(data)
         })
 
         productDataViewModel.clickProductData.observe(viewLifecycleOwner, Observer { clickProductData ->
@@ -269,11 +269,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         })
         productDataViewModel.filterProductData.observe(viewLifecycleOwner, Observer { filterProductData ->
-            productItemRecyclerAdapter.submitList(filterProductData)
+//            productItemRecyclerAdapter.submitList(filterProductData)
         })
 
         productDataViewModel.convenienceProductData.observe(viewLifecycleOwner, Observer { convenienceProductData ->
-            productItemRecyclerAdapter.submitList(convenienceProductData)
+//            productItemRecyclerAdapter.submitList(convenienceProductData)
         })
 
         productDataViewModel.isFavorite.observe(viewLifecycleOwner, Observer { isFavorite ->
@@ -293,7 +293,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val dialogBinding = ProductDetailViewerBinding.bind(mDialogView)
 
         //어쩔 수 없이 notifyItemChanged로 업데이트 하기로 결정
-        val index = productItemRecyclerAdapter.currentList.indexOfFirst { it.id == productData.id }
+//        val index = productItemRecyclerAdapter.currentList.indexOfFirst { it.id == productData.id }
 
         dialogBinding.productData = productData
 
@@ -317,9 +317,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         dialog.setOnDismissListener {
-            if (index != -1) {
-                productItemRecyclerAdapter.notifyItemChanged(index)
-            }
+//            if (index != -1) {
+//                productItemRecyclerAdapter.notifyItemChanged(index)
+//            }
         }
     }
 
@@ -392,7 +392,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         })
 
         dbViewModel.DBProductDataList.observe(viewLifecycleOwner, Observer { DBProductDataList ->
-            productDataViewModel.loadDBProductData(DBProductDataList)
+//            productDataViewModel.loadDBProductData(DBProductDataList)
         })
     }
 

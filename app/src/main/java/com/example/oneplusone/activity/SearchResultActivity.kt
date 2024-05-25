@@ -151,7 +151,7 @@ class SearchResultActivity : AppCompatActivity() {
         mainFilterViewModel.mainFilterDataList.observe(this) { mainFilterData ->
 
             mainFilterAdapter.submitList(mainFilterData)
-            productDataViewModel.loadFilteredProductData(mainFilterData)
+//            productDataViewModel.loadFilteredProductData(mainFilterData)
         }
 
     }
@@ -182,14 +182,14 @@ class SearchResultActivity : AppCompatActivity() {
 
     private fun observeProductDataViewModel() {
         productDataViewModel.productDataList.observe(this) { data ->
-            productItemRecyclerAdapter.submitList(data)
+//            productItemRecyclerAdapter.submitList(data)
         }
 
         productDataViewModel.clickProductData.observe(this){ clickProductData ->
             showProductDetailDialog(clickProductData)
         }
         productDataViewModel.filterProductData.observe(this){ filterProductData ->
-            productItemRecyclerAdapter.submitList(filterProductData)
+//            productItemRecyclerAdapter.submitList(filterProductData)
         }
 
         productDataViewModel.isFavorite.observe(this) { isFavorite ->
@@ -209,7 +209,7 @@ class SearchResultActivity : AppCompatActivity() {
         }
         dbViewModel.DBProductDataList.observe(this) { DBProductDataList ->
             Log.d("DBProductDataList", DBProductDataList.toString())
-            productDataViewModel.loadDBProductData(DBProductDataList)
+//            productDataViewModel.loadDBProductData(DBProductDataList)
         }
         dbViewModel.productNameList.observe(this) { productNameList ->
             if(productNameList!=null){
@@ -262,7 +262,7 @@ class SearchResultActivity : AppCompatActivity() {
         val dialogBinding = ProductDetailViewerBinding.bind(mDialogView)
 
         //어쩔 수 없이 notifyItemChanged로 업데이트 하기로 결정
-        val index = productItemRecyclerAdapter.currentList.indexOfFirst { it.id == productData.id }
+//        val index = productItemRecyclerAdapter.currentList.indexOfFirst { it.id == productData.id }
 
         dialogBinding.productData = productData
 
@@ -285,9 +285,9 @@ class SearchResultActivity : AppCompatActivity() {
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         dialog.setOnDismissListener {
-            if (index != -1) {
-                productItemRecyclerAdapter.notifyItemChanged(index)
-            }
+//            if (index != -1) {
+//                productItemRecyclerAdapter.notifyItemChanged(index)
+//            }
         }
     }
 

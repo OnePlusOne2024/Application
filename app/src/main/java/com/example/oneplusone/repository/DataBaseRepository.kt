@@ -1,7 +1,10 @@
 package com.example.oneplusone.repository
 
+import androidx.lifecycle.LiveData
+import androidx.paging.PagingData
 import com.example.oneplusone.db.FavoriteProductModel
 import com.example.oneplusone.db.ProductData
+import kotlinx.coroutines.flow.Flow
 
 
 interface DataBaseRepository {
@@ -10,7 +13,7 @@ interface DataBaseRepository {
     suspend fun deleteFavoriteProduct(productData: FavoriteProductModel)
     suspend fun getSearchFavoriteProductList(searchText:String):List<FavoriteProductModel>
 
-    suspend fun getAllServerProductDataList():List<ProductData>
+    fun getAllServerProductDataList(): Flow<PagingData<ProductData>>
     suspend fun insertServerProductDataList(productDataList: List<ProductData>)
     suspend fun deleteServerProductDataList()
 

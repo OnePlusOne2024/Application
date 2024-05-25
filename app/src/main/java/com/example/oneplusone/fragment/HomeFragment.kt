@@ -5,13 +5,20 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
+import androidx.paging.filter
+import androidx.paging.map
 import com.example.oneplusone.R
 import com.example.oneplusone.activity.SearchActivity
 import com.example.oneplusone.databinding.FragmentHomeBinding
@@ -23,17 +30,20 @@ import com.example.oneplusone.`interface`.ProductClickListener
 import com.example.oneplusone.`interface`.ProductFavoriteClickListener
 import com.example.oneplusone.model.data.FilterData
 import com.example.oneplusone.model.data.MainFilterData
+import com.example.oneplusone.recyclerAdapter.LoadingBarAdapter
 import com.example.oneplusone.recyclerAdapter.MainFilterRecyclerAdapter
 import com.example.oneplusone.recyclerAdapter.ProductFilterRecyclerAdapter
 import com.example.oneplusone.recyclerAdapter.ProductItemRecyclerAdapter
-import com.example.oneplusone.viewModel.FilterDataViewModel
-import com.example.oneplusone.viewModel.ProductDataViewModel
-import com.example.oneplusone.util.ItemSpacingController
 import com.example.oneplusone.util.FilterAnimated
 import com.example.oneplusone.util.FilterStyle
+import com.example.oneplusone.util.ItemSpacingController
 import com.example.oneplusone.viewModel.DataBaseViewModel
+import com.example.oneplusone.viewModel.FilterDataViewModel
 import com.example.oneplusone.viewModel.MainFilterViewModel
+import com.example.oneplusone.viewModel.ProductDataViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -50,6 +60,8 @@ class HomeFragment : Fragment() {
     private lateinit var productFilterAdapter: ProductFilterRecyclerAdapter
     private lateinit var productItemRecyclerAdapter: ProductItemRecyclerAdapter
     private lateinit var mainFilterAdapter: MainFilterRecyclerAdapter
+
+
 
     private val productSpacingController = ItemSpacingController(25, 25, 40)
 
@@ -74,7 +86,7 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        dbViewModel.loadProductDataList()
+
         dbViewModel.loadFavoriteProducts()
 
         initAdapter()
@@ -93,6 +105,7 @@ class HomeFragment : Fragment() {
         initMainFilterAdapter()
         initProductFilterAdapter()
         initProductItemRecyclerAdapter()
+        initLoadingAdapter()
     }
 
     private fun moveSearchActivity() {
@@ -167,16 +180,49 @@ class HomeFragment : Fragment() {
                 productDataViewModel.toggleFavorite(productData)
             }
         })
-        binding.productGridView.adapter = productItemRecyclerAdapter
+        binding.productGridView.adapter = productItemRecyclerAdapter.withLoadStateFooter(footer=LoadingBarAdapter())
+
         binding.productGridView.addItemDecoration(productSpacingController)
+
+
+        productItemRecyclerAdapter.addLoadStateListener { loadState ->
+            val isListEmpty =
+                loadState.refresh is LoadState.NotLoading && productItemRecyclerAdapter.itemCount == 0
+            val isLoading = loadState.source.refresh is LoadState.Loading ||
+                    loadState.source.append is LoadState.Loading
+            if (isLoading) {
+                dbViewModel.toggleLoadingBar(true)
+                binding.productGridView.isEnabled=false
+
+            } else {
+                // 로딩이 완료되었거나 에러가 발생했을 때
+                dbViewModel.toggleLoadingBar(false)
+                binding.productGridView.isEnabled=true
+
+                // 에러 상태 처리
+                val errorState = loadState.source.append as? LoadState.Error
+                    ?: loadState.source.prepend as? LoadState.Error
+                    ?: loadState.append as? LoadState.Error
+                    ?: loadState.prepend as? LoadState.Error
+                errorState?.let {
+                    // 에러 처리 로직
+                }
+            }
+        }
+    }
+
+    private fun initLoadingAdapter() {
+
     }
 
     private fun observeMainFilterViewModel() {
         mainFilterViewModel.mainFilterDataList.observe(viewLifecycleOwner, Observer { mainFilterData ->
 
             mainFilterAdapter.submitList(mainFilterData)
-            productDataViewModel.setMainFilterData(mainFilterData)
-//            productDataViewModel.loadFilteredProductData(mainFilterData)
+            productDataViewModel.setCurrentMainFilterData(mainFilterData)
+
+            //메인필터의 값을 설정한 후에 db에서 값을 가져옴
+            dbViewModel.loadProductDataList()
         })
 
     }
@@ -207,15 +253,27 @@ class HomeFragment : Fragment() {
 
     //todo 즐겨찾기 페이지 만들기
     private fun observeProductDataViewModel() {
-//        productDataViewModel.productDataList.observe(viewLifecycleOwner, Observer { data ->
-//            productItemRecyclerAdapter.submitList(data)
-//        })
+        productDataViewModel.productDataList.observe(viewLifecycleOwner, Observer { data ->
+
+//            lifecycleScope.launch {
+
+//                data.collectLatest { pagingData ->
+//
+//                    val transformedData = pagingData
+//                        .map { productData ->
+//                            productDataViewModel.loadDBProductData(productData)
+//                            productData
+//                        }
+//                    productItemRecyclerAdapter.submitData(lifecycle, transformedData)
+//                }
+//            }
+        })
 
         productDataViewModel.clickProductData.observe(viewLifecycleOwner, Observer { clickProductData ->
             showProductDetailDialog(clickProductData)
         })
         productDataViewModel.filterProductData.observe(viewLifecycleOwner, Observer { filterProductData ->
-            productItemRecyclerAdapter.submitList(filterProductData)
+//            productItemRecyclerAdapter.submitList(filterProductData)
 
         })
 
@@ -226,13 +284,13 @@ class HomeFragment : Fragment() {
             this.productNameList=productNameList
         })
 
-        productDataViewModel._mergeData.observe(viewLifecycleOwner, Observer { (favoriteProducts, dbProducts) ->
-            if (favoriteProducts != null && dbProducts != null) {
-                productDataViewModel.loadProductData()
-            }
-        })
+//        productDataViewModel._mergeData.observe(viewLifecycleOwner, Observer { (favoriteProducts, dbProducts) ->
+//            if (favoriteProducts != null && dbProducts != null) {
+//                productDataViewModel.loadProductData()
+//            }
+//        })
         productDataViewModel.mainFilterDataList.observe(viewLifecycleOwner, Observer { mainFilterDataList ->
-            productDataViewModel.loadFilteredProductData(mainFilterDataList)
+//            productDataViewModel.loadFilteredProductData(mainFilterDataList)
         })
 
 //        productDataViewModel.serverProductDataList.observe(viewLifecycleOwner, Observer { serverProductDataList ->
@@ -247,7 +305,7 @@ class HomeFragment : Fragment() {
         val dialogBinding = ProductDetailViewerBinding.bind(mDialogView)
 
         //어쩔 수 없이 notifyItemChanged로 업데이트 하기로 결정
-        val index = productItemRecyclerAdapter.currentList.indexOfFirst { it.id == productData.id }
+//        val index = productItemRecyclerAdapter.currentList.indexOfFirst { it.id == productData.id }
 
         dialogBinding.productData = productData
 
@@ -271,20 +329,44 @@ class HomeFragment : Fragment() {
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         dialog.setOnDismissListener {
-            if (index != -1) {
-                productItemRecyclerAdapter.notifyItemChanged(index)
-            }
+//            if (index != -1) {
+//                productItemRecyclerAdapter.notifyItemChanged(index)
+//            }
         }
     }
     private fun observeDataBaseViewModel() {
 
+        dbViewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
+            Log.d("isLoading", isLoading.toString())
+            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
 
+        })
 
         dbViewModel.favoriteProducts.observe(viewLifecycleOwner, Observer { favoriteProductData ->
             productDataViewModel.loadFavoriteProduct(favoriteProductData)
         })
-        dbViewModel.DBProductDataList.observe(viewLifecycleOwner, Observer { DBProductDataList ->
-            productDataViewModel.loadDBProductData(DBProductDataList)
+
+        dbViewModel.DBProductDataList.observe(viewLifecycleOwner, Observer { dbProductDataList ->
+            lifecycleScope.launch {
+
+                dbProductDataList.collectLatest { pagingData ->
+
+                    val transformedData = pagingData
+                        .map { productData ->
+
+                            productDataViewModel.isProductFavorite(productData)
+                        }.filter{
+                            productDataViewModel.loadFilteredProductData(it)
+                        }
+
+                    productItemRecyclerAdapter.submitData(lifecycle, transformedData)
+
+                }
+
+            }
         })
+
+
     }
+
 }

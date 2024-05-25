@@ -142,7 +142,7 @@ class FavoriteFragment : Fragment() {
         mainFilterViewModel.mainFilterDataList.observe(viewLifecycleOwner, Observer { mainFilterData ->
 
             mainFilterAdapter.submitList(mainFilterData)
-            productDataViewModel.loadFilteredProductData(mainFilterData)
+//            productDataViewModel.loadFilteredProductData(mainFilterData)
         })
 
     }
@@ -171,7 +171,7 @@ class FavoriteFragment : Fragment() {
     //todo 즐겨찾기 페이지 만들기
     private fun observeProductDataViewModel() {
         productDataViewModel.productDataList.observe(viewLifecycleOwner, Observer { data ->
-            productItemRecyclerAdapter.submitList(data)
+//            productItemRecyclerAdapter.submitList(data)
             Log.d("data", data.toString())
         })
 
@@ -179,7 +179,7 @@ class FavoriteFragment : Fragment() {
             showProductDetailDialog(clickProductData)
         })
         productDataViewModel.filterProductData.observe(viewLifecycleOwner, Observer { filterProductData ->
-            productItemRecyclerAdapter.submitList(filterProductData)
+//            productItemRecyclerAdapter.submitList(filterProductData)
 
         })
 
@@ -192,7 +192,7 @@ class FavoriteFragment : Fragment() {
         val mDialogView = LayoutInflater.from(requireContext()).inflate(R.layout.product_detail_viewer, null)
         val dialogBinding = ProductDetailViewerBinding.bind(mDialogView)
 
-        val index = productItemRecyclerAdapter.currentList.indexOfFirst { it.id == productData.id }
+//        val index = productItemRecyclerAdapter.currentList.indexOfFirst { it.id == productData.id }
 
         dialogBinding.productData = productData
 
@@ -214,9 +214,9 @@ class FavoriteFragment : Fragment() {
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         dialog.setOnDismissListener {
-            if (index != -1) {
-                productItemRecyclerAdapter.notifyItemChanged(index)
-            }
+//            if (index != -1) {
+//                productItemRecyclerAdapter.notifyItemChanged(index)
+//            }
             //일단 db에서 다시 꺼내오기로 결정
 
         }

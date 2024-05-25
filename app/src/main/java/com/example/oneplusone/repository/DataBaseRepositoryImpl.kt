@@ -1,9 +1,16 @@
 package com.example.oneplusone.repository
 
+import androidx.lifecycle.LiveData
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.liveData
 import com.example.oneplusone.db.FavoriteProductDao
 import com.example.oneplusone.db.FavoriteProductModel
 import com.example.oneplusone.db.ProductDao
 import com.example.oneplusone.db.ProductData
+import com.example.oneplusone.util.ProductDataPagingSource
+import kotlinx.coroutines.flow.Flow
 
 
 class DataBaseRepositoryImpl(
@@ -27,8 +34,16 @@ class DataBaseRepositoryImpl(
         return favoriteProductDao.getSearchProduct(searchText)
     }
 
-    override suspend fun getAllServerProductDataList(): List<ProductData> {
-        return serverProductDao.getAllProductData()
+    override fun getAllServerProductDataList(): Flow<PagingData<ProductData>> {
+
+
+        return Pager(
+            config =  PagingConfig(
+                pageSize = 50,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = { ProductDataPagingSource(serverProductDao) }
+        ).flow
     }
 
     override suspend fun insertServerProductDataList(productDataList: List<ProductData>) {

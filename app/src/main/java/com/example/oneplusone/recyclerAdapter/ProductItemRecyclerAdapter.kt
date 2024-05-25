@@ -4,6 +4,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageButton
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -17,7 +18,7 @@ import com.example.oneplusone.`interface`.ProductFavoriteClickListener
 class ProductItemRecyclerAdapter(
     private val productClickListener: ProductClickListener,
     private val productFavoriteClickListener: ProductFavoriteClickListener
-): ListAdapter<ProductData, ProductItemRecyclerAdapter.Holder>(ProductDiffCallback()) {
+) : PagingDataAdapter<ProductData, ProductItemRecyclerAdapter.Holder>(ProductDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val binding = ProductViewerBinding.inflate(
@@ -27,35 +28,41 @@ class ProductItemRecyclerAdapter(
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        holder.bind(getItem(position),productClickListener,productFavoriteClickListener)
+        val product = getItem(position)
+
+        product?.let{
+            holder.bind(product, productClickListener, productFavoriteClickListener)
+
+        }
+
+//        if (product != null) {
+//            holder.bind(product, productClickListener, productFavoriteClickListener)
+//        }
     }
 
-    class Holder(private val binding: ProductViewerBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-
+    inner class Holder(private val binding: ProductViewerBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(
             product: ProductData,
             productClickListener: ProductClickListener,
             productFavoriteClickListener: ProductFavoriteClickListener
         ) {
 
-            binding.productData=product
+            Log.d("product", product.toString())
+            binding.productData = product
 
             itemView.setOnClickListener {
                 productClickListener.onItemClick(product)
             }
 
-
             binding.favorite.setOnClickListener {
                 productFavoriteClickListener.onFavoriteClick(product)
                 updateFavoriteButtonImage(binding.favorite, product.favorite)
-
             }
         }
-        //일단 여기서 이미지를 바꾸기로
-    private fun updateFavoriteButtonImage(button: ImageButton, isFavorite: Boolean) {
-        button.setImageResource(if (isFavorite) R.drawable.favorite_on else R.drawable.favorite_off)
-        Log.d("isFavorite", isFavorite.toString())
+
+        private fun updateFavoriteButtonImage(button: ImageButton, isFavorite: Boolean) {
+            button.setImageResource(if (isFavorite) R.drawable.favorite_on else R.drawable.favorite_off)
+            Log.d("isFavorite", isFavorite.toString())
         }
     }
 
