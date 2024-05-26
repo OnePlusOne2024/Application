@@ -2,6 +2,7 @@ package com.example.oneplusone.repository
 
 import com.example.oneplusone.db.ProductData
 import com.example.oneplusone.model.data.ServerProductData
+import com.example.oneplusone.model.data.ServerResponse
 
 interface ProductDataRepository {
 
@@ -11,8 +12,7 @@ interface ProductDataRepository {
 
     fun getUpdateInfoCheck(lastConnectTime: String?, callback: (Boolean) -> Unit)
 
-    fun getProductDataList(callback: (List<ServerProductData>?) -> Unit)
-
+    fun getProductDataList(lastConnectTime: String?,callback: (ServerResponse?) -> Unit)
 
 
 

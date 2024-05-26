@@ -36,6 +36,8 @@ class DataBaseViewModel@Inject constructor(
 //            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), PagingData.empty())
 //
 
+    private val _serverConnectProcessState=MutableLiveData<Boolean>()
+
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> get() = _isLoading
 
@@ -47,6 +49,9 @@ class DataBaseViewModel@Inject constructor(
 
     val productNameList:LiveData<List<String>>
         get()=_productNameList
+
+    val serverConnectProcessState:LiveData<Boolean>
+        get()=_serverConnectProcessState
     init {
 //        loadFavoriteProducts()
 //        loadProductDataList()
@@ -167,9 +172,9 @@ class DataBaseViewModel@Inject constructor(
     fun insertServerProductDataList(productDataList:List<ServerProductData>){
         val convertResult=convertServerProductDataToDBData(productDataList)
 
-        Log.d("convertResult", convertResult.toString())
         viewModelScope.launch {
             dbRepository.insertServerProductDataList(convertResult)
+            waitServerConnectProcess(true)
         }
     }
 
@@ -177,5 +182,9 @@ class DataBaseViewModel@Inject constructor(
         viewModelScope.launch {
             dbRepository.deleteServerProductDataList()
         }
+    }
+
+    fun waitServerConnectProcess(serverConnectProcessState:Boolean){
+        _serverConnectProcessState.value=serverConnectProcessState
     }
 }

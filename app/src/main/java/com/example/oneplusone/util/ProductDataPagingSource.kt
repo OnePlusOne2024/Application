@@ -24,7 +24,7 @@ class ProductDataPagingSource(private val serverProductDao: ProductDao) : Paging
             val data = serverProductDao.getAllProductData(page)
 
             //테스트를 위해 고의적으로 딜레이를 줬음
-//            delay(1000)
+            delay(500)
 
 
 

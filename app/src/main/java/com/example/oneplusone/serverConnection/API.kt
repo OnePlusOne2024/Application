@@ -7,6 +7,8 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Query
+import java.time.LocalDateTime
 
 interface API {
 
@@ -16,7 +18,7 @@ interface API {
     suspend fun updateInfoCheck(@Body lastConnectTime:String?): Response<Boolean>
 
     @GET("/api/v1/product/readAll")
-    suspend fun getProductList(): Response<ServerResponse>
+    suspend fun getProductList(@Query("clientTime")clientTime: String?): Response<ServerResponse>
 
     //상품 정보들을 가져옴//하나로 통일
     @GET("product/GS25")

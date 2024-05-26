@@ -12,6 +12,7 @@ import com.example.oneplusone.db.ProductData
 import com.example.oneplusone.model.data.ConvenienceData
 import com.example.oneplusone.model.data.MainFilterData
 import com.example.oneplusone.model.data.ServerProductData
+import com.example.oneplusone.model.data.ServerResponse
 import com.example.oneplusone.model.data.enums.BenefitsType
 import com.example.oneplusone.model.data.enums.ConvenienceType
 import com.example.oneplusone.model.data.enums.FilterType
@@ -55,7 +56,7 @@ class ProductDataViewModel @Inject constructor(
 
     private val _updateCheckResult=MutableLiveData<Boolean?>()
 
-    private val _serverProductDataList=MutableLiveData<List<ServerProductData>?>()
+    private val _serverProductDataList=MutableLiveData<ServerResponse?>()
 
     private val _DBProductDataList=MutableLiveData<ProductData>()
 
@@ -98,7 +99,7 @@ class ProductDataViewModel @Inject constructor(
     val updateCheckResult: LiveData<Boolean?>
         get()=_updateCheckResult
 
-    val serverProductDataList: LiveData<List<ServerProductData>?>
+    val serverProductDataList: LiveData<ServerResponse?>
         get() = _serverProductDataList
 
     val favoriteProductData:LiveData<List<ProductData>?>
@@ -367,10 +368,11 @@ class ProductDataViewModel @Inject constructor(
     }
 
     //서버에서 상품 목록을 가져옴
-    fun getProductDataFromServer(){
+    fun getProductDataFromServer(loadConnectTime: String?) {
         Log.d("실행됨", "serverProductData.toString()")
 
-        productDataRepository.getProductDataList { serverProductData ->
+        productDataRepository.getProductDataList(loadConnectTime) { serverProductData ->
+
             if (serverProductData != null) {
                 _serverProductDataList.value=serverProductData
             }

@@ -3,6 +3,7 @@ package com.example.oneplusone.repository
 import android.util.Log
 import com.example.oneplusone.db.ProductData
 import com.example.oneplusone.model.data.ServerProductData
+import com.example.oneplusone.model.data.ServerResponse
 import com.example.oneplusone.serverConnection.RetrofitBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -141,15 +142,19 @@ class ProductDataRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getProductDataList(callback: (List<ServerProductData>?) -> Unit) {
+    override fun getProductDataList(lastConnectTime: String?,callback: (ServerResponse?) -> Unit) {
 
-
+        if (lastConnectTime != null) {
+            Log.d("lastConnectTime",lastConnectTime)
+        }
         CoroutineScope(Dispatchers.IO).launch {
             val result = try {
-                val response = RetrofitBuilder.api.getProductList()
+                val response = RetrofitBuilder.api.getProductList(lastConnectTime)
+
                 if (response.isSuccessful){
                     Log.d("연결 성공","성공")
-                    response.body()?.result
+
+                    response.body()
                 } else {
                     Log.d("연결 실패","실패")
                     null
