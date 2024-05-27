@@ -153,7 +153,7 @@ class ProductDataRepositoryImpl @Inject constructor(
 
                 if (response.isSuccessful){
                     Log.d("연결 성공","성공")
-
+                    Log.d("연결 성공", response.body().toString())
                     response.body()
                 } else {
                     Log.d("연결 실패","실패")

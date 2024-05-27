@@ -9,6 +9,7 @@ import androidx.activity.viewModels
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.example.oneplusone.R
 
 import com.example.oneplusone.databinding.ActivityMainBinding
@@ -38,13 +39,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
+
         //한번만 실행되어야 함 어플을 다시 킬때마다 실행
         observeProductDataViewModel()
         //딱 한번만 실행되도록 하기 위해
 //        productDataViewModel.updateCheckResult(loadConnectTime(this@MainActivity))
         productDataViewModel.getProductDataFromServer(loadConnectTime(this@MainActivity))
 
-//        setBottomNavigation()
+        setBottomNavigation()
 
     }
 
@@ -78,7 +80,6 @@ class MainActivity : AppCompatActivity() {
     private fun setBottomNavigation() {
 //        binding.navView.selectedItemId = R.id.home_menu
 
-
         binding.navView.setOnItemSelectedListener {
             val fragment = when (it.itemId) {
                 R.id.home_menu -> HomeFragment()
@@ -98,30 +99,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observeProductDataViewModel() {
-
-//        productDataViewModel.updateCheckResult.observe(this) { updateCheckResult ->
-//            //만약 트루면 DB의데이터를 지우고 새로 넣음
-//            if (updateCheckResult == true) {
-//                dbViewModel.deleteAllDBProductList()
-//                productDataViewModel.getProductDataFromServer(loadConnectTime(this))
-//            }
-//            //false면 그냥 그대로 사용
-//        }
-
         productDataViewModel.serverProductDataList.observe(this) { serverProductDataList ->
+            if (serverProductDataList != null && serverProductDataList.success) {
 
-            if(serverProductDataList!!.success){
-                dbViewModel.deleteAllDBProductList()
-                dbViewModel.insertServerProductDataList(serverProductDataList.result)
                 dbViewModel.waitServerConnectProcess(false)
+                dbViewModel.updateProductDatabase(serverProductDataList.result)
+
             }else{
                 dbViewModel.waitServerConnectProcess(true)
-            }
-        }
-        dbViewModel.serverConnectProcessState.observe(this) { serverConnectProcessState ->
-            Log.d("serverConnectProcessState", serverConnectProcessState.toString())
-            if(serverConnectProcessState){
-                setBottomNavigation()
             }
         }
     }

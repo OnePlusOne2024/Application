@@ -192,7 +192,7 @@ class ProductDataViewModel @Inject constructor(
 
     fun isProductFavorite(productData: ProductData): ProductData {
         val favoriteProducts = _favoriteProductData.value
-        val updatedList=_favoriteProductData.value?.find{
+        val updatedList=favoriteProducts!!.find{
             it.id== productData.id
         }?:productData
 
@@ -238,9 +238,8 @@ class ProductDataViewModel @Inject constructor(
 
     //todo filter와 all 알아보기
     fun loadFilteredProductData(productData: ProductData): Boolean {
-
+        Log.d("_mainFilterDataList.value", _mainFilterDataList.value.toString())
         productData.let { productList ->
-
             val finalFilteredProductList =
                 _mainFilterDataList.value!!.all { filter ->
                     when (filter.filterType) {

@@ -15,6 +15,7 @@ import com.example.oneplusone.model.data.ServerProductData
 import com.example.oneplusone.repository.DataBaseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -169,22 +170,40 @@ class DataBaseViewModel@Inject constructor(
         }
     }
 
-    fun insertServerProductDataList(productDataList:List<ServerProductData>){
-        val convertResult=convertServerProductDataToDBData(productDataList)
-
+    fun updateProductDatabase(productDataList: List<ServerProductData>) {
         viewModelScope.launch {
-            dbRepository.insertServerProductDataList(convertResult)
-            waitServerConnectProcess(true)
+
+            deleteAllDBProductList()
+
+            insertServerProductDataList(productDataList)
+
+            _serverConnectProcessState.value=true
         }
     }
 
-    fun deleteAllDBProductList(){
-        viewModelScope.launch {
-            dbRepository.deleteServerProductDataList()
-        }
+    private suspend fun insertServerProductDataList(productDataList: List<ServerProductData>) {
+        val convertResult = convertServerProductDataToDBData(productDataList)
+        dbRepository.insertServerProductDataList(convertResult)
+
+    }
+
+//지금 제대로 삭제후 데이터를 저장하지 못하고 있음 이를 해결해야함 반드시 서버로부터 데이터가 들어오면
+    //상품db의 모든데이터를 제거한후 새로운데이터를 넣고 페이징 데이터를 로드해야함
+    private suspend fun deleteAllDBProductList() {
+        dbRepository.deleteServerProductDataList()
     }
 
     fun waitServerConnectProcess(serverConnectProcessState:Boolean){
         _serverConnectProcessState.value=serverConnectProcessState
     }
+
+    fun loadProductAndFavoriteProduct(){
+
+        if(_serverConnectProcessState.value == true){
+            loadFavoriteProducts()
+            loadProductDataList()
+        }
+
+    }
+
 }

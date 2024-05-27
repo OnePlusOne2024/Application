@@ -1,5 +1,6 @@
 package com.example.oneplusone.fragment
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Color
@@ -13,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -53,7 +55,8 @@ class HomeFragment : Fragment() {
     private val productDataViewModel: ProductDataViewModel by viewModels()
     private val filterDataViewModel: FilterDataViewModel by viewModels()
     private val mainFilterViewModel: MainFilterViewModel by viewModels()
-    private val dbViewModel:DataBaseViewModel by viewModels()
+    //메인엑티비티와 데이터를 공유해야함activityViewModels로 메인엑티비티의 db뷰모델과 공유
+    private val dbViewModel:DataBaseViewModel by activityViewModels()
     private var productNameList= arrayListOf<String>()
 
 
@@ -79,15 +82,12 @@ class HomeFragment : Fragment() {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
 
 
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-        dbViewModel.loadFavoriteProducts()
 
         initAdapter()
 
@@ -180,35 +180,36 @@ class HomeFragment : Fragment() {
                 productDataViewModel.toggleFavorite(productData)
             }
         })
-        binding.productGridView.adapter = productItemRecyclerAdapter.withLoadStateFooter(footer=LoadingBarAdapter())
+//        binding.productGridView.adapter = productItemRecyclerAdapter.withLoadStateFooter(footer=LoadingBarAdapter())
+        binding.productGridView.adapter = productItemRecyclerAdapter
 
         binding.productGridView.addItemDecoration(productSpacingController)
 
 
-        productItemRecyclerAdapter.addLoadStateListener { loadState ->
-            val isListEmpty =
-                loadState.refresh is LoadState.NotLoading && productItemRecyclerAdapter.itemCount == 0
-            val isLoading = loadState.source.refresh is LoadState.Loading ||
-                    loadState.source.append is LoadState.Loading
-            if (isLoading) {
-                dbViewModel.toggleLoadingBar(true)
-                binding.productGridView.isEnabled=false
-
-            } else {
-                // 로딩이 완료되었거나 에러가 발생했을 때
-                dbViewModel.toggleLoadingBar(false)
-                binding.productGridView.isEnabled=true
-
-                // 에러 상태 처리
-                val errorState = loadState.source.append as? LoadState.Error
-                    ?: loadState.source.prepend as? LoadState.Error
-                    ?: loadState.append as? LoadState.Error
-                    ?: loadState.prepend as? LoadState.Error
-                errorState?.let {
-                    // 에러 처리 로직
-                }
-            }
-        }
+//        productItemRecyclerAdapter.addLoadStateListener { loadState ->
+//            val isListEmpty =
+//                loadState.refresh is LoadState.NotLoading && productItemRecyclerAdapter.itemCount == 0
+//            val isLoading = loadState.source.refresh is LoadState.Loading ||
+//                    loadState.source.append is LoadState.Loading
+//            if (isLoading) {
+//                dbViewModel.toggleLoadingBar(true)
+//                binding.productGridView.isEnabled=false
+//
+//            } else {
+//                // 로딩이 완료되었거나 에러가 발생했을 때
+//                dbViewModel.toggleLoadingBar(false)
+//                binding.productGridView.isEnabled=true
+//
+//                // 에러 상태 처리
+//                val errorState = loadState.source.append as? LoadState.Error
+//                    ?: loadState.source.prepend as? LoadState.Error
+//                    ?: loadState.append as? LoadState.Error
+//                    ?: loadState.prepend as? LoadState.Error
+//                errorState?.let {
+//                    // 에러 처리 로직
+//                }
+//            }
+//        }
     }
 
     private fun initLoadingAdapter() {
@@ -220,9 +221,14 @@ class HomeFragment : Fragment() {
 
             mainFilterAdapter.submitList(mainFilterData)
             productDataViewModel.setCurrentMainFilterData(mainFilterData)
+            //메인필터의 값이 바뀔때마다 아이템들을 새로 불러옴
+            dbViewModel.loadFavoriteProducts()
+            dbViewModel.loadProductDataList()
 
             //메인필터의 값을 설정한 후에 db에서 값을 가져옴
-            dbViewModel.loadProductDataList()
+//            dbViewModel.loadProductAndFavoriteProduct()
+//            dbViewModel.loadProductDataList()
+//            dbViewModel.loadFavoriteProducts()
         })
 
     }
@@ -300,19 +306,20 @@ class HomeFragment : Fragment() {
 //            }
 //        })
     }
+    @SuppressLint("NotifyDataSetChanged")
     private fun showProductDetailDialog(productData: ProductData) {
         val mDialogView = LayoutInflater.from(requireContext()).inflate(R.layout.product_detail_viewer, null)
         val dialogBinding = ProductDetailViewerBinding.bind(mDialogView)
 
         //어쩔 수 없이 notifyItemChanged로 업데이트 하기로 결정
-//        val index = productItemRecyclerAdapter.currentList.indexOfFirst { it.id == productData.id }
-
+        Log.d("ProductData", productData.id.toString())
         dialogBinding.productData = productData
-
 
 
         dialogBinding.favorite.setOnClickListener{
             productDataViewModel.toggleFavorite(productData)
+
+
 
             if (productData.favorite) {
                 dialogBinding.favorite.setImageResource(R.drawable.favorite_on)
@@ -328,10 +335,10 @@ class HomeFragment : Fragment() {
         val dialog = mBuilder.show()
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
+
         dialog.setOnDismissListener {
-//            if (index != -1) {
-//                productItemRecyclerAdapter.notifyItemChanged(index)
-//            }
+            productItemRecyclerAdapter.notifyDataSetChanged()
+//            productItemRecyclerAdapter.notifyItemChanged(productData.id!!.toInt())
         }
     }
     private fun observeDataBaseViewModel() {
@@ -365,7 +372,14 @@ class HomeFragment : Fragment() {
 
             }
         })
-
+        dbViewModel.serverConnectProcessState.observe(viewLifecycleOwner, Observer { serverConnectProcessState ->
+            Log.d("serverConnectProcessState", serverConnectProcessState.toString())
+            //최초로 db에 데이터 삽입 과정이 끝나면 아이템을 불러옴
+            if(serverConnectProcessState){
+                dbViewModel.loadFavoriteProducts()
+                dbViewModel.loadProductDataList()
+            }
+        })
 
     }
 

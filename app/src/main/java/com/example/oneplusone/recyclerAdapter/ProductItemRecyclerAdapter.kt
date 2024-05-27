@@ -40,7 +40,7 @@ class ProductItemRecyclerAdapter(
 //        }
     }
 
-    inner class Holder(private val binding: ProductViewerBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class Holder(val binding: ProductViewerBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(
             product: ProductData,
             productClickListener: ProductClickListener,
@@ -60,7 +60,7 @@ class ProductItemRecyclerAdapter(
             }
         }
 
-        private fun updateFavoriteButtonImage(button: ImageButton, isFavorite: Boolean) {
+        fun updateFavoriteButtonImage(button: ImageButton, isFavorite: Boolean) {
             button.setImageResource(if (isFavorite) R.drawable.favorite_on else R.drawable.favorite_off)
             Log.d("isFavorite", isFavorite.toString())
         }
