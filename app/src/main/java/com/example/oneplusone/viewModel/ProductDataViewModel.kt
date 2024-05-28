@@ -203,6 +203,8 @@ class ProductDataViewModel @Inject constructor(
         return updatedList
     }
 
+
+
     fun loadFavoriteProduct(favoriteProduct: List<FavoriteProductModel>){
 
         val convertProductDataList=convertProductDataType(favoriteProduct)
@@ -216,7 +218,7 @@ class ProductDataViewModel @Inject constructor(
     }
 
 
-    private fun convertProductDataType(favoriteProduct: List<FavoriteProductModel>): List<ProductData> {
+    fun convertProductDataType(favoriteProduct: List<FavoriteProductModel>): List<ProductData> {
         return favoriteProduct.map { product ->
             ProductData(
                 id = product.id.toLong(),
@@ -232,6 +234,19 @@ class ProductDataViewModel @Inject constructor(
         }
     }
 
+    fun convertSingleProductDataType(favoriteProduct: FavoriteProductModel): ProductData {
+        return ProductData(
+                id = favoriteProduct.id.toLong(),
+                productName = favoriteProduct.productName,
+                productPrice = favoriteProduct.productPrice,
+                brand = favoriteProduct.brand,
+                benefits = favoriteProduct.benefits,
+                productImage = favoriteProduct.productImage,
+                favorite = favoriteProduct.favorite,
+                category = favoriteProduct.category,
+                pb = favoriteProduct.pb
+            )
+        }
 
 
     fun loadClickProductData(productData: ProductData){

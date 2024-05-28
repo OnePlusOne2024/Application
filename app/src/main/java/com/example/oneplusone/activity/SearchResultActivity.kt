@@ -11,6 +11,9 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.filter
+import androidx.paging.map
 import com.example.oneplusone.R
 import com.example.oneplusone.databinding.ActivitySearchResultBinding
 import com.example.oneplusone.databinding.ProductDetailViewerBinding
@@ -33,6 +36,9 @@ import com.example.oneplusone.viewModel.MainFilterViewModel
 import com.example.oneplusone.viewModel.ProductDataViewModel
 import com.example.oneplusone.viewModel.SearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+
 //todo 잘못된 검색어(빈칸,특수문자?,글자수?)제어 팝업 만들어야함
 @AndroidEntryPoint
 class SearchResultActivity : AppCompatActivity() {
@@ -63,7 +69,7 @@ class SearchResultActivity : AppCompatActivity() {
         setupDataBinding()
 
         observeSetting()
-
+        dbViewModel.loadFavoriteProducts()
         dbViewModel.loadProductNameList()
 
         oldSearchText=intent.getStringExtra("searchText")
@@ -151,7 +157,9 @@ class SearchResultActivity : AppCompatActivity() {
         mainFilterViewModel.mainFilterDataList.observe(this) { mainFilterData ->
 
             mainFilterAdapter.submitList(mainFilterData)
-//            productDataViewModel.loadFilteredProductData(mainFilterData)
+            productDataViewModel.setCurrentMainFilterData(mainFilterData)
+            dbViewModel.loadSearchProductDataByPaging()
+
         }
 
     }
@@ -196,20 +204,35 @@ class SearchResultActivity : AppCompatActivity() {
             dbViewModel.favoriteProductJudgment(isFavorite)
         }
 
-        productDataViewModel._mergeData.observe(this)  { (favoriteProducts, dbProducts) ->
-            if (favoriteProducts != null && dbProducts != null) {
-                productDataViewModel.loadProductData()
-            }
-        }
+
     }
 
     private fun observeDataBaseViewModel() {
         dbViewModel.favoriteProducts.observe(this) { favoriteProductData ->
             productDataViewModel.loadFavoriteProduct(favoriteProductData)
         }
-        dbViewModel.DBProductDataList.observe(this) { DBProductDataList ->
-            Log.d("DBProductDataList", DBProductDataList.toString())
-//            productDataViewModel.loadDBProductData(DBProductDataList)
+//        dbViewModel.favoriteProducts.observe(this) { favoriteProductData ->
+//            productDataViewModel.loadFavoriteProduct(favoriteProductData)
+//        }
+        
+        dbViewModel.DBProductDataList.observe(this) { dbProductDataList ->
+            lifecycleScope.launch {
+
+                dbProductDataList.collectLatest { pagingData ->
+
+                    val transformedData = pagingData
+                        .map { productData ->
+                            Log.d("productData4", productData.toString())
+                            productDataViewModel.isProductFavorite(productData)
+                        }.filter{
+                            productDataViewModel.loadFilteredProductData(it)
+                        }
+
+                    productItemRecyclerAdapter.submitData(lifecycle, transformedData)
+
+                }
+
+            }
         }
         dbViewModel.productNameList.observe(this) { productNameList ->
             if(productNameList!=null){
@@ -223,8 +246,12 @@ class SearchResultActivity : AppCompatActivity() {
 
 
             val convertSearchText="%${newSearchText}%"
-            dbViewModel.loadSearchFavoriteProducts(convertSearchText)
-            dbViewModel.loadSearchProductDataList(convertSearchText)
+            dbViewModel.setSearchText(convertSearchText)
+
+
+            dbViewModel.loadSearchProductDataByPaging()
+//            dbViewModel.loadSearchFavoriteProducts(convertSearchText)
+//            dbViewModel.loadSearchProductDataList(convertSearchText)
 
 
             //새로운 검색을 했다면 검색된 상품만 다시 불러옴
@@ -261,8 +288,6 @@ class SearchResultActivity : AppCompatActivity() {
         val mDialogView = LayoutInflater.from(this@SearchResultActivity).inflate(R.layout.product_detail_viewer, null)
         val dialogBinding = ProductDetailViewerBinding.bind(mDialogView)
 
-        //어쩔 수 없이 notifyItemChanged로 업데이트 하기로 결정
-//        val index = productItemRecyclerAdapter.currentList.indexOfFirst { it.id == productData.id }
 
         dialogBinding.productData = productData
 

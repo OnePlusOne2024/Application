@@ -1,5 +1,6 @@
 package com.example.oneplusone.fragment
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -11,6 +12,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.filter
+import androidx.paging.map
 import com.example.oneplusone.R
 import com.example.oneplusone.databinding.FragmentFavoriteBinding
 import com.example.oneplusone.databinding.ProductDetailViewerBinding
@@ -32,6 +36,8 @@ import com.example.oneplusone.viewModel.FilterDataViewModel
 import com.example.oneplusone.viewModel.MainFilterViewModel
 import com.example.oneplusone.viewModel.ProductDataViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
@@ -142,7 +148,8 @@ class FavoriteFragment : Fragment() {
         mainFilterViewModel.mainFilterDataList.observe(viewLifecycleOwner, Observer { mainFilterData ->
 
             mainFilterAdapter.submitList(mainFilterData)
-//            productDataViewModel.loadFilteredProductData(mainFilterData)
+            productDataViewModel.setCurrentMainFilterData(mainFilterData)
+            dbViewModel.loadFavoriteProductDataByPaging()
         })
 
     }
@@ -170,17 +177,9 @@ class FavoriteFragment : Fragment() {
 
     //todo 즐겨찾기 페이지 만들기
     private fun observeProductDataViewModel() {
-        productDataViewModel.productDataList.observe(viewLifecycleOwner, Observer { data ->
-//            productItemRecyclerAdapter.submitList(data)
-            Log.d("data", data.toString())
-        })
 
         productDataViewModel.clickProductData.observe(viewLifecycleOwner, Observer { clickProductData ->
             showProductDetailDialog(clickProductData)
-        })
-        productDataViewModel.filterProductData.observe(viewLifecycleOwner, Observer { filterProductData ->
-//            productItemRecyclerAdapter.submitList(filterProductData)
-
         })
 
         productDataViewModel.isFavorite.observe(viewLifecycleOwner, Observer { isFavorite ->
@@ -188,11 +187,11 @@ class FavoriteFragment : Fragment() {
             productDataViewModel.favoriteProductJudgment(isFavorite)
         })
     }
+    @SuppressLint("NotifyDataSetChanged")
     private fun showProductDetailDialog(productData: ProductData) {
         val mDialogView = LayoutInflater.from(requireContext()).inflate(R.layout.product_detail_viewer, null)
         val dialogBinding = ProductDetailViewerBinding.bind(mDialogView)
 
-//        val index = productItemRecyclerAdapter.currentList.indexOfFirst { it.id == productData.id }
 
         dialogBinding.productData = productData
 
@@ -214,11 +213,7 @@ class FavoriteFragment : Fragment() {
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         dialog.setOnDismissListener {
-//            if (index != -1) {
-//                productItemRecyclerAdapter.notifyItemChanged(index)
-//            }
-            //일단 db에서 다시 꺼내오기로 결정
-
+            productItemRecyclerAdapter.notifyDataSetChanged()
         }
     }
     private fun observeDataBaseViewModel() {
@@ -227,5 +222,24 @@ class FavoriteFragment : Fragment() {
             productDataViewModel.loadFavoriteProductInFavoriteProductFragment(favoriteProductData)
         })
 
+
+        dbViewModel.favoriteProductByPaging.observe(viewLifecycleOwner, Observer { favoriteProductByPaging ->
+            lifecycleScope.launch {
+
+                favoriteProductByPaging.collectLatest { pagingData ->
+
+                    val transformedData = pagingData
+                        .map { productData ->
+                            productDataViewModel.convertSingleProductDataType(productData)
+                        }.filter {
+                            productDataViewModel.loadFilteredProductData(it)
+                        }
+
+                    productItemRecyclerAdapter.submitData(lifecycle, transformedData)
+
+                }
+
+            }
+        })
     }
 }

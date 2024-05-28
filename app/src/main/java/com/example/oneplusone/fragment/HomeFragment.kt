@@ -180,36 +180,12 @@ class HomeFragment : Fragment() {
                 productDataViewModel.toggleFavorite(productData)
             }
         })
-//        binding.productGridView.adapter = productItemRecyclerAdapter.withLoadStateFooter(footer=LoadingBarAdapter())
         binding.productGridView.adapter = productItemRecyclerAdapter
 
         binding.productGridView.addItemDecoration(productSpacingController)
 
 
-//        productItemRecyclerAdapter.addLoadStateListener { loadState ->
-//            val isListEmpty =
-//                loadState.refresh is LoadState.NotLoading && productItemRecyclerAdapter.itemCount == 0
-//            val isLoading = loadState.source.refresh is LoadState.Loading ||
-//                    loadState.source.append is LoadState.Loading
-//            if (isLoading) {
-//                dbViewModel.toggleLoadingBar(true)
-//                binding.productGridView.isEnabled=false
-//
-//            } else {
-//                // 로딩이 완료되었거나 에러가 발생했을 때
-//                dbViewModel.toggleLoadingBar(false)
-//                binding.productGridView.isEnabled=true
-//
-//                // 에러 상태 처리
-//                val errorState = loadState.source.append as? LoadState.Error
-//                    ?: loadState.source.prepend as? LoadState.Error
-//                    ?: loadState.append as? LoadState.Error
-//                    ?: loadState.prepend as? LoadState.Error
-//                errorState?.let {
-//                    // 에러 처리 로직
-//                }
-//            }
-//        }
+
     }
 
     private fun initLoadingAdapter() {
@@ -259,29 +235,11 @@ class HomeFragment : Fragment() {
 
     //todo 즐겨찾기 페이지 만들기
     private fun observeProductDataViewModel() {
-        productDataViewModel.productDataList.observe(viewLifecycleOwner, Observer { data ->
-
-//            lifecycleScope.launch {
-
-//                data.collectLatest { pagingData ->
-//
-//                    val transformedData = pagingData
-//                        .map { productData ->
-//                            productDataViewModel.loadDBProductData(productData)
-//                            productData
-//                        }
-//                    productItemRecyclerAdapter.submitData(lifecycle, transformedData)
-//                }
-//            }
-        })
 
         productDataViewModel.clickProductData.observe(viewLifecycleOwner, Observer { clickProductData ->
             showProductDetailDialog(clickProductData)
         })
-        productDataViewModel.filterProductData.observe(viewLifecycleOwner, Observer { filterProductData ->
-//            productItemRecyclerAdapter.submitList(filterProductData)
 
-        })
 
         productDataViewModel.isFavorite.observe(viewLifecycleOwner, Observer { isFavorite ->
             dbViewModel.favoriteProductJudgment(isFavorite)
@@ -290,21 +248,7 @@ class HomeFragment : Fragment() {
             this.productNameList=productNameList
         })
 
-//        productDataViewModel._mergeData.observe(viewLifecycleOwner, Observer { (favoriteProducts, dbProducts) ->
-//            if (favoriteProducts != null && dbProducts != null) {
-//                productDataViewModel.loadProductData()
-//            }
-//        })
-        productDataViewModel.mainFilterDataList.observe(viewLifecycleOwner, Observer { mainFilterDataList ->
-//            productDataViewModel.loadFilteredProductData(mainFilterDataList)
-        })
 
-//        productDataViewModel.serverProductDataList.observe(viewLifecycleOwner, Observer { serverProductDataList ->
-//            //서버에서 가져온 데이터를 넣는 코드 일단 일시정지
-//            if (serverProductDataList != null) {
-//                dbViewModel.insertServerProductDataList(serverProductDataList)
-//            }
-//        })
     }
     @SuppressLint("NotifyDataSetChanged")
     private fun showProductDetailDialog(productData: ProductData) {
@@ -318,8 +262,6 @@ class HomeFragment : Fragment() {
 
         dialogBinding.favorite.setOnClickListener{
             productDataViewModel.toggleFavorite(productData)
-
-
 
             if (productData.favorite) {
                 dialogBinding.favorite.setImageResource(R.drawable.favorite_on)
@@ -338,7 +280,6 @@ class HomeFragment : Fragment() {
 
         dialog.setOnDismissListener {
             productItemRecyclerAdapter.notifyDataSetChanged()
-//            productItemRecyclerAdapter.notifyItemChanged(productData.id!!.toInt())
         }
     }
     private fun observeDataBaseViewModel() {

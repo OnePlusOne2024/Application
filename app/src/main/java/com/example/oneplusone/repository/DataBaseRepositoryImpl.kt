@@ -9,6 +9,7 @@ import com.example.oneplusone.db.FavoriteProductModel
 import com.example.oneplusone.db.ProductDao
 import com.example.oneplusone.db.ProductData
 import com.example.oneplusone.model.data.enums.ConvenienceType
+import com.example.oneplusone.util.FavoriteProductDataPagingSource
 import com.example.oneplusone.util.ProductDataPagingSource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -23,6 +24,18 @@ class DataBaseRepositoryImpl(
         return favoriteProductDao.getAllFavoriteProduct()
     }
 
+    override fun getAllFavoriteProductByPaging(): Flow<PagingData<FavoriteProductModel>>{
+
+        return Pager(
+            config =  PagingConfig(
+                pageSize = 50,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = { FavoriteProductDataPagingSource(favoriteProductDao) }
+        ).flow
+
+    }
+
     override suspend fun insertFavoriteProduct(productData: FavoriteProductModel) {
         favoriteProductDao.insertFavoriteProduct(productData)
     }
@@ -33,6 +46,10 @@ class DataBaseRepositoryImpl(
 
     override suspend fun getSearchFavoriteProductList(searchText: String): List<FavoriteProductModel> {
         return favoriteProductDao.getSearchProduct(searchText)
+    }
+
+    override suspend fun deleteAllFavoriteProductList(){
+        favoriteProductDao.deleteAllFavoriteProduct()
     }
 
     override fun getAllServerProductDataList(): Flow<PagingData<ProductData>> {
@@ -73,7 +90,14 @@ class DataBaseRepositoryImpl(
         return serverProductDao.getProductNameList()
     }
 
-    override suspend fun getSearchProductList(searchText: String): List<ProductData> {
-        return serverProductDao.getSearchProduct(searchText)
+    override fun getSearchProductList(searchText: String): Flow<PagingData<ProductData>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 50,
+                enablePlaceholders = false,
+
+                ),
+            pagingSourceFactory =  { ProductDataPagingSource(serverProductDao,null,searchText) }
+        ).flow
     }
 }

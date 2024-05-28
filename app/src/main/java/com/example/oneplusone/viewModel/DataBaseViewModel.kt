@@ -32,17 +32,18 @@ class DataBaseViewModel@Inject constructor(
     private val _DBProductDataList = MutableLiveData<Flow<PagingData<ProductData>>>()
     private val _productNameList=MutableLiveData<List<String>>()
 
-//    val favoritePagingBooks: StateFlow<PagingData<ProductData>> =
-//        dbRepository.getAllServerProductDataList()
-//            .cachedIn(viewModelScope) // 코루틴이 데이터흐름을 캐시하고 공유 가능하게 만든다.
-//            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), PagingData.empty())
-//
 
     private val _convenienceType=MutableLiveData<String>()
 
     private val _serverConnectProcessState=MutableLiveData<Boolean>()
 
     private val _isLoading = MutableLiveData<Boolean>()
+
+    private val _favoriteProductByPaging= MutableLiveData<Flow<PagingData<FavoriteProductModel>>>()
+
+    private val _searchText=MutableLiveData<String>()
+    val favoriteProductByPaging: LiveData<Flow<PagingData<FavoriteProductModel>>>
+        get() = _favoriteProductByPaging
     val isLoading: LiveData<Boolean> get() = _isLoading
 
     val favoriteProducts: LiveData<List<FavoriteProductModel>>
@@ -59,6 +60,10 @@ class DataBaseViewModel@Inject constructor(
 
     val convenienceType:LiveData<String>
         get()=_convenienceType
+
+    val searchText:LiveData<String>
+        get()=_searchText
+
     init {
 //        loadFavoriteProducts()
 //        loadProductDataList()
@@ -76,6 +81,12 @@ class DataBaseViewModel@Inject constructor(
         }
     }
 
+    fun deleteAllFavoriteProduct(){
+        viewModelScope.launch {
+            dbRepository.deleteAllFavoriteProductList()
+        }
+    }
+
     fun loadProductDataList() {
 
         _DBProductDataList.value=dbRepository.getAllServerProductDataList()
@@ -88,11 +99,11 @@ class DataBaseViewModel@Inject constructor(
 
     }
 
-
-    fun toggleLoadingBar(loadingValue: Boolean) {
-        _isLoading.value=loadingValue
-//        _isLoading.value=!_isLoading.value!!
+    fun loadFavoriteProductDataByPaging(){
+        _favoriteProductByPaging.value=dbRepository.getAllFavoriteProductByPaging()
     }
+
+
 
     fun loadSearchFavoriteProducts(newSearchText: String) {
         viewModelScope.launch {
@@ -110,6 +121,16 @@ class DataBaseViewModel@Inject constructor(
 //            Log.d("loadSearchFavoriteProducts", productsDataList.toString())
 //            _DBProductDataList.value= productsDataList
 //        }
+    }
+
+    fun setSearchText(searchText: String){
+        _searchText.value=searchText
+    }
+
+    fun loadSearchProductDataByPaging(){
+        _searchText.value?.let{
+            _DBProductDataList.value=dbRepository.getSearchProductList(it)
+        }
     }
 
     fun setConvenienceType(convenienceType: String){
@@ -144,21 +165,6 @@ class DataBaseViewModel@Inject constructor(
         }
     }
 
-    private fun convertServerProductData(serverProductDate:List<ServerProductData>): List<ProductData> {
-        return serverProductDate.map { product ->
-            ProductData(
-                id = null,
-                productName = product.name,
-                productPrice = product.price,
-                brand = product.convname,
-                benefits = product.event,
-                productImage = product.image,
-                favorite = false,
-                category = product.category,
-                pb = product.pb
-            )
-        }
-    }
 
     private fun convertServerProductDataToDBData(serverProductDate:List<ServerProductData>): List<ProductData> {
         return serverProductDate.map { product ->
@@ -190,9 +196,12 @@ class DataBaseViewModel@Inject constructor(
     fun updateProductDatabase(productDataList: List<ServerProductData>) {
         viewModelScope.launch {
 
+            deleteAllFavoriteProduct()
+
             deleteAllDBProductList()
 
             insertServerProductDataList(productDataList)
+
 
             _serverConnectProcessState.value=true
         }

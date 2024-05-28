@@ -13,14 +13,17 @@ interface FavoriteProductDao {
     @Query("SELECT * FROM favoriteProduct")
     suspend fun getAllFavoriteProduct(): List<FavoriteProductModel>
 
+    @Query("SELECT * FROM favoriteProduct ORDER BY id ASC LIMIT 50 OFFSET (:page-1)*50")
+    suspend fun getAllFavoriteProductByPaging(page:Int): List<FavoriteProductModel>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFavoriteProduct(productData: FavoriteProductModel): Long
 
     @Delete
     suspend fun deleteFavoriteProduct(productData: FavoriteProductModel)
 
-    @Delete
-    suspend fun deleteAllFavoriteProduct(productData: FavoriteProductModel)
+    @Query("DELETE FROM favoriteProduct")
+    suspend fun deleteAllFavoriteProduct()
 
 
     @Query("SELECT * FROM favoriteProduct WHERE LOWER(productName) LIKE LOWER(:searchProductText)")

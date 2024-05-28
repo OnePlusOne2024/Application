@@ -55,14 +55,13 @@ class MainActivity : AppCompatActivity() {
         val lastConnectTime = sharedPreferences.getString("lastConnectTime",null)
         val editor = sharedPreferences.edit()
 
+
         //접속했으면 현재 날짜를 등록
         editor.putString("lastConnectTime", getCurrentDate().toString())
         editor.apply()
 
 
-        val formatter = DateTimeFormatter.ISO_DATE_TIME
-        val dateTime = LocalDateTime.parse(lastConnectTime, formatter)
-        Log.d("dateTime", dateTime.toString())
+        Log.d("dateTime", lastConnectTime.toString())
 
 
         return lastConnectTime

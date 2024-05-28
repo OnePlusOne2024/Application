@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.oneplusone.db.FavoriteProductDao
+import com.example.oneplusone.db.FavoriteProductModel
 import com.example.oneplusone.db.ProductDao
 import com.example.oneplusone.db.ProductData
 import kotlinx.coroutines.CoroutineScope
@@ -13,33 +14,24 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
 
-class ProductDataPagingSource(
-    private val serverProductDao: ProductDao,
-    private val convenienceType: String? = null,
-    private val searchText:String?=null
-) : PagingSource<Int,ProductData>() {
+class FavoriteProductDataPagingSource(
+    private val favoriteProductDao: FavoriteProductDao,
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ProductData> {
+) : PagingSource<Int,FavoriteProductModel>() {
+
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, FavoriteProductModel> {
 
 
 
         // 시작 페이지
         val page = params.key ?: STARTING_PAGE
-        Log.d("dbdata", searchText.toString())
+
         return try {
 
-            val data = when {
-                convenienceType == null && searchText == null -> {
-                    serverProductDao.getAllProductData(page)
-                }
-                convenienceType != null && searchText == null -> {
-                    serverProductDao.getAllProductDataByConvenienceType(page, convenienceType)
-                }
-                else -> {
-                    Log.d("dbdata", searchText.toString())
-                    serverProductDao.getSearchProduct(page, searchText!!)
-                }
-            }
+            val data = favoriteProductDao.getAllFavoriteProductByPaging(page)
+
+
+
             Log.d("dbdata", data.toString())
             //테스트를 위해 고의적으로 딜레이를 줬음
             delay(500)
@@ -61,7 +53,7 @@ class ProductDataPagingSource(
         }
     }
 
-    override fun getRefreshKey(state: PagingState<Int, ProductData>): Int? {
+    override fun getRefreshKey(state: PagingState<Int, FavoriteProductModel>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
                 ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)

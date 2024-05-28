@@ -300,6 +300,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun showProductDetailDialog(productData: ProductData) {
         val mDialogView = LayoutInflater.from(requireContext()).inflate(R.layout.product_detail_viewer, null)
         val dialogBinding = ProductDetailViewerBinding.bind(mDialogView)
@@ -329,6 +330,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         dialog.setOnDismissListener {
+            productItemRecyclerAdapter.notifyDataSetChanged()
 //            if (index != -1) {
 //                productItemRecyclerAdapter.notifyItemChanged(index)
 //            }
@@ -370,10 +372,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
         })
 
-        productDataViewModel.convenienceType.observe(viewLifecycleOwner, Observer { convenienceData ->
-
-
-        })
     }
 
     private fun addMarker(convenienceData: ConvenienceData, isSelected: Boolean) {

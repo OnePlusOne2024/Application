@@ -25,6 +25,6 @@ interface ProductDao {
     @Query("SELECT productName FROM productData")
     suspend fun getProductNameList(): List<String>
 
-    @Query("SELECT * FROM productData WHERE LOWER(productName) LIKE LOWER(:searchProductText)")
-    suspend fun getSearchProduct(searchProductText: String): List<ProductData>
+    @Query("SELECT * FROM productData WHERE LOWER(productName) LIKE LOWER(:searchProductText) LIMIT 50 OFFSET (:page-1)*50")
+    suspend fun getSearchProduct(page:Int ,searchProductText: String): List<ProductData>
 }
