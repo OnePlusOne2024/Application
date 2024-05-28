@@ -1,15 +1,16 @@
 package com.example.oneplusone.repository
 
-import androidx.lifecycle.LiveData
+import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import androidx.paging.liveData
 import com.example.oneplusone.db.FavoriteProductDao
 import com.example.oneplusone.db.FavoriteProductModel
 import com.example.oneplusone.db.ProductDao
 import com.example.oneplusone.db.ProductData
+import com.example.oneplusone.model.data.enums.ConvenienceType
 import com.example.oneplusone.util.ProductDataPagingSource
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 
 
@@ -43,6 +44,20 @@ class DataBaseRepositoryImpl(
                 enablePlaceholders = false
             ),
             pagingSourceFactory = { ProductDataPagingSource(serverProductDao) }
+        ).flow
+    }
+
+    override fun getAllProductDataByConvenienceType(convenienceType: String):Flow<PagingData<ProductData>>{
+        Log.d("convenienceType2",convenienceType)
+        val pagingSourceFactory ={ ProductDataPagingSource(serverProductDao,convenienceType)}
+
+        return Pager(
+            config = PagingConfig(
+                pageSize = 50,
+                enablePlaceholders = false,
+
+            ),
+            pagingSourceFactory =  pagingSourceFactory
         ).flow
     }
 

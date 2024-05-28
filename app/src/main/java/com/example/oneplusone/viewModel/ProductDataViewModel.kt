@@ -11,7 +11,6 @@ import com.example.oneplusone.db.FavoriteProductModel
 import com.example.oneplusone.db.ProductData
 import com.example.oneplusone.model.data.ConvenienceData
 import com.example.oneplusone.model.data.MainFilterData
-import com.example.oneplusone.model.data.ServerProductData
 import com.example.oneplusone.model.data.ServerResponse
 import com.example.oneplusone.model.data.enums.BenefitsType
 import com.example.oneplusone.model.data.enums.ConvenienceType
@@ -62,6 +61,8 @@ class ProductDataViewModel @Inject constructor(
 
     private val _mainFilterDataList=MutableLiveData<List<MainFilterData>>()
 
+    private val _convenienceType=MutableLiveData<String>()
+
     //MediatorLiveData를 사용해 여러개의 라이브데이터를 하나로 합침
     val _mergeData = MediatorLiveData<Pair<List<ProductData>?, ProductData?>>().apply {
         value = Pair(null, null)
@@ -74,6 +75,9 @@ class ProductDataViewModel @Inject constructor(
         get()=_productDataList
 
     //todo 서버에서 데이터를 가져왔을 경우를 생각해 레포지토리 생성하기
+
+    val convenienceType: LiveData<String>
+        get() = _convenienceType
 
     val clickProductData: LiveData<ProductData>
         get() = _clickProductData
@@ -262,6 +266,10 @@ class ProductDataViewModel @Inject constructor(
         }
     }
 
+    fun setTouchConvenience(selectedMarkerData: String){
+        _convenienceType.value=selectedMarkerData
+    }
+
     fun loadConvenienceProductData(selectedMarkerData: ConvenienceData) {
         Log.d("selectedMarkerData", selectedMarkerData.toString())
         Log.d("productDataList", productDataList.value.toString())
@@ -282,33 +290,29 @@ class ProductDataViewModel @Inject constructor(
 //        }
     }
 
-    fun loadMapFilteredProductData(mainFilterData: List<MainFilterData>) {
-        Log.d("mainFilterData", mainFilterData.toString())
-        _convenienceProductData.value?.let { productList ->
-
-            // PB 필터를 적용한 결과에 메인 필터 적용
-            val finalFilteredProductList = productList.filter { product ->
-                mainFilterData.all { filter ->
+    fun loadMapFilteredProductData(productData: ProductData):Boolean {
+        Log.d("_convenienceType.value", _convenienceType.value.toString())
+        productData.let { productList ->
+            val finalFilteredProductList =
+                _mainFilterDataList.value!!.all { filter ->
                     when (filter.filterType) {
-                        FilterType.CONVENIENCE ->
-                            filter.mainFilterText == ConvenienceType.ALL_CONVENIENCE_STORE.title || product.brand == filter.mainFilterText
                         FilterType.PRODUCT_CATEGORY ->
-                            filter.mainFilterText == ProductCategoryType.ALL_PRODUCT_CATEGORY.title || product.category == filter.mainFilterText
+                            filter.mainFilterText == ProductCategoryType.ALL_PRODUCT_CATEGORY.title || productList.category == filter.mainFilterText
                         FilterType.BENEFITS ->
-                            filter.mainFilterText == BenefitsType.ALL_BENEFITS.title || product.benefits == filter.mainFilterText
+                            filter.mainFilterText == BenefitsType.ALL_BENEFITS.title || productList.benefits == filter.mainFilterText
                         FilterType.PB ->
                             if (filter.mainFilterText == "PB 상품만") {
-                                product.pb
+                                productList.pb
                             } else {
                                 true
                             }
-                        else -> true
+                        else -> false
                     }
                 }
-            }
-            Log.d("finalFilteredProductList", finalFilteredProductList.toString())
-            _filterProductData.value = finalFilteredProductList
+            Log.d("_convenienceType.value", finalFilteredProductList.toString())
+            return finalFilteredProductList
         }
+
     }
 
     //ignoreCase = true면 대소문자 구분 안하는거
@@ -317,6 +321,22 @@ class ProductDataViewModel @Inject constructor(
             originalProduct.productName.contains(searchText, ignoreCase = true)
         }
         return filterProductData
+    }
+
+    fun loadConvenienceFilter(productData: ProductData) {
+        convenienceType.value?.let { Log.d("convenienceType.value2", it) }
+        productData.let { productList ->
+            val convenienceFiltered = convenienceType.value?.all { convenienceType ->
+                when (convenienceType.toString()) {
+                    ConvenienceType.STORE_CU.title -> productList.brand == ConvenienceType.STORE_CU.title
+                    ConvenienceType.STORE_SEVEN_ELEVEN.title -> productList.brand == ConvenienceType.STORE_SEVEN_ELEVEN.title
+                    ConvenienceType.STORE_GS_25.title -> productList.brand == ConvenienceType.STORE_GS_25.title
+                    ConvenienceType.STORE_E_MART24.title -> productList.brand == ConvenienceType.STORE_E_MART24.title
+                    else -> false
+                }
+            }
+
+        }
     }
 //    fun setSearchText(searchText: String){
 //

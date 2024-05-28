@@ -12,17 +12,28 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
 
-class ProductDataPagingSource(private val serverProductDao: ProductDao) : PagingSource<Int,ProductData>() {
+class ProductDataPagingSource(
+    private val serverProductDao: ProductDao,
+    private val convenienceType: String? = null
+) : PagingSource<Int,ProductData>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ProductData> {
+
+
 
         // 시작 페이지
         val page = params.key ?: STARTING_PAGE
 
         return try {
 
-            val data = serverProductDao.getAllProductData(page)
+            val data = if (convenienceType == null) {
+                serverProductDao.getAllProductData(page)
+            } else {
+                Log.d("convenienceType3", convenienceType.toString())
+                serverProductDao.getAllProductDataByConvenienceType(page, convenienceType)
+            }
 
+            Log.d("dbdata", data.toString())
             //테스트를 위해 고의적으로 딜레이를 줬음
             delay(500)
 

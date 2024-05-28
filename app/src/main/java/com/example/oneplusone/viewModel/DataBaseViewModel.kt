@@ -12,6 +12,7 @@ import com.example.oneplusone.db.FavoriteProductModel
 import com.example.oneplusone.db.ProductData
 
 import com.example.oneplusone.model.data.ServerProductData
+import com.example.oneplusone.model.data.enums.ConvenienceType
 import com.example.oneplusone.repository.DataBaseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -37,6 +38,8 @@ class DataBaseViewModel@Inject constructor(
 //            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), PagingData.empty())
 //
 
+    private val _convenienceType=MutableLiveData<String>()
+
     private val _serverConnectProcessState=MutableLiveData<Boolean>()
 
     private val _isLoading = MutableLiveData<Boolean>()
@@ -53,6 +56,9 @@ class DataBaseViewModel@Inject constructor(
 
     val serverConnectProcessState:LiveData<Boolean>
         get()=_serverConnectProcessState
+
+    val convenienceType:LiveData<String>
+        get()=_convenienceType
     init {
 //        loadFavoriteProducts()
 //        loadProductDataList()
@@ -76,6 +82,13 @@ class DataBaseViewModel@Inject constructor(
 
     }
 
+    fun loadProductDataByConvenienceType(){
+
+        _convenienceType.value?.let { _DBProductDataList.value=dbRepository.getAllProductDataByConvenienceType(it) }
+
+    }
+
+
     fun toggleLoadingBar(loadingValue: Boolean) {
         _isLoading.value=loadingValue
 //        _isLoading.value=!_isLoading.value!!
@@ -97,6 +110,10 @@ class DataBaseViewModel@Inject constructor(
 //            Log.d("loadSearchFavoriteProducts", productsDataList.toString())
 //            _DBProductDataList.value= productsDataList
 //        }
+    }
+
+    fun setConvenienceType(convenienceType: String){
+        _convenienceType.value=convenienceType
     }
 
     fun loadProductNameList(){
@@ -197,13 +214,6 @@ class DataBaseViewModel@Inject constructor(
         _serverConnectProcessState.value=serverConnectProcessState
     }
 
-    fun loadProductAndFavoriteProduct(){
 
-        if(_serverConnectProcessState.value == true){
-            loadFavoriteProducts()
-            loadProductDataList()
-        }
-
-    }
 
 }

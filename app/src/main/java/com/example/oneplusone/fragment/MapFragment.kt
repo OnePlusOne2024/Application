@@ -16,6 +16,9 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.filter
+import androidx.paging.map
 import com.example.oneplusone.R
 import com.example.oneplusone.databinding.FragmentMapBinding
 import com.example.oneplusone.databinding.ProductDetailViewerBinding
@@ -46,6 +49,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
@@ -103,8 +108,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        dbViewModel.loadProductDataList()
-        dbViewModel.loadFavoriteProducts()
 
         initAdapter()
         setupDataBinding()
@@ -112,7 +115,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mapZipperTouch()
 //        onMarkerClickListener()
         //todo:지도에 편의점 띄우기 + 터치시 상품뷰 출력
-
+        dbViewModel.loadFavoriteProducts()
 
         //임시로 초기 상품뷰의 높이 설정
         binding.mapProductLayout.layoutParams.height=(screenHeight * 0.4).toInt()
@@ -222,7 +225,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun observeMainFilterViewModel() {
         mapMainFilterViewModel.mainFilterDataList.observe(viewLifecycleOwner, Observer { mainFilterData ->
             mainFilterAdapter.submitList(mainFilterData)
-            productDataViewModel.loadMapFilteredProductData(mainFilterData)
+            productDataViewModel.setCurrentMainFilterData(mainFilterData)
+
+            dbViewModel.loadProductDataByConvenienceType()
+//            dbViewModel.loadProductDataList()
+
         })
     }
 
@@ -285,6 +292,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 productDataViewModel.loadProductData()
             }
         })
+        productDataViewModel.convenienceType.observe(viewLifecycleOwner, Observer { convenienceType ->
+//            dbViewModel.loadProductDataList()
+//            dbViewModel.loadFavoriteProducts()
+        })
+
 
     }
 
@@ -340,7 +352,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 binding.productFilter.text=(selectedMarkerData.convenienceName)
 
                 //선택된 편의점의 종류에 맞게 상품 로드
-                productDataViewModel.loadConvenienceProductData(selectedMarkerData)
+//                dbViewModel.loadProductDataByConvenienceType(selectedMarkerData.convenienceType)
+                dbViewModel.setConvenienceType(selectedMarkerData.convenienceType)
+//                dbViewModel.loadProductDataByConvenienceType(selectedMarkerData.convenienceType)
                 //메인필터를 초기화
                 mapMainFilterViewModel.initMainFilters()
             }else{
@@ -354,6 +368,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 val isSelected = convenienceData == selectedMarkerData
                 addMarker(convenienceData, isSelected)
             }
+        })
+
+        productDataViewModel.convenienceType.observe(viewLifecycleOwner, Observer { convenienceData ->
+
+
         })
     }
 
@@ -391,8 +410,30 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             productDataViewModel.loadFavoriteProduct(favoriteProductData)
         })
 
-        dbViewModel.DBProductDataList.observe(viewLifecycleOwner, Observer { DBProductDataList ->
-//            productDataViewModel.loadDBProductData(DBProductDataList)
+        dbViewModel.convenienceType.observe(viewLifecycleOwner, Observer { convenienceType ->
+            dbViewModel.loadProductDataByConvenienceType()
+        })
+
+        dbViewModel.DBProductDataList.observe(viewLifecycleOwner, Observer { dbProductDataList ->
+
+            lifecycleScope.launch {
+
+                dbProductDataList.collectLatest { pagingData ->
+
+                    val transformedData = pagingData
+                        .map { productData ->
+
+                            productDataViewModel.isProductFavorite(productData)
+                        }.filter{productData->
+                            Log.d("pagingData2", productData.toString())
+                            productDataViewModel.loadMapFilteredProductData(productData)
+                        }
+
+                    productItemRecyclerAdapter.submitData(lifecycle, transformedData)
+
+                }
+
+            }
         })
     }
 

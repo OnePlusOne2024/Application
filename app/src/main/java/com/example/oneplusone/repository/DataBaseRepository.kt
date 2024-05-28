@@ -14,6 +14,9 @@ interface DataBaseRepository {
     suspend fun getSearchFavoriteProductList(searchText:String):List<FavoriteProductModel>
 
     fun getAllServerProductDataList(): Flow<PagingData<ProductData>>
+
+    fun getAllProductDataByConvenienceType(convenienceType: String):Flow<PagingData<ProductData>>
+
     suspend fun insertServerProductDataList(productDataList: List<ProductData>)
     suspend fun deleteServerProductDataList()
 
