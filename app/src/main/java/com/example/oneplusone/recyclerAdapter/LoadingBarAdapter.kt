@@ -11,9 +11,6 @@ import com.example.oneplusone.databinding.ProgressbarBinding
 
 class LoadingBarAdapter : LoadStateAdapter<LoadingBarAdapter.LoadingBarAdapterViewHolder>() {
 
-    /**
-     * LoadState 값을 받아 로딩 상태에 따라 ProgressBar의 visible 설정 처리
-     */
     inner class LoadingBarAdapterViewHolder(
         private val binding: ProgressbarBinding
     ) : RecyclerView.ViewHolder(binding.root) {

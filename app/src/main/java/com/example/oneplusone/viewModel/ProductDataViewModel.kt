@@ -17,6 +17,7 @@ import com.example.oneplusone.model.data.enums.ConvenienceType
 import com.example.oneplusone.model.data.enums.FilterType
 import com.example.oneplusone.model.data.enums.ProductCategoryType
 import com.example.oneplusone.repository.ProductDataRepository
+import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDateTime
 import javax.inject.Inject
@@ -63,11 +64,15 @@ class ProductDataViewModel @Inject constructor(
 
     private val _convenienceType=MutableLiveData<String>()
 
+    private val _userCoordinate=MutableLiveData<LatLng>()
+
     //MediatorLiveData를 사용해 여러개의 라이브데이터를 하나로 합침
     val _mergeData = MediatorLiveData<Pair<List<ProductData>?, ProductData?>>().apply {
         value = Pair(null, null)
     }
 
+    val userCoordinate: LiveData<LatLng>
+        get()=_userCoordinate
     val isFavorite: LiveData<ProductData>
         get()=_isFavorite
 
@@ -117,12 +122,7 @@ class ProductDataViewModel @Inject constructor(
         _isFavorite.value=productData
 
     }
-    fun favoriteProductJudgment(productData: ProductData){
 
-//        if(!productData.favorite){
-//            _productDataList.value = _productDataList.value?.filter { it != productData }
-//        }
-    }
     init {
 
         //좋아요한 상품목록, 일반상품목록 모두 db에서 가져와 비교해야 하는데 두 데이터가 모두 준비됐을때만 productData의 값을
@@ -187,6 +187,14 @@ class ProductDataViewModel @Inject constructor(
 
     }
 
+    fun setCoordinate(latitude: Double, longitude: Double){
+        _userCoordinate.value= LatLng(latitude,longitude)
+    }
+    fun loadConvenienceDataFromServer(userCoordinate:LatLng){
+        productDataRepository.getConvenienceData(userCoordinate) { serverResult ->
+
+        }
+    }
 
     fun loadDBProductData(productDataList: ProductData){
         _DBProductDataList.value=productDataList

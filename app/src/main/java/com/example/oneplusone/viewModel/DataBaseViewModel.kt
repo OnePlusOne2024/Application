@@ -162,6 +162,7 @@ class DataBaseViewModel@Inject constructor(
             insertFavoriteProduct(favoriteProductModel)
         }else{
             deleteFavoriteProduct(favoriteProductModel)
+            loadFavoriteProductDataByPaging()
         }
     }
 

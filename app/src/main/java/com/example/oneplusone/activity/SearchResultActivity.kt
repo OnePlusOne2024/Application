@@ -189,15 +189,10 @@ class SearchResultActivity : AppCompatActivity() {
     }
 
     private fun observeProductDataViewModel() {
-        productDataViewModel.productDataList.observe(this) { data ->
-//            productItemRecyclerAdapter.submitList(data)
-        }
+
 
         productDataViewModel.clickProductData.observe(this){ clickProductData ->
             showProductDetailDialog(clickProductData)
-        }
-        productDataViewModel.filterProductData.observe(this){ filterProductData ->
-//            productItemRecyclerAdapter.submitList(filterProductData)
         }
 
         productDataViewModel.isFavorite.observe(this) { isFavorite ->
@@ -211,9 +206,7 @@ class SearchResultActivity : AppCompatActivity() {
         dbViewModel.favoriteProducts.observe(this) { favoriteProductData ->
             productDataViewModel.loadFavoriteProduct(favoriteProductData)
         }
-//        dbViewModel.favoriteProducts.observe(this) { favoriteProductData ->
-//            productDataViewModel.loadFavoriteProduct(favoriteProductData)
-//        }
+
         
         dbViewModel.DBProductDataList.observe(this) { dbProductDataList ->
             lifecycleScope.launch {
@@ -250,12 +243,7 @@ class SearchResultActivity : AppCompatActivity() {
 
 
             dbViewModel.loadSearchProductDataByPaging()
-//            dbViewModel.loadSearchFavoriteProducts(convertSearchText)
-//            dbViewModel.loadSearchProductDataList(convertSearchText)
 
-
-            //새로운 검색을 했다면 검색된 상품만 다시 불러옴
-//            productDataViewModel.loadProductData(null,newSearchText)
             //검색한 데이터를 저장함
             searchViewModel.saveSearchText(this@SearchResultActivity,newSearchText)
         }
@@ -313,6 +301,7 @@ class SearchResultActivity : AppCompatActivity() {
 //            if (index != -1) {
 //                productItemRecyclerAdapter.notifyItemChanged(index)
 //            }
+            productItemRecyclerAdapter.notifyDataSetChanged()
         }
     }
 

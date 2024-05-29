@@ -184,7 +184,6 @@ class FavoriteFragment : Fragment() {
 
         productDataViewModel.isFavorite.observe(viewLifecycleOwner, Observer { isFavorite ->
             dbViewModel.favoriteProductJudgment(isFavorite)
-            productDataViewModel.favoriteProductJudgment(isFavorite)
         })
     }
     @SuppressLint("NotifyDataSetChanged")

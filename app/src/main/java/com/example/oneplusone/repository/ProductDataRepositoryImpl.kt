@@ -2,9 +2,11 @@ package com.example.oneplusone.repository
 
 import android.util.Log
 import com.example.oneplusone.db.ProductData
+import com.example.oneplusone.model.data.ServerConvenienceResult
 import com.example.oneplusone.model.data.ServerProductData
 import com.example.oneplusone.model.data.ServerResponse
 import com.example.oneplusone.serverConnection.RetrofitBuilder
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -169,7 +171,29 @@ class ProductDataRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun getConvenienceData(userCoordinate: LatLng, callback: (ServerConvenienceResult?) -> Unit) {
 
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = try {
+                val response = RetrofitBuilder.api.getConvenienceData(userCoordinate.latitude.toString(),userCoordinate.longitude.toString())
+
+                if (response.isSuccessful){
+                    Log.d("연결 성공","성공")
+                    Log.d("연결 성공", response.body().toString())
+                    response.body()
+                } else {
+                    Log.d("연결 실패","실패")
+                    null
+                }
+            } catch (e: Exception) {
+                Log.d("연결 실패", e.toString())
+                null
+            }
+            withContext(Dispatchers.Main) {
+                callback(result)
+            }
+        }
+    }
 //    override fun getGS25ProductList() {
 //        RetrofitBuilder.api.getGS25ProductData().enqueue(object : Callback<List<ProductData>> {
 //            override fun onResponse(call: Call<List<ProductData>>, response: Response<List<ProductData>>) {

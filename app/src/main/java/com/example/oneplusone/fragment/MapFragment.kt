@@ -12,6 +12,9 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -42,6 +45,7 @@ import com.example.oneplusone.viewModel.FilterDataViewModel
 import com.example.oneplusone.viewModel.MapDataViewModel
 import com.example.oneplusone.viewModel.MapMainFilterViewModel
 import com.example.oneplusone.viewModel.ProductDataViewModel
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -51,6 +55,14 @@ import com.google.android.gms.maps.model.MarkerOptions
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import android.Manifest
+import android.os.Looper
+import com.google.android.gms.location.Granularity
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 
 
 @AndroidEntryPoint
@@ -71,15 +83,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var productItemRecyclerAdapter: ProductItemRecyclerAdapter
     private lateinit var mainFilterAdapter: MainFilterRecyclerAdapter
 
+
     private val productSpacingController = ItemSpacingController(25, 25, 40)
 
+    lateinit var locationPermission: ActivityResultLauncher<Array<String>>
 
-//    private lateinit var markerView: View
-//    private lateinit var tagMarker: TextView
+    //위치 서비스가 gps를 사용해서 위치를 확인
+    lateinit var fusedLocationClient: FusedLocationProviderClient
 
-//    val markerView: View = LayoutInflater.from(context).inflate(R.layout.custom_marker, null)
-//    val tagMarkerText = markerView.findViewById<TextView>(R.id.custom_marker_text)
-//    val tagMarkerImage = markerView.findViewById<ImageView>(R.id.custom_marker_image)
+    lateinit var locationCallback: LocationCallback
+
 
 //todo 코드 너무 중구난방으로 나누어져 있음, 맵메인뷰모델을 꼭 써야하는지 생각해보기, 디자인 구림,
 // 점포 아이콘 아래에 정확한 위치에 편의점 아이콘을 넣는것은 어떨지 생각해보기
@@ -90,8 +103,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var selectMainFilter:View?=null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
+
+
     ): View {
+
+
         binding = FragmentMapBinding.inflate(inflater, container, false)
 
 //        @SuppressLint("InflateParams")
@@ -114,6 +131,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         observeSetting()
         mapZipperTouch()
 //        onMarkerClickListener()
+
+        locationPermissionCheck()
+        locationPermissionLaunch()
         //todo:지도에 편의점 띄우기 + 터치시 상품뷰 출력
         dbViewModel.loadFavoriteProducts()
 
@@ -121,12 +141,42 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         binding.mapProductLayout.layoutParams.height=(screenHeight * 0.4).toInt()
     }
 
+
+
+    private fun locationPermissionLaunch() {
+        locationPermission.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+        )
+    }
+
+    private fun locationPermissionCheck() {
+        locationPermission = registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()){ results ->
+            if(results.all{it.value}){
+
+            }else{ //문제가 발생했을 때
+                Toast.makeText(requireContext(),"권한 승인이 필요합니다.",Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+
+
     private fun initAdapter() {
+        getCurrentLocation()
         initMainFilterAdapter()
         initProductFilterAdapter()
         initProductItemRecyclerAdapter()
     }
 //
+
+
+    private fun getCurrentLocation() {
+
+    }
 
     //레이아웃과 연결 (Hilt)
     private fun setupDataBinding() {
@@ -257,9 +307,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun observeProductDataViewModel() {
-        productDataViewModel.productDataList.observe(viewLifecycleOwner, Observer { data ->
-//            productItemRecyclerAdapter.submitList(data)
-        })
 
         productDataViewModel.clickProductData.observe(viewLifecycleOwner, Observer { clickProductData ->
 
@@ -275,13 +322,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             binding.mapProductLayout.layoutParams = params
 
         })
-        productDataViewModel.filterProductData.observe(viewLifecycleOwner, Observer { filterProductData ->
-//            productItemRecyclerAdapter.submitList(filterProductData)
-        })
 
-        productDataViewModel.convenienceProductData.observe(viewLifecycleOwner, Observer { convenienceProductData ->
-//            productItemRecyclerAdapter.submitList(convenienceProductData)
-        })
 
         productDataViewModel.isFavorite.observe(viewLifecycleOwner, Observer { isFavorite ->
             dbViewModel.favoriteProductJudgment(isFavorite)
@@ -292,11 +333,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 productDataViewModel.loadProductData()
             }
         })
-        productDataViewModel.convenienceType.observe(viewLifecycleOwner, Observer { convenienceType ->
-//            dbViewModel.loadProductDataList()
-//            dbViewModel.loadFavoriteProducts()
+        productDataViewModel.userCoordinate.observe(viewLifecycleOwner, Observer { userCoordinate ->
+            //업데이트된 좌표로 카메라를 이동시키고 서버에서 편의점 리스트를 불러옴
+            googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(userCoordinate.latitude, userCoordinate.longitude), 12f))
+            productDataViewModel.loadConvenienceDataFromServer(userCoordinate)
         })
-
 
     }
 
@@ -331,9 +372,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         dialog.setOnDismissListener {
             productItemRecyclerAdapter.notifyDataSetChanged()
-//            if (index != -1) {
-//                productItemRecyclerAdapter.notifyItemChanged(index)
-//            }
         }
     }
 
@@ -388,11 +426,37 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         this.googleMap = googleMap
 //        val point = LatLng(37.514655, 126.979974)
 //        googleMap.addMarker(MarkerOptions().position(point))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(37.514655, 126.979974), 12f))
+        updateLocation()
+//        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(37.514655, 126.979974), 12f))
         observeConvenienceData()
         setMarkerClickListener()
     }
+    @SuppressLint("MissingPermission")
+    fun updateLocation(){
 
+        //intervalMillis는 업데이트 단위 1초
+        //setMinUpdateDistanceMeters는 거리 변화의 업데이트 1000F는 1키로
+        //setWaitForAccurateLocation는 정확한 위치를 기다릴리 여부
+        val locationRequest=LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000).apply {
+
+            setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
+            setWaitForAccurateLocation(true)
+        }.build()
+
+        val locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                for (location in locationResult.locations) {
+
+                    productDataViewModel.setCoordinate(location.latitude,location.longitude)
+                    Log.d("위치정보", "위도: ${location.latitude} 경도: ${location.longitude}")
+
+                }
+            }
+        }
+
+        // 권한 처리 후
+        LocationServices.getFusedLocationProviderClient(requireContext()).requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper())
+    }
 
     //이상하게 일정거리 이상에서 마커를 터치하면 분명 같은 마커를 터치 했는데 다른 마커가 터치된 것처럼 반응함(축소거리 조정예정)
     private fun setMarkerClickListener() {
@@ -457,6 +521,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onStart() {
         super.onStart()
+        //위치정보 획득 권한 요청
+
         binding.mapView.onStart()
     }
 
