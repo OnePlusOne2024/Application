@@ -9,5 +9,7 @@ data class ConvenienceData(
 
     val convenienceName: String,
 
+    val convenienceAddress:String,
+
     val conveniencePosition: LatLng,
     )

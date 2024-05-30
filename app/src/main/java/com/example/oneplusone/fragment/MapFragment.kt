@@ -335,11 +335,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         })
         productDataViewModel.userCoordinate.observe(viewLifecycleOwner, Observer { userCoordinate ->
             //업데이트된 좌표로 카메라를 이동시키고 서버에서 편의점 리스트를 불러옴
-            googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(userCoordinate.latitude, userCoordinate.longitude), 12f))
-            productDataViewModel.loadConvenienceDataFromServer(userCoordinate)
+            googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(userCoordinate.latitude, userCoordinate.longitude), 15f))
+
+            mapDataViewModel.loadConvenienceDataFromServer(userCoordinate)
         })
 
     }
+
+
 
     @SuppressLint("NotifyDataSetChanged")
     private fun showProductDetailDialog(productData: ProductData) {
@@ -392,9 +395,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 binding.productFilter.text=(selectedMarkerData.convenienceName)
 
                 //선택된 편의점의 종류에 맞게 상품 로드
-//                dbViewModel.loadProductDataByConvenienceType(selectedMarkerData.convenienceType)
                 dbViewModel.setConvenienceType(selectedMarkerData.convenienceType)
-//                dbViewModel.loadProductDataByConvenienceType(selectedMarkerData.convenienceType)
                 //메인필터를 초기화
                 mapMainFilterViewModel.initMainFilters()
             }else{
@@ -409,6 +410,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 addMarker(convenienceData, isSelected)
             }
         })
+
+
 
     }
 
@@ -431,14 +434,15 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         observeConvenienceData()
         setMarkerClickListener()
     }
+
     @SuppressLint("MissingPermission")
     fun updateLocation(){
 
         //intervalMillis는 업데이트 단위 1초
         //setMinUpdateDistanceMeters는 거리 변화의 업데이트 1000F는 1키로
         //setWaitForAccurateLocation는 정확한 위치를 기다릴리 여부
-        val locationRequest=LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000).apply {
-
+        val locationRequest=LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 3000).apply {
+//            setMinUpdateDistanceMeters(1000f)
             setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
             setWaitForAccurateLocation(true)
         }.build()

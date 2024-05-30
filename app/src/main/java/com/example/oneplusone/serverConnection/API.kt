@@ -21,7 +21,7 @@ interface API {
     @GET("/api/v1/product/read_all")
     suspend fun getProductList(@Query("clientTime")clientTime: String?): Response<ServerResponse>
 
-    @GET("/api/v1/product/")
+    @GET("/api/v1/convenience/near_conv")
     suspend fun getConvenienceData(
         @Query("latitude")latitude: String?,
         @Query("longitude")longitude: String?,

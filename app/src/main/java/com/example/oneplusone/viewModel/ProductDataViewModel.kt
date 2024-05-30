@@ -11,6 +11,7 @@ import com.example.oneplusone.db.FavoriteProductModel
 import com.example.oneplusone.db.ProductData
 import com.example.oneplusone.model.data.ConvenienceData
 import com.example.oneplusone.model.data.MainFilterData
+import com.example.oneplusone.model.data.ServerConvenienceData
 import com.example.oneplusone.model.data.ServerResponse
 import com.example.oneplusone.model.data.enums.BenefitsType
 import com.example.oneplusone.model.data.enums.ConvenienceType
@@ -66,10 +67,17 @@ class ProductDataViewModel @Inject constructor(
 
     private val _userCoordinate=MutableLiveData<LatLng>()
 
+    private val _convenienceDataList= MutableLiveData<List<ConvenienceData>>()
+
     //MediatorLiveData를 사용해 여러개의 라이브데이터를 하나로 합침
     val _mergeData = MediatorLiveData<Pair<List<ProductData>?, ProductData?>>().apply {
         value = Pair(null, null)
     }
+
+
+    val convenienceDataList: LiveData<List<ConvenienceData>>
+        get() = _convenienceDataList
+
 
     val userCoordinate: LiveData<LatLng>
         get()=_userCoordinate
@@ -190,11 +198,24 @@ class ProductDataViewModel @Inject constructor(
     fun setCoordinate(latitude: Double, longitude: Double){
         _userCoordinate.value= LatLng(latitude,longitude)
     }
-    fun loadConvenienceDataFromServer(userCoordinate:LatLng){
-        productDataRepository.getConvenienceData(userCoordinate) { serverResult ->
 
+
+
+
+
+    //서버에서 상품 목록을 가져옴
+    fun getProductDataFromServer(loadConnectTime: String?) {
+        Log.d("실행됨", "serverProductData.toString()")
+
+        productDataRepository.getProductDataList(loadConnectTime) { serverProductData ->
+
+            if (serverProductData != null) {
+                _serverProductDataList.value=serverProductData
+            }
         }
     }
+
+
 
     fun loadDBProductData(productDataList: ProductData){
         _DBProductDataList.value=productDataList
@@ -409,17 +430,6 @@ class ProductDataViewModel @Inject constructor(
 //        getProductDataFromServer()
     }
 
-    //서버에서 상품 목록을 가져옴
-    fun getProductDataFromServer(loadConnectTime: String?) {
-        Log.d("실행됨", "serverProductData.toString()")
-
-        productDataRepository.getProductDataList(loadConnectTime) { serverProductData ->
-
-            if (serverProductData != null) {
-                _serverProductDataList.value=serverProductData
-            }
-        }
-    }
 
 
 

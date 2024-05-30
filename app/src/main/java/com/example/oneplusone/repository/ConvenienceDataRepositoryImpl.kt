@@ -1,10 +1,17 @@
 package com.example.oneplusone.repository
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.oneplusone.model.data.ConvenienceData
+import com.example.oneplusone.model.data.ServerConvenienceResult
 import com.example.oneplusone.model.data.enums.ConvenienceType
+import com.example.oneplusone.serverConnection.RetrofitBuilder
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ConvenienceDataRepositoryImpl @Inject constructor() : ConvenienceDataRepository {
@@ -16,29 +23,33 @@ class ConvenienceDataRepositoryImpl @Inject constructor() : ConvenienceDataRepos
     override fun loadConvenienceData() {
 
         convenienceData.value= arrayListOf(
-            ConvenienceData(ConvenienceType.STORE_GS_25.title,
-                "GS25 대천",
-                LatLng(37.514655, 126.979974),
-                ),
 
-            ConvenienceData(ConvenienceType.STORE_SEVEN_ELEVEN.title,
-                "세븐 일레븐 대천2점 울트라",
-                LatLng(37.516927,126.980288),
-            ),
-            ConvenienceData(ConvenienceType.STORE_CU.title,
-                "CU 아산5호점",
-                LatLng(37.514655, 126.983000),
-            ),
-            ConvenienceData(ConvenienceType.STORE_E_MART24.title,
-                "이마트 24 순천",
-                LatLng(37.514655, 126.981100),
-            ),
-            ConvenienceData(ConvenienceType.STORE_GS_25.title,
-                "GS25 대천5",
-                LatLng(37.516927,126.982200),
-            ),
 
         )
+    }
+
+    override fun getConvenienceData(userCoordinate: LatLng, callback: (ServerConvenienceResult?) -> Unit) {
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = try {
+                val response = RetrofitBuilder.api.getConvenienceData(userCoordinate.latitude.toString(),userCoordinate.longitude.toString())
+
+                if (response.isSuccessful){
+                    Log.d("연결 성공","성공")
+                    Log.d("연결 성공", response.body().toString())
+                    response.body()
+                } else {
+                    Log.d("연결 실패","실패")
+                    null
+                }
+            } catch (e: Exception) {
+                Log.d("연결 실패", e.toString())
+                null
+            }
+            withContext(Dispatchers.Main) {
+                callback(result)
+            }
+        }
     }
 
 }

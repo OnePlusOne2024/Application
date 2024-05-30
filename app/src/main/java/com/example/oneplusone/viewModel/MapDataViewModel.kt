@@ -1,10 +1,13 @@
 package com.example.oneplusone.viewModel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.oneplusone.model.data.ConvenienceData
+import com.example.oneplusone.model.data.ServerConvenienceData
 import com.example.oneplusone.repository.ConvenienceDataRepository
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -17,7 +20,7 @@ class MapDataViewModel  @Inject constructor(
 ): ViewModel() {
 
     //_convenienceDataList는 관찰 가능한 데이터를 제공
-    private val _convenienceDataList: LiveData<List<ConvenienceData>> = convenienceDataRepository.getConvenienceData()
+    private val _convenienceDataList= MutableLiveData<List<ConvenienceData>>()
 
     private val _selectedMarkerData = MutableLiveData<ConvenienceData?>()
 
@@ -30,13 +33,6 @@ class MapDataViewModel  @Inject constructor(
     val selectedMarkerData: LiveData<ConvenienceData?>
         get() = _selectedMarkerData
 
-    init{
-        loadConvenienceData()
-    }
-
-    private  fun loadConvenienceData(){
-        convenienceDataRepository.loadConvenienceData()
-    }
 
     fun selectMarker(convenienceData: ConvenienceData?) {
         if (_selectedMarkerData.value == convenienceData) {
@@ -45,6 +41,26 @@ class MapDataViewModel  @Inject constructor(
         } else {
             // 새로운 마커 선택
             _selectedMarkerData.value = convenienceData
+        }
+    }
+
+    fun loadConvenienceDataFromServer(userCoordinate: LatLng){
+        convenienceDataRepository.getConvenienceData(userCoordinate) { serverResult ->
+            if(serverResult!=null && serverResult.success){
+                _convenienceDataList.value=convertConvenienceDataType(serverResult.result)
+            }
+            Log.d("serverResult", serverResult.toString())
+        }
+    }
+
+    private fun convertConvenienceDataType(serverConvenienceData: List<ServerConvenienceData>): List<ConvenienceData> {
+        return serverConvenienceData.map { convenience ->
+            ConvenienceData(
+                convenienceType=convenience.convBrandName,
+                convenienceName = convenience.convName,
+                convenienceAddress = convenience.convAddr,
+                conveniencePosition = LatLng(convenience.latitude,convenience.longitude)
+            )
         }
     }
 
