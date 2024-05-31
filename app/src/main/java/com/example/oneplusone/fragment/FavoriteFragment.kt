@@ -84,6 +84,7 @@ class FavoriteFragment : Fragment() {
         initMainFilterAdapter()
         initProductFilterAdapter()
         initProductItemRecyclerAdapter()
+        productItemRecyclerAdapterStateManagement()
     }
 
     private fun setupDataBinding() {
@@ -142,13 +143,27 @@ class FavoriteFragment : Fragment() {
             })
         binding.productGridView.adapter = productItemRecyclerAdapter
         binding.productGridView.addItemDecoration(productSpacingController)
+
     }
 
+    //endOfPaginationReached는 데이터를 추가 요청해야 하는지 아닌지 Boolean으로 알려줌
+    private fun productItemRecyclerAdapterStateManagement(){
+        productItemRecyclerAdapter.addLoadStateListener { combinedLoadStates ->
+            if(combinedLoadStates.append.endOfPaginationReached) {
+
+                if(productItemRecyclerAdapter.itemCount < 1) {
+                    binding.emptyProduct.visibility = View.VISIBLE
+                }else {
+                    binding.emptyProduct.visibility = View.GONE
+                }
+            }
+        }
+    }
     private fun observeMainFilterViewModel() {
         mainFilterViewModel.mainFilterDataList.observe(viewLifecycleOwner, Observer { mainFilterData ->
 
             mainFilterAdapter.submitList(mainFilterData)
-            productDataViewModel.setCurrentMainFilterData(mainFilterData)
+//            productDataViewModel.setCurrentMainFilterData(mainFilterData)
             dbViewModel.loadFavoriteProductDataByPaging()
         })
 
@@ -227,12 +242,15 @@ class FavoriteFragment : Fragment() {
 
                 favoriteProductByPaging.collectLatest { pagingData ->
 
+
                     val transformedData = pagingData
                         .map { productData ->
+                            Log.d("productData", productData.toString())
                             productDataViewModel.convertSingleProductDataType(productData)
-                        }.filter {
-                            productDataViewModel.loadFilteredProductData(it)
                         }
+//                        .filter {
+//                            productDataViewModel.loadFilteredProductData(it)
+//                        }
 
                     productItemRecyclerAdapter.submitData(lifecycle, transformedData)
 
@@ -240,5 +258,7 @@ class FavoriteFragment : Fragment() {
 
             }
         })
+
+
     }
 }

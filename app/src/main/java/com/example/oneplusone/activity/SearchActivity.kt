@@ -40,6 +40,7 @@ class SearchActivity : AppCompatActivity() {
         setupDataBinding()
         observeSetting()
         observeDBData()
+        cancelSearchBar()
 
         dbViewModel.loadProductNameList()
 
@@ -72,6 +73,12 @@ class SearchActivity : AppCompatActivity() {
         observeRecentSearchList()
         observeSearchText()
         observeSearchTextCheckResult()
+    }
+
+    private fun cancelSearchBar(){
+        binding.cancelButton.setOnClickListener{
+            binding.searchBar.text = null
+        }
     }
 
     private fun initProductRankingAdapter(){

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">OnePlusOne</string>
+    <string name="app_name">원 플러스 원</string>
     <string name="title_activity_map">Map_Activity</string>
     <string name="title_activity_navi">NaviActivity</string>
     <string name="title_home">Home</string>

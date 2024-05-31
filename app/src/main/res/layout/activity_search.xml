@@ -25,19 +25,46 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:paddingEnd="30dp"
-            android:paddingStart="7dp"
+            android:paddingStart="30dp"
             android:singleLine="true"
+            android:elevation="10dp"
             android:background="#ffffff"
             android:hint="검색할 단어를 입력해주세요." />
+
+        <View
+            android:id="@+id/line3"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+
+            android:background="#cccccc"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/search_bar" />
+
+        <ImageButton
+            android:id="@+id/cancel_button"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="17dp"
+            android:background="?attr/selectableItemBackground"
+            android:scaleType="centerInside"
+            android:elevation="12dp"
+            android:src="@drawable/ic_baseline_cancle_24"
+            app:layout_constraintBottom_toBottomOf="@id/search_bar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/search_bar" />
+
 
         <ImageView
             android:id="@+id/search_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/search_bar"
+            android:layout_marginEnd="7dp"
+            android:elevation="12dp"
+            android:src="@drawable/ic_baseline_search_24"
             app:layout_constraintBottom_toBottomOf="@id/search_bar"
-            android:src="@android:drawable/ic_menu_search"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/search_bar" />
 
         <TextView
             android:id="@+id/product_ranking_text"
@@ -72,6 +99,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/line1"
+
             app:spanCount="2" />
 
         <TextView
@@ -103,10 +131,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
+            android:layout_marginBottom="5dp"
             android:fontFamily="@font/scdream6"
             android:text="0/20"
-            android:textColor="#000000"
 
+            android:textColor="#000000"
             android:textSize="10dp"
             app:layout_constraintBottom_toTopOf="@id/recent_searches"
             app:layout_constraintEnd_toStartOf="@id/all_reset_recent_search" />
@@ -115,15 +144,14 @@
             android:id="@+id/all_reset_recent_search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginBottom="5dp"
             android:fontFamily="@font/scdream6"
             android:text="전체 삭제"
             android:textColor="#000000"
-            android:textSize="10dp"
 
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/recent_searches" />
+            android:textSize="10dp"
+            app:layout_constraintBottom_toTopOf="@id/recent_searches"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recent_searches"

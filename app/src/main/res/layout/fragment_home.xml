@@ -44,7 +44,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:src="@android:drawable/ic_menu_search"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_baseline_search_24"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -56,7 +57,8 @@
             android:background="#ffffff"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/product_filter" />
+            app:layout_constraintTop_toBottomOf="@id/product_filter"
+            android:elevation="10dp"/>
 
 
         <androidx.recyclerview.widget.RecyclerView
@@ -67,7 +69,7 @@
             android:layout_marginStart="8dp"
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-
+            android:elevation="12dp"
             app:layout_constraintBottom_toBottomOf="@id/product_filter_bar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -77,13 +79,14 @@
             android:id="@+id/filter_bar_detail"
             android:layout_width="match_parent"
             android:layout_height="85dp"
-            android:layout_marginTop="7dp"
+
             android:background="#ffffff"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/product_grid_view"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/product_filter_bar" />
+            app:layout_constraintTop_toBottomOf="@id/product_filter_bar"
+            android:elevation="10dp"/>
 <!--            filterBar="@{filterDataViewModel.filterBar}"/>-->
 
 
@@ -95,7 +98,7 @@
             android:layout_marginStart="8dp"
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-
+            android:elevation="12dp"
             app:layout_constraintBottom_toBottomOf="@id/filter_bar_detail"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -120,6 +123,52 @@
             app:layout_constraintVertical_bias="0.0"
             app:spanCount="2" />
 
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/emptyProduct"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.4"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/product_grid_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/product_grid_view">
+
+
+            <ImageView
+                android:id="@+id/emptyProductImage"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_marginTop="3dp"
+
+                android:src="@drawable/all_product_category"
+                app:layout_constraintBottom_toTopOf="@id/emptyProductText"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/emptyProductText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_marginTop="30dp"
+                android:fontFamily="@font/scdream5"
+
+                android:paddingBottom="3dp"
+                android:text="상품이 존재하지 않습니다."
+                android:textColor="#000000"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/emptyProductImage"
+                app:layout_constraintStart_toStartOf="@id/emptyProductImage"
+                app:layout_constraintTop_toBottomOf="@id/emptyProductImage" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"
@@ -130,6 +179,8 @@
             app:layout_constraintBottom_toBottomOf="@id/product_grid_view"
             android:layout_centerInParent="true"
             android:visibility="gone" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

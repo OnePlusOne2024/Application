@@ -69,6 +69,8 @@ class SearchResultActivity : AppCompatActivity() {
         setupDataBinding()
 
         observeSetting()
+
+        cancelSearchBar()
         dbViewModel.loadFavoriteProducts()
         dbViewModel.loadProductNameList()
 
@@ -87,6 +89,7 @@ class SearchResultActivity : AppCompatActivity() {
         initMainFilterAdapter()
         initProductFilterAdapter()
         initProductItemRecyclerAdapter()
+        productItemRecyclerAdapterStateManagement()
     }
 
     private fun setupDataBinding() {
@@ -105,6 +108,12 @@ class SearchResultActivity : AppCompatActivity() {
         observeProductDataViewModel()
         observeDataBaseViewModel()
         observeSearchViewModel()
+    }
+
+    private fun cancelSearchBar(){
+        binding.cancelButton.setOnClickListener{
+            binding.searchBar.text = null
+        }
     }
 
     private fun initMainFilterAdapter() {
@@ -153,11 +162,24 @@ class SearchResultActivity : AppCompatActivity() {
         binding.productGridView.addItemDecoration(productSpacingController)
     }
 
+    private fun productItemRecyclerAdapterStateManagement(){
+        productItemRecyclerAdapter.addLoadStateListener { combinedLoadStates ->
+            if(combinedLoadStates.append.endOfPaginationReached) {
+
+                if(productItemRecyclerAdapter.itemCount < 1) {
+                    binding.emptyProduct.visibility = View.VISIBLE
+                }else {
+                    binding.emptyProduct.visibility = View.GONE
+                }
+            }
+        }
+    }
+
     private fun observeMainFilterViewModel() {
         mainFilterViewModel.mainFilterDataList.observe(this) { mainFilterData ->
 
             mainFilterAdapter.submitList(mainFilterData)
-            productDataViewModel.setCurrentMainFilterData(mainFilterData)
+//            productDataViewModel.setCurrentMainFilterData(mainFilterData)
             dbViewModel.loadSearchProductDataByPaging()
 
         }
@@ -217,9 +239,10 @@ class SearchResultActivity : AppCompatActivity() {
                         .map { productData ->
                             Log.d("productData4", productData.toString())
                             productDataViewModel.isProductFavorite(productData)
-                        }.filter{
-                            productDataViewModel.loadFilteredProductData(it)
                         }
+//                        .filter{
+//                            productDataViewModel.loadFilteredProductData(it)
+//                        }
 
                     productItemRecyclerAdapter.submitData(lifecycle, transformedData)
 

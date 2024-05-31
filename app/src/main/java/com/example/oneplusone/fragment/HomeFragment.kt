@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.opengl.Visibility
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -105,7 +106,7 @@ class HomeFragment : Fragment() {
         initMainFilterAdapter()
         initProductFilterAdapter()
         initProductItemRecyclerAdapter()
-        initLoadingAdapter()
+        productItemRecyclerAdapterStateManagement()
     }
 
     private fun moveSearchActivity() {
@@ -188,23 +189,33 @@ class HomeFragment : Fragment() {
 
     }
 
-    private fun initLoadingAdapter() {
-
+    private fun productItemRecyclerAdapterStateManagement(){
+        productItemRecyclerAdapter.addLoadStateListener { combinedLoadStates ->
+            if(combinedLoadStates.append.endOfPaginationReached) {
+                Log.d("productItemRecyclerAdapter.itemCount",
+                    productItemRecyclerAdapter.itemCount.toString()
+                )
+                if(productItemRecyclerAdapter.itemCount < 1) {
+                    binding.emptyProduct.visibility = View.VISIBLE
+                }else {
+                    binding.emptyProduct.visibility = View.GONE
+                }
+            }
+        }
     }
+
+
 
     private fun observeMainFilterViewModel() {
         mainFilterViewModel.mainFilterDataList.observe(viewLifecycleOwner, Observer { mainFilterData ->
 
             mainFilterAdapter.submitList(mainFilterData)
-            productDataViewModel.setCurrentMainFilterData(mainFilterData)
+//            productDataViewModel.setCurrentMainFilterData(mainFilterData)
+            dbViewModel.setCurrentMainFilterData(mainFilterData)
             //메인필터의 값이 바뀔때마다 아이템들을 새로 불러옴
-            dbViewModel.loadFavoriteProducts()
-            dbViewModel.loadProductDataList()
-
-            //메인필터의 값을 설정한 후에 db에서 값을 가져옴
-//            dbViewModel.loadProductAndFavoriteProduct()
-//            dbViewModel.loadProductDataList()
 //            dbViewModel.loadFavoriteProducts()
+//            dbViewModel.loadProductDataList()
+
         })
 
     }
@@ -303,9 +314,12 @@ class HomeFragment : Fragment() {
                         .map { productData ->
 
                             productDataViewModel.isProductFavorite(productData)
-                        }.filter{
-                            productDataViewModel.loadFilteredProductData(it)
                         }
+//                        .filter{
+//
+//                            productDataViewModel.loadFilteredProductData(it)
+//                        }
+
 
                     productItemRecyclerAdapter.submitData(lifecycle, transformedData)
 
@@ -314,14 +328,25 @@ class HomeFragment : Fragment() {
             }
         })
         dbViewModel.serverConnectProcessState.observe(viewLifecycleOwner, Observer { serverConnectProcessState ->
-            Log.d("serverConnectProcessState", serverConnectProcessState.toString())
-            //최초로 db에 데이터 삽입 과정이 끝나면 아이템을 불러옴
-            if(serverConnectProcessState){
+//            Log.d("serverConnectProcessState", serverConnectProcessState.toString())
+//            //최초로 db에 데이터 삽입 과정이 끝나면 아이템을 불러옴
+//            if(serverConnectProcessState){
+//
+//
+//                dbViewModel.loadFavoriteProducts()
+//                dbViewModel.loadProductDataList()
+//            }
+
+        })
+        dbViewModel.mergeData.observe(viewLifecycleOwner, Observer { (mainFilterDataList, serverConnectProcessState) ->
+            Log.d("mainFilterDataList", mainFilterDataList.toString())
+            Log.d("mainFilterDataList", serverConnectProcessState.toString())
+            if (mainFilterDataList != null && serverConnectProcessState==true) {
                 dbViewModel.loadFavoriteProducts()
                 dbViewModel.loadProductDataList()
             }
-        })
 
+        })
     }
 
 }

@@ -2,21 +2,18 @@ package com.example.oneplusone.viewModel
 
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import com.example.oneplusone.db.FavoriteProductModel
 import com.example.oneplusone.db.ProductData
+import com.example.oneplusone.model.data.MainFilterData
 
 import com.example.oneplusone.model.data.ServerProductData
-import com.example.oneplusone.model.data.enums.ConvenienceType
 import com.example.oneplusone.repository.DataBaseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -42,6 +39,9 @@ class DataBaseViewModel@Inject constructor(
     private val _favoriteProductByPaging= MutableLiveData<Flow<PagingData<FavoriteProductModel>>>()
 
     private val _searchText=MutableLiveData<String>()
+
+    private val _mainFilterDataList=MutableLiveData<List<MainFilterData>>()
+
     val favoriteProductByPaging: LiveData<Flow<PagingData<FavoriteProductModel>>>
         get() = _favoriteProductByPaging
     val isLoading: LiveData<Boolean> get() = _isLoading
@@ -64,11 +64,24 @@ class DataBaseViewModel@Inject constructor(
     val searchText:LiveData<String>
         get()=_searchText
 
+
+    val mainFilterDataList: LiveData<List<MainFilterData>>
+        get() = _mainFilterDataList
+
+    val mergeData = MediatorLiveData<Pair<List<MainFilterData>?, Boolean?>>().apply {
+        value = Pair(null, null)
+    }
+
     init {
-//        loadFavoriteProducts()
-//        loadProductDataList()
-        //db의 상품정보 데이터를 모두 지움
-//        deleteAllDBProductList()
+        mergeData.addSource(mainFilterDataList) { mainFilterDataList ->
+            val serverConnectProcessState = mergeData.value?.second
+            mergeData.value = Pair(mainFilterDataList, serverConnectProcessState)
+        }
+
+        mergeData.addSource(serverConnectProcessState) { serverConnectProcessState ->
+            val mainFilterDataList = mergeData.value?.first
+            mergeData.value = Pair(mainFilterDataList, serverConnectProcessState)
+        }
     }
 
 
@@ -89,39 +102,25 @@ class DataBaseViewModel@Inject constructor(
 
     fun loadProductDataList() {
 
-        _DBProductDataList.value=dbRepository.getAllServerProductDataList()
+        _DBProductDataList.value=dbRepository.getAllServerProductDataList(mainFilterDataList.value!!)
 
     }
 
     fun loadProductDataByConvenienceType(){
 
-        _convenienceType.value?.let { _DBProductDataList.value=dbRepository.getAllProductDataByConvenienceType(it) }
+        _convenienceType.value?.let { _DBProductDataList.value=dbRepository.getAllProductDataByConvenienceType(it,mainFilterDataList.value!!) }
 
     }
 
     fun loadFavoriteProductDataByPaging(){
         _favoriteProductByPaging.value=dbRepository.getAllFavoriteProductByPaging()
+        Log.d("_favoriteProductByPaging.value", _favoriteProductByPaging.value.toString())
+
+
     }
 
 
 
-    fun loadSearchFavoriteProducts(newSearchText: String) {
-        viewModelScope.launch {
-
-            val products = dbRepository.getSearchFavoriteProductList(newSearchText)
-            Log.d("loadSearchFavoriteProducts", products.toString())
-            _favoriteProducts.value = products
-        }
-    }
-
-    fun loadSearchProductDataList(newSearchText: String) {
-//        viewModelScope.launch {
-//
-//            val productsDataList = dbRepository.getSearchProductList(newSearchText)
-//            Log.d("loadSearchFavoriteProducts", productsDataList.toString())
-//            _DBProductDataList.value= productsDataList
-//        }
-    }
 
     fun setSearchText(searchText: String){
         _searchText.value=searchText
@@ -129,7 +128,7 @@ class DataBaseViewModel@Inject constructor(
 
     fun loadSearchProductDataByPaging(){
         _searchText.value?.let{
-            _DBProductDataList.value=dbRepository.getSearchProductList(it)
+            _DBProductDataList.value=dbRepository.getSearchProductList(it,mainFilterDataList.value!!)
         }
     }
 
@@ -215,13 +214,17 @@ class DataBaseViewModel@Inject constructor(
     }
 
 //지금 제대로 삭제후 데이터를 저장하지 못하고 있음 이를 해결해야함 반드시 서버로부터 데이터가 들어오면
-    //상품db의 모든데이터를 제거한후 새로운데이터를 넣고 페이징 데이터를 로드해야함
+    //상품db의 모든데이터를 제거한후 새로운데이터를 넣고 페이징 데이터를 로드해야함(해결)
     private suspend fun deleteAllDBProductList() {
         dbRepository.deleteServerProductDataList()
     }
 
     fun waitServerConnectProcess(serverConnectProcessState:Boolean){
         _serverConnectProcessState.value=serverConnectProcessState
+    }
+
+    fun setCurrentMainFilterData(mainFilterDataList: List<MainFilterData>) {
+        _mainFilterDataList.value=mainFilterDataList
     }
 
 

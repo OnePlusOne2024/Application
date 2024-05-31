@@ -16,17 +16,7 @@ import javax.inject.Inject
 
 class ConvenienceDataRepositoryImpl @Inject constructor() : ConvenienceDataRepository {
 
-    private val convenienceData = MutableLiveData<List<ConvenienceData>>()
 
-    override fun getConvenienceData(): LiveData<List<ConvenienceData>> = convenienceData
-
-    override fun loadConvenienceData() {
-
-        convenienceData.value= arrayListOf(
-
-
-        )
-    }
 
     override fun getConvenienceData(userCoordinate: LatLng, callback: (ServerConvenienceResult?) -> Unit) {
 

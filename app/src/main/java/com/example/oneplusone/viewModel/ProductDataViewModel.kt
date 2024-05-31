@@ -70,7 +70,7 @@ class ProductDataViewModel @Inject constructor(
     private val _convenienceDataList= MutableLiveData<List<ConvenienceData>>()
 
     //MediatorLiveData를 사용해 여러개의 라이브데이터를 하나로 합침
-    val _mergeData = MediatorLiveData<Pair<List<ProductData>?, ProductData?>>().apply {
+    val mergeData = MediatorLiveData<Pair<List<ProductData>?, ProductData?>>().apply {
         value = Pair(null, null)
     }
 
@@ -135,14 +135,14 @@ class ProductDataViewModel @Inject constructor(
 
         //좋아요한 상품목록, 일반상품목록 모두 db에서 가져와 비교해야 하는데 두 데이터가 모두 준비됐을때만 productData의 값을
         //변경해야 하기 때문에 MediatorLiveData를 사용했음남기다
-        _mergeData.addSource(favoriteProductData) { favoriteProducts ->
-            val dbProducts = _mergeData.value?.second
-            _mergeData.value = Pair(favoriteProducts, dbProducts)
+        mergeData.addSource(favoriteProductData) { favoriteProducts ->
+            val dbProducts = mergeData.value?.second
+            mergeData.value = Pair(favoriteProducts, dbProducts)
         }
 
-        _mergeData.addSource(DBProductDataList) { dbProductDataList ->
-            val favoriteProducts = _mergeData.value?.first
-            _mergeData.value = Pair(favoriteProducts, dbProductDataList)
+        mergeData.addSource(DBProductDataList) { dbProductDataList ->
+            val favoriteProducts = mergeData.value?.first
+            mergeData.value = Pair(favoriteProducts, dbProductDataList)
         }
 
     }
@@ -285,11 +285,11 @@ class ProductDataViewModel @Inject constructor(
 
 
     //todo filter와 all 알아보기
-    fun loadFilteredProductData(productData: ProductData): Boolean {
+    fun loadFilteredProductData(productData: ProductData): Boolean? {
         Log.d("_mainFilterDataList.value", _mainFilterDataList.value.toString())
         productData.let { productList ->
             val finalFilteredProductList =
-                _mainFilterDataList.value!!.all { filter ->
+                _mainFilterDataList.value?.all { filter ->
                     when (filter.filterType) {
                         FilterType.CONVENIENCE ->
                             filter.mainFilterText == ConvenienceType.ALL_CONVENIENCE_STORE.title || productList.brand == filter.mainFilterText
@@ -306,6 +306,7 @@ class ProductDataViewModel @Inject constructor(
                         else -> false
                     }
             }
+            Log.d("finalFilteredProductList", finalFilteredProductList.toString())
             return finalFilteredProductList
         }
     }
@@ -454,9 +455,7 @@ class ProductDataViewModel @Inject constructor(
         return LocalDateTime.now()
     }
 
-    fun setCurrentMainFilterData(mainFilterDataList: List<MainFilterData>) {
-        _mainFilterDataList.value=mainFilterDataList
-    }
+
 
     companion object{
         const val MIN_HEIGHT_PERCENT=0.3

@@ -166,17 +166,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
 
     private fun initAdapter() {
-        getCurrentLocation()
+
         initMainFilterAdapter()
         initProductFilterAdapter()
         initProductItemRecyclerAdapter()
+        productItemRecyclerAdapterStateManagement()
     }
 //
 
 
-    private fun getCurrentLocation() {
 
-    }
 
     //레이아웃과 연결 (Hilt)
     private fun setupDataBinding() {
@@ -271,11 +270,24 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         binding.mapProductGridView.addItemDecoration(productSpacingController)
     }
 
+    private fun productItemRecyclerAdapterStateManagement(){
+        productItemRecyclerAdapter.addLoadStateListener { combinedLoadStates ->
+            if(combinedLoadStates.append.endOfPaginationReached) {
+
+                if(productItemRecyclerAdapter.itemCount < 1) {
+                    binding.emptyProduct.visibility = View.VISIBLE
+                }else {
+                    binding.emptyProduct.visibility = View.GONE
+                }
+            }
+        }
+    }
+
 
     private fun observeMainFilterViewModel() {
         mapMainFilterViewModel.mainFilterDataList.observe(viewLifecycleOwner, Observer { mainFilterData ->
             mainFilterAdapter.submitList(mainFilterData)
-            productDataViewModel.setCurrentMainFilterData(mainFilterData)
+//            productDataViewModel.setCurrentMainFilterData(mainFilterData)
 
             dbViewModel.loadProductDataByConvenienceType()
 //            dbViewModel.loadProductDataList()
@@ -327,13 +339,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         productDataViewModel.isFavorite.observe(viewLifecycleOwner, Observer { isFavorite ->
             dbViewModel.favoriteProductJudgment(isFavorite)
         })
-        productDataViewModel._mergeData.observe(viewLifecycleOwner, Observer { (favoriteProducts, dbProducts) ->
-            Log.d("favoriteProducts", favoriteProducts.toString())
-            if (favoriteProducts != null && dbProducts != null) {
-                productDataViewModel.loadProductData()
-            }
-        })
+//        productDataViewModel._mergeData.observe(viewLifecycleOwner, Observer { (favoriteProducts, dbProducts) ->
+//            Log.d("favoriteProducts", favoriteProducts.toString())
+//            if (favoriteProducts != null && dbProducts != null) {
+//                productDataViewModel.loadProductData()
+//            }
+//        })
         productDataViewModel.userCoordinate.observe(viewLifecycleOwner, Observer { userCoordinate ->
+
             //업데이트된 좌표로 카메라를 이동시키고 서버에서 편의점 리스트를 불러옴
             googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(userCoordinate.latitude, userCoordinate.longitude), 15f))
 
@@ -382,8 +395,17 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun observeConvenienceData() {
         mapDataViewModel.convenienceDataList.observe(viewLifecycleOwner, Observer { convenienceData ->
 
-            for(i in convenienceData.indices){
-                addMarker(convenienceData[i],false)
+            if (convenienceData != null) {
+                if (convenienceData.isEmpty()) {
+                    Toast.makeText(requireContext(), "500M 이내에 편의점이 존재하지 않습니다.", Toast.LENGTH_LONG).show()
+                } else {
+                    for (i in convenienceData.indices) {
+                        addMarker(convenienceData[i], false)
+                    }
+                    Toast.makeText(requireContext(),"500M 이내의 편의점을 불러왔습니다.",Toast.LENGTH_LONG).show()
+                }
+            } else {
+                Toast.makeText(requireContext(), "편의점 정보를 가져오는데 실패했습니다.", Toast.LENGTH_LONG).show()
             }
         })
 
@@ -442,7 +464,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         //setMinUpdateDistanceMeters는 거리 변화의 업데이트 1000F는 1키로
         //setWaitForAccurateLocation는 정확한 위치를 기다릴리 여부
         val locationRequest=LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 3000).apply {
-//            setMinUpdateDistanceMeters(1000f)
+            setMinUpdateDistanceMeters(500f)
             setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
             setWaitForAccurateLocation(true)
         }.build()
@@ -450,7 +472,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 for (location in locationResult.locations) {
-
+                    if(location==null){
+                        Toast.makeText(requireContext(),"사용자의 위치를 가져오는데 오류가 발생했습니다.",Toast.LENGTH_LONG).show()
+                    }
                     productDataViewModel.setCoordinate(location.latitude,location.longitude)
                     Log.d("위치정보", "위도: ${location.latitude} 경도: ${location.longitude}")
 

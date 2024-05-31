@@ -8,10 +8,9 @@ import com.example.oneplusone.db.FavoriteProductDao
 import com.example.oneplusone.db.FavoriteProductModel
 import com.example.oneplusone.db.ProductDao
 import com.example.oneplusone.db.ProductData
-import com.example.oneplusone.model.data.enums.ConvenienceType
+import com.example.oneplusone.model.data.MainFilterData
 import com.example.oneplusone.util.FavoriteProductDataPagingSource
 import com.example.oneplusone.util.ProductDataPagingSource
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 
 
@@ -52,7 +51,7 @@ class DataBaseRepositoryImpl(
         favoriteProductDao.deleteAllFavoriteProduct()
     }
 
-    override fun getAllServerProductDataList(): Flow<PagingData<ProductData>> {
+    override fun getAllServerProductDataList(mainFilterDataList: List<MainFilterData>): Flow<PagingData<ProductData>> {
 
 
         return Pager(
@@ -60,13 +59,18 @@ class DataBaseRepositoryImpl(
                 pageSize = 50,
                 enablePlaceholders = false
             ),
-            pagingSourceFactory = { ProductDataPagingSource(serverProductDao) }
+            pagingSourceFactory = { ProductDataPagingSource(serverProductDao,null,null,mainFilterDataList) }
         ).flow
     }
 
-    override fun getAllProductDataByConvenienceType(convenienceType: String):Flow<PagingData<ProductData>>{
+    override fun getAllProductDataByConvenienceType(convenienceType: String,mainFilterDataList: List<MainFilterData>):Flow<PagingData<ProductData>>{
         Log.d("convenienceType2",convenienceType)
-        val pagingSourceFactory ={ ProductDataPagingSource(serverProductDao,convenienceType)}
+        val pagingSourceFactory ={ ProductDataPagingSource(
+            serverProductDao,
+            convenienceType,
+            null,
+            mainFilterDataList
+        )}
 
         return Pager(
             config = PagingConfig(
@@ -90,14 +94,19 @@ class DataBaseRepositoryImpl(
         return serverProductDao.getProductNameList()
     }
 
-    override fun getSearchProductList(searchText: String): Flow<PagingData<ProductData>> {
+    override fun getSearchProductList(searchText: String,mainFilterDataList: List<MainFilterData>): Flow<PagingData<ProductData>> {
         return Pager(
             config = PagingConfig(
                 pageSize = 50,
                 enablePlaceholders = false,
 
                 ),
-            pagingSourceFactory =  { ProductDataPagingSource(serverProductDao,null,searchText) }
+            pagingSourceFactory =  { ProductDataPagingSource(
+                serverProductDao,
+                null,
+                searchText,
+                mainFilterDataList
+            ) }
         ).flow
     }
 }

@@ -49,24 +49,51 @@
             android:layout_width="0dp"
             android:layout_height="40dp"
             android:layout_marginTop="10dp"
+            android:paddingEnd="30dp"
+            android:paddingStart="30dp"
+            android:singleLine="true"
+            android:elevation="10dp"
             android:background="#ffffff"
             android:hint="검색할 단어를 입력해주세요."
-            android:paddingStart="7dp"
-            android:paddingEnd="30dp"
-            android:singleLine="true"
-
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/product_filter" />
+
+        <View
+            android:id="@+id/line3"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+
+            android:background="#cccccc"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/search_bar" />
+
+
+        <ImageButton
+            android:id="@+id/cancel_button"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="17dp"
+            android:background="?attr/selectableItemBackground"
+            android:scaleType="centerInside"
+            android:elevation="12dp"
+            android:src="@drawable/ic_baseline_cancle_24"
+            app:layout_constraintBottom_toBottomOf="@id/search_bar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/search_bar" />
+
 
         <ImageView
             android:id="@+id/search_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/search_bar"
+            android:layout_marginEnd="7dp"
+            android:elevation="12dp"
+            android:src="@drawable/ic_baseline_search_24"
             app:layout_constraintBottom_toBottomOf="@id/search_bar"
-            android:src="@android:drawable/ic_menu_search"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/search_bar" />
 
         <ImageView
             android:id="@+id/product_filter_bar"
@@ -74,6 +101,7 @@
             android:layout_height="85dp"
             android:layout_marginTop="10dp"
             android:background="#ffffff"
+            android:elevation="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/search_bar" />
@@ -87,7 +115,7 @@
             android:layout_marginStart="8dp"
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-
+            android:elevation="12dp"
             app:layout_constraintBottom_toBottomOf="@id/product_filter_bar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -97,9 +125,10 @@
             android:id="@+id/filter_bar_detail"
             android:layout_width="match_parent"
             android:layout_height="85dp"
-            android:layout_marginTop="7dp"
+
             android:background="#ffffff"
             android:visibility="gone"
+            android:elevation="10dp"
             app:layout_constraintBottom_toTopOf="@+id/product_grid_view"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -111,7 +140,7 @@
             android:id="@+id/filter_viewer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
+            android:elevation="12dp"
             android:layout_marginStart="8dp"
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -137,7 +166,49 @@
             app:layout_constraintVertical_bias="0.0"
             app:spanCount="2" />
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/emptyProduct"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.4"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/product_grid_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/product_grid_view">
 
+
+            <ImageView
+                android:id="@+id/emptyProductImage"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_marginTop="3dp"
+
+                android:src="@drawable/all_product_category"
+                app:layout_constraintBottom_toTopOf="@id/emptyProductText"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/emptyProductText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_marginTop="30dp"
+                android:fontFamily="@font/scdream5"
+
+                android:paddingBottom="3dp"
+                android:text="상품이 존재하지 않습니다."
+                android:textColor="#000000"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/emptyProductImage"
+                app:layout_constraintStart_toStartOf="@id/emptyProductImage"
+                app:layout_constraintTop_toBottomOf="@id/emptyProductImage" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
