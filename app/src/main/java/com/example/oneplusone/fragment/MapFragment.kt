@@ -289,7 +289,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             mainFilterAdapter.submitList(mainFilterData)
 //            productDataViewModel.setCurrentMainFilterData(mainFilterData)
 
-            dbViewModel.loadProductDataByConvenienceType()
+            dbViewModel.setCurrentMainFilterData(mainFilterData)
 //            dbViewModel.loadProductDataList()
 
         })
@@ -339,12 +339,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         productDataViewModel.isFavorite.observe(viewLifecycleOwner, Observer { isFavorite ->
             dbViewModel.favoriteProductJudgment(isFavorite)
         })
-//        productDataViewModel._mergeData.observe(viewLifecycleOwner, Observer { (favoriteProducts, dbProducts) ->
-//            Log.d("favoriteProducts", favoriteProducts.toString())
-//            if (favoriteProducts != null && dbProducts != null) {
-//                productDataViewModel.loadProductData()
-//            }
-//        })
+
         productDataViewModel.userCoordinate.observe(viewLifecycleOwner, Observer { userCoordinate ->
 
             //업데이트된 좌표로 카메라를 이동시키고 서버에서 편의점 리스트를 불러옴
@@ -501,7 +496,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         })
 
         dbViewModel.convenienceType.observe(viewLifecycleOwner, Observer { convenienceType ->
-            dbViewModel.loadProductDataByConvenienceType()
+
         })
 
         dbViewModel.DBProductDataList.observe(viewLifecycleOwner, Observer { dbProductDataList ->
@@ -514,9 +509,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                         .map { productData ->
 
                             productDataViewModel.isProductFavorite(productData)
-                        }.filter{productData->
-                            Log.d("pagingData2", productData.toString())
-                            productDataViewModel.loadMapFilteredProductData(productData)
                         }
 
                     productItemRecyclerAdapter.submitData(lifecycle, transformedData)
@@ -524,6 +516,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 }
 
             }
+        })
+
+        dbViewModel.mapMergeData.observe(viewLifecycleOwner, Observer { (mainFilterDataList, convenienceType) ->
+            Log.d("mainFilterDataList", mainFilterDataList.toString())
+            Log.d("mainFilterDataList", convenienceType.toString())
+            if (mainFilterDataList != null && convenienceType !=null) {
+                dbViewModel.loadFavoriteProducts()
+                dbViewModel.loadProductDataByConvenienceType()
+            }
+
         })
     }
 

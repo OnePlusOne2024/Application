@@ -68,20 +68,49 @@ class DataBaseViewModel@Inject constructor(
     val mainFilterDataList: LiveData<List<MainFilterData>>
         get() = _mainFilterDataList
 
-    val mergeData = MediatorLiveData<Pair<List<MainFilterData>?, Boolean?>>().apply {
+    val homeMergeData = MediatorLiveData<Pair<List<MainFilterData>?, Boolean?>>().apply {
+        value = Pair(null, null)
+    }
+
+    val mapMergeData = MediatorLiveData<Pair<List<MainFilterData>?, String?>>().apply {
+        value = Pair(null, null)
+    }
+
+    val searchMergeData = MediatorLiveData<Pair<List<MainFilterData>?, String?>>().apply {
         value = Pair(null, null)
     }
 
     init {
-        mergeData.addSource(mainFilterDataList) { mainFilterDataList ->
-            val serverConnectProcessState = mergeData.value?.second
-            mergeData.value = Pair(mainFilterDataList, serverConnectProcessState)
+        homeMergeData.addSource(mainFilterDataList) { mainFilterDataList ->
+            val serverConnectProcessState = homeMergeData.value?.second
+            homeMergeData.value = Pair(mainFilterDataList, serverConnectProcessState)
         }
 
-        mergeData.addSource(serverConnectProcessState) { serverConnectProcessState ->
-            val mainFilterDataList = mergeData.value?.first
-            mergeData.value = Pair(mainFilterDataList, serverConnectProcessState)
+        homeMergeData.addSource(serverConnectProcessState) { serverConnectProcessState ->
+            val mainFilterDataList = homeMergeData.value?.first
+            homeMergeData.value = Pair(mainFilterDataList, serverConnectProcessState)
         }
+
+        mapMergeData.addSource(mainFilterDataList) { mainFilterDataList ->
+            val convenienceType = mapMergeData.value?.second
+            mapMergeData.value = Pair(mainFilterDataList, convenienceType)
+        }
+
+        mapMergeData.addSource(convenienceType) { convenienceType ->
+            val mainFilterDataList = mapMergeData.value?.first
+            mapMergeData.value = Pair(mainFilterDataList, convenienceType)
+        }
+
+        searchMergeData.addSource(mainFilterDataList) { mainFilterDataList ->
+            val searchText = searchMergeData.value?.second
+            searchMergeData.value = Pair(mainFilterDataList, searchText)
+        }
+
+        searchMergeData.addSource(searchText) { searchText ->
+            val mainFilterDataList = searchMergeData.value?.first
+            searchMergeData.value = Pair(mainFilterDataList, searchText)
+        }
+
     }
 
 
@@ -113,7 +142,7 @@ class DataBaseViewModel@Inject constructor(
     }
 
     fun loadFavoriteProductDataByPaging(){
-        _favoriteProductByPaging.value=dbRepository.getAllFavoriteProductByPaging()
+        _favoriteProductByPaging.value=dbRepository.getAllFavoriteProductByPaging(mainFilterDataList.value!!)
         Log.d("_favoriteProductByPaging.value", _favoriteProductByPaging.value.toString())
 
 

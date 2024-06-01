@@ -72,7 +72,7 @@ class ProductDataPagingSource(
         }
     }
 
-    fun loadFilteredProductData(productData: List<ProductData>): List<ProductData> {
+    private fun loadFilteredProductData(productData: List<ProductData>): List<ProductData> {
 
 
         return productData.filter { product ->

@@ -1,5 +1,6 @@
 package com.example.oneplusone.activity
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -116,6 +117,9 @@ class SearchResultActivity : AppCompatActivity() {
         }
     }
 
+
+
+
     private fun initMainFilterAdapter() {
         mainFilterAdapter = MainFilterRecyclerAdapter(object : MainFilterClickListener {
             override fun onMainFilterClick(mainFilter: MainFilterData, itemView: View) {
@@ -180,7 +184,7 @@ class SearchResultActivity : AppCompatActivity() {
 
             mainFilterAdapter.submitList(mainFilterData)
 //            productDataViewModel.setCurrentMainFilterData(mainFilterData)
-            dbViewModel.loadSearchProductDataByPaging()
+            dbViewModel.setCurrentMainFilterData(mainFilterData)
 
         }
 
@@ -224,6 +228,7 @@ class SearchResultActivity : AppCompatActivity() {
 
     }
 
+
     private fun observeDataBaseViewModel() {
         dbViewModel.favoriteProducts.observe(this) { favoriteProductData ->
             productDataViewModel.loadFavoriteProduct(favoriteProductData)
@@ -255,6 +260,16 @@ class SearchResultActivity : AppCompatActivity() {
                 searchViewModel.updateProductNameList(productNameList)
             }
         }
+
+        dbViewModel.searchMergeData.observe(this) { (mainFilterDataList, searchText) ->
+            Log.d("mainFilterDataList", mainFilterDataList.toString())
+            Log.d("mainFilterDataList", searchText.toString())
+            if (mainFilterDataList != null && searchText !=null) {
+                dbViewModel.loadFavoriteProducts()
+                dbViewModel.loadSearchProductDataByPaging()
+            }
+
+        }
     }
 
     private fun observeSearchViewModel(){
@@ -264,8 +279,6 @@ class SearchResultActivity : AppCompatActivity() {
             val convertSearchText="%${newSearchText}%"
             dbViewModel.setSearchText(convertSearchText)
 
-
-            dbViewModel.loadSearchProductDataByPaging()
 
             //검색한 데이터를 저장함
             searchViewModel.saveSearchText(this@SearchResultActivity,newSearchText)
@@ -295,6 +308,7 @@ class SearchResultActivity : AppCompatActivity() {
     }
 
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun showProductDetailDialog(productData: ProductData) {
         val mDialogView = LayoutInflater.from(this@SearchResultActivity).inflate(R.layout.product_detail_viewer, null)
         val dialogBinding = ProductDetailViewerBinding.bind(mDialogView)

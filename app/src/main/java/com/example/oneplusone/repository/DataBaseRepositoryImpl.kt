@@ -23,14 +23,14 @@ class DataBaseRepositoryImpl(
         return favoriteProductDao.getAllFavoriteProduct()
     }
 
-    override fun getAllFavoriteProductByPaging(): Flow<PagingData<FavoriteProductModel>>{
+    override fun getAllFavoriteProductByPaging(mainFilterDataList: List<MainFilterData>): Flow<PagingData<FavoriteProductModel>>{
 
         return Pager(
             config =  PagingConfig(
                 pageSize = 50,
                 enablePlaceholders = false
             ),
-            pagingSourceFactory = { FavoriteProductDataPagingSource(favoriteProductDao) }
+            pagingSourceFactory = { FavoriteProductDataPagingSource(favoriteProductDao,mainFilterDataList) }
         ).flow
 
     }
@@ -57,7 +57,8 @@ class DataBaseRepositoryImpl(
         return Pager(
             config =  PagingConfig(
                 pageSize = 50,
-                enablePlaceholders = false
+                enablePlaceholders = false,
+
             ),
             pagingSourceFactory = { ProductDataPagingSource(serverProductDao,null,null,mainFilterDataList) }
         ).flow

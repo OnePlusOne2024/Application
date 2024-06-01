@@ -5,10 +5,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.opengl.Visibility
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,7 +17,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
-import androidx.paging.filter
 import androidx.paging.map
 import com.example.oneplusone.R
 import com.example.oneplusone.activity.SearchActivity
@@ -33,7 +29,6 @@ import com.example.oneplusone.`interface`.ProductClickListener
 import com.example.oneplusone.`interface`.ProductFavoriteClickListener
 import com.example.oneplusone.model.data.FilterData
 import com.example.oneplusone.model.data.MainFilterData
-import com.example.oneplusone.recyclerAdapter.LoadingBarAdapter
 import com.example.oneplusone.recyclerAdapter.MainFilterRecyclerAdapter
 import com.example.oneplusone.recyclerAdapter.ProductFilterRecyclerAdapter
 import com.example.oneplusone.recyclerAdapter.ProductItemRecyclerAdapter
@@ -189,17 +184,41 @@ class HomeFragment : Fragment() {
 
     }
 
+    //상품이 존재하지 않을때를 표시하기 위해
     private fun productItemRecyclerAdapterStateManagement(){
-        productItemRecyclerAdapter.addLoadStateListener { combinedLoadStates ->
-            if(combinedLoadStates.append.endOfPaginationReached) {
-                Log.d("productItemRecyclerAdapter.itemCount",
-                    productItemRecyclerAdapter.itemCount.toString()
-                )
-                if(productItemRecyclerAdapter.itemCount < 1) {
-                    binding.emptyProduct.visibility = View.VISIBLE
-                }else {
-                    binding.emptyProduct.visibility = View.GONE
-                }
+        productItemRecyclerAdapter.addLoadStateListener { loadState ->
+
+            val isLoading = loadState.source.refresh is LoadState.Loading ||
+                    loadState.source.prepend is LoadState.Loading ||
+                    loadState.source.append is LoadState.Loading
+
+
+
+            val isEmpty = productItemRecyclerAdapter.itemCount < 1
+
+            val productEmptyImage=binding.emptyProduct
+            val productLoadingImage=binding.progressBar
+
+            if (isLoading) {
+                // 로드 중 이미지
+                Log.d("로딩", "로드중")
+                productLoadingImage.visibility = View.VISIBLE
+
+                productEmptyImage.visibility = View.GONE
+            }else if (isEmpty) {
+                // 아이템이 없을 때
+                Log.d("로딩", "빔")
+                productEmptyImage.visibility = View.VISIBLE
+                productLoadingImage.visibility = View.GONE
+
+
+            } else {
+                // 아이템이 있을 때
+                Log.d("로딩", "있음")
+                productEmptyImage.visibility = View.GONE
+                productLoadingImage.visibility = View.GONE
+
+
             }
         }
     }
@@ -295,11 +314,6 @@ class HomeFragment : Fragment() {
     }
     private fun observeDataBaseViewModel() {
 
-        dbViewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
-            Log.d("isLoading", isLoading.toString())
-            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-
-        })
 
         dbViewModel.favoriteProducts.observe(viewLifecycleOwner, Observer { favoriteProductData ->
             productDataViewModel.loadFavoriteProduct(favoriteProductData)
@@ -315,11 +329,6 @@ class HomeFragment : Fragment() {
 
                             productDataViewModel.isProductFavorite(productData)
                         }
-//                        .filter{
-//
-//                            productDataViewModel.loadFilteredProductData(it)
-//                        }
-
 
                     productItemRecyclerAdapter.submitData(lifecycle, transformedData)
 
@@ -327,23 +336,20 @@ class HomeFragment : Fragment() {
 
             }
         })
-        dbViewModel.serverConnectProcessState.observe(viewLifecycleOwner, Observer { serverConnectProcessState ->
-//            Log.d("serverConnectProcessState", serverConnectProcessState.toString())
-//            //최초로 db에 데이터 삽입 과정이 끝나면 아이템을 불러옴
-//            if(serverConnectProcessState){
-//
-//
-//                dbViewModel.loadFavoriteProducts()
-//                dbViewModel.loadProductDataList()
-//            }
 
-        })
-        dbViewModel.mergeData.observe(viewLifecycleOwner, Observer { (mainFilterDataList, serverConnectProcessState) ->
+        //메인필터의 값이 존재하고 db작업이 끝났을때만 아이템들을 불러옴
+        //페이징에서 데이터를 필터링하고 가져오기 때문에 메인필터의 값도 같이 들어가야함
+        dbViewModel.homeMergeData.observe(viewLifecycleOwner, Observer { (mainFilterDataList, serverConnectProcessState) ->
             Log.d("mainFilterDataList", mainFilterDataList.toString())
             Log.d("mainFilterDataList", serverConnectProcessState.toString())
+
             if (mainFilterDataList != null && serverConnectProcessState==true) {
                 dbViewModel.loadFavoriteProducts()
                 dbViewModel.loadProductDataList()
+                //서버에서 업데이트가 있는지 확인후 db에 넣는동안 로딩바와 안내 텍스트를 보여줌
+                binding.progressBar.visibility = View.GONE
+            }else{
+                binding.progressBar.visibility = View.VISIBLE
             }
 
         })

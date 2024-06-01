@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 interface DataBaseRepository {
     suspend fun getAllFavoriteProducts(): List<FavoriteProductModel>
 
-    fun getAllFavoriteProductByPaging(): Flow<PagingData<FavoriteProductModel>>
+    fun getAllFavoriteProductByPaging(mainFilterDataList: List<MainFilterData>): Flow<PagingData<FavoriteProductModel>>
 
     suspend fun insertFavoriteProduct(productData: FavoriteProductModel)
     suspend fun deleteFavoriteProduct(productData: FavoriteProductModel)

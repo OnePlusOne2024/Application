@@ -130,6 +130,22 @@ class FavoriteFragment : Fragment() {
         binding.filterViewer.adapter = productFilterAdapter
     }
 
+    private fun productItemRecyclerAdapterStateManagement(){
+        productItemRecyclerAdapter.addLoadStateListener { _ ->
+
+            Log.d("productItemRecyclerAdapter.itemCount",
+                productItemRecyclerAdapter.itemCount.toString()
+            )
+
+            if(productItemRecyclerAdapter.itemCount < 1) {
+                binding.emptyProduct.visibility = View.VISIBLE
+            }else {
+                binding.emptyProduct.visibility = View.GONE
+            }
+
+        }
+    }
+
     private fun initProductItemRecyclerAdapter() {
         productItemRecyclerAdapter = ProductItemRecyclerAdapter(
             object : ProductClickListener {
@@ -146,24 +162,13 @@ class FavoriteFragment : Fragment() {
 
     }
 
-    //endOfPaginationReached는 데이터를 추가 요청해야 하는지 아닌지 Boolean으로 알려줌
-    private fun productItemRecyclerAdapterStateManagement(){
-        productItemRecyclerAdapter.addLoadStateListener { combinedLoadStates ->
-            if(combinedLoadStates.append.endOfPaginationReached) {
 
-                if(productItemRecyclerAdapter.itemCount < 1) {
-                    binding.emptyProduct.visibility = View.VISIBLE
-                }else {
-                    binding.emptyProduct.visibility = View.GONE
-                }
-            }
-        }
-    }
     private fun observeMainFilterViewModel() {
         mainFilterViewModel.mainFilterDataList.observe(viewLifecycleOwner, Observer { mainFilterData ->
 
             mainFilterAdapter.submitList(mainFilterData)
 //            productDataViewModel.setCurrentMainFilterData(mainFilterData)
+            dbViewModel.setCurrentMainFilterData(mainFilterData)
             dbViewModel.loadFavoriteProductDataByPaging()
         })
 
@@ -232,8 +237,7 @@ class FavoriteFragment : Fragment() {
     }
     private fun observeDataBaseViewModel() {
         dbViewModel.favoriteProducts.observe(viewLifecycleOwner, Observer { favoriteProductData ->
-            Log.d("favoriteProductData", favoriteProductData.toString())
-            productDataViewModel.loadFavoriteProductInFavoriteProductFragment(favoriteProductData)
+
         })
 
 

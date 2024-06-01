@@ -208,9 +208,11 @@ class ProductDataViewModel @Inject constructor(
         Log.d("실행됨", "serverProductData.toString()")
 
         productDataRepository.getProductDataList(loadConnectTime) { serverProductData ->
-
+            Log.d("serverProductData", serverProductData.toString())
             if (serverProductData != null) {
                 _serverProductDataList.value=serverProductData
+            }else{
+                _serverProductDataList.value=null
             }
         }
     }
