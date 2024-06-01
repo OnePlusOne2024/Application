@@ -31,6 +31,7 @@ import com.example.oneplusone.recyclerAdapter.ProductItemRecyclerAdapter
 import com.example.oneplusone.util.FilterAnimated
 import com.example.oneplusone.util.FilterStyle
 import com.example.oneplusone.util.ItemSpacingController
+import com.example.oneplusone.util.ProductItemRecyclerAdapterStateManagement
 import com.example.oneplusone.viewModel.DataBaseViewModel
 import com.example.oneplusone.viewModel.FilterDataViewModel
 import com.example.oneplusone.viewModel.MainFilterViewModel
@@ -78,13 +79,20 @@ class FavoriteFragment : Fragment() {
         setupDataBinding()
 
         observeSetting()
+
+
+
     }
 
     private fun initAdapter() {
         initMainFilterAdapter()
         initProductFilterAdapter()
         initProductItemRecyclerAdapter()
-        productItemRecyclerAdapterStateManagement()
+        ProductItemRecyclerAdapterStateManagement(
+            adapter = productItemRecyclerAdapter,
+            loadingImage = binding.progressBarImage,
+            emptyImage = binding.emptyProduct
+        )
     }
 
     private fun setupDataBinding() {
@@ -130,21 +138,6 @@ class FavoriteFragment : Fragment() {
         binding.filterViewer.adapter = productFilterAdapter
     }
 
-    private fun productItemRecyclerAdapterStateManagement(){
-        productItemRecyclerAdapter.addLoadStateListener { _ ->
-
-            Log.d("productItemRecyclerAdapter.itemCount",
-                productItemRecyclerAdapter.itemCount.toString()
-            )
-
-            if(productItemRecyclerAdapter.itemCount < 1) {
-                binding.emptyProduct.visibility = View.VISIBLE
-            }else {
-                binding.emptyProduct.visibility = View.GONE
-            }
-
-        }
-    }
 
     private fun initProductItemRecyclerAdapter() {
         productItemRecyclerAdapter = ProductItemRecyclerAdapter(

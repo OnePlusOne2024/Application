@@ -57,6 +57,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import android.Manifest
 import android.os.Looper
+import com.example.oneplusone.util.ProductItemRecyclerAdapterStateManagement
 import com.google.android.gms.location.Granularity
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -139,6 +140,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         //임시로 초기 상품뷰의 높이 설정
         binding.mapProductLayout.layoutParams.height=(screenHeight * 0.4).toInt()
+
+
+        ProductItemRecyclerAdapterStateManagement(
+            adapter = productItemRecyclerAdapter,
+            loadingImage = binding.progressBarImage,
+            emptyImage = binding.emptyProduct
+        )
     }
 
 
@@ -170,7 +178,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         initMainFilterAdapter()
         initProductFilterAdapter()
         initProductItemRecyclerAdapter()
-        productItemRecyclerAdapterStateManagement()
+        ProductItemRecyclerAdapterStateManagement(
+            adapter = productItemRecyclerAdapter,
+            loadingImage = binding.progressBarImage,
+            emptyImage = binding.emptyProduct
+        )
     }
 //
 
@@ -268,19 +280,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             })
         binding.mapProductGridView.adapter = productItemRecyclerAdapter
         binding.mapProductGridView.addItemDecoration(productSpacingController)
-    }
-
-    private fun productItemRecyclerAdapterStateManagement(){
-        productItemRecyclerAdapter.addLoadStateListener { combinedLoadStates ->
-            if(combinedLoadStates.append.endOfPaginationReached) {
-
-                if(productItemRecyclerAdapter.itemCount < 1) {
-                    binding.emptyProduct.visibility = View.VISIBLE
-                }else {
-                    binding.emptyProduct.visibility = View.GONE
-                }
-            }
-        }
     }
 
 

@@ -99,6 +99,8 @@ object FilterBindingAdapter {
         view.text=resource
     }
 
+
+
 //    @JvmStatic
 //    @BindingAdapter("filterBar")
 //    fun setFilterBar(view: ImageView, resource: Boolean) {

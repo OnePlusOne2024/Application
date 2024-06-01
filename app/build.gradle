@@ -92,6 +92,8 @@ dependencies {
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
+    //커스텀로딩바를 위한 라이브러리
+    implementation 'com.github.ybq:Android-SpinKit:1.4.0'
 
     kapt 'com.google.dagger:hilt-compiler:2.48'
     testImplementation 'junit:junit:4.13.2'

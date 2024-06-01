@@ -31,6 +31,7 @@ import com.example.oneplusone.recyclerAdapter.ProductItemRecyclerAdapter
 import com.example.oneplusone.util.FilterAnimated
 import com.example.oneplusone.util.FilterStyle
 import com.example.oneplusone.util.ItemSpacingController
+import com.example.oneplusone.util.ProductItemRecyclerAdapterStateManagement
 import com.example.oneplusone.viewModel.DataBaseViewModel
 import com.example.oneplusone.viewModel.FilterDataViewModel
 import com.example.oneplusone.viewModel.MainFilterViewModel
@@ -84,13 +85,19 @@ class SearchResultActivity : AppCompatActivity() {
         binding.searchIcon.setOnClickListener {
             searchViewModel.setSearchText( binding.searchBar.text.toString())
         }
+
+
     }
 
     private fun initAdapter() {
         initMainFilterAdapter()
         initProductFilterAdapter()
         initProductItemRecyclerAdapter()
-        productItemRecyclerAdapterStateManagement()
+        ProductItemRecyclerAdapterStateManagement(
+            adapter = productItemRecyclerAdapter,
+            loadingImage = binding.progressBarImage,
+            emptyImage = binding.emptyProduct
+        )
     }
 
     private fun setupDataBinding() {
@@ -166,24 +173,12 @@ class SearchResultActivity : AppCompatActivity() {
         binding.productGridView.addItemDecoration(productSpacingController)
     }
 
-    private fun productItemRecyclerAdapterStateManagement(){
-        productItemRecyclerAdapter.addLoadStateListener { combinedLoadStates ->
-            if(combinedLoadStates.append.endOfPaginationReached) {
 
-                if(productItemRecyclerAdapter.itemCount < 1) {
-                    binding.emptyProduct.visibility = View.VISIBLE
-                }else {
-                    binding.emptyProduct.visibility = View.GONE
-                }
-            }
-        }
-    }
 
     private fun observeMainFilterViewModel() {
         mainFilterViewModel.mainFilterDataList.observe(this) { mainFilterData ->
 
             mainFilterAdapter.submitList(mainFilterData)
-//            productDataViewModel.setCurrentMainFilterData(mainFilterData)
             dbViewModel.setCurrentMainFilterData(mainFilterData)
 
         }

@@ -16,6 +16,7 @@ import com.example.oneplusone.databinding.ActivityMainBinding
 import com.example.oneplusone.fragment.FavoriteFragment
 import com.example.oneplusone.fragment.HomeFragment
 import com.example.oneplusone.fragment.MapFragment
+import com.example.oneplusone.util.UpdateCheckDialog
 import com.example.oneplusone.viewModel.DataBaseViewModel
 import com.example.oneplusone.viewModel.ProductDataViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,7 +46,6 @@ class MainActivity : AppCompatActivity() {
         //딱 한번만 실행되도록 하기 위해
 //        productDataViewModel.updateCheckResult(loadConnectTime(this@MainActivity))
         productDataViewModel.getProductDataFromServer(loadConnectTime(this@MainActivity))
-
         setBottomNavigation()
 
     }

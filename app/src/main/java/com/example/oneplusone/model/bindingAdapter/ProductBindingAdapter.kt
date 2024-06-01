@@ -15,21 +15,6 @@ import java.util.concurrent.Executors
 
 //보류
 object ProductBindingAdapter {
-//    @JvmStatic
-//    @BindingAdapter("productItems")
-//    fun setProductItems(recyclerView: RecyclerView, items: List<ProductData>?) {
-//        if(recyclerView.adapter == null) {
-//
-//            recyclerView.adapter = ProductItemRecyclerAdapter(object : ProductClickListener {
-//                override fun onItemClick(productData: ProductData) {
-//                    Log.d("ProductClick", "Clicked Product ID: ${productData.productId}")
-//                }
-//            })
-//        }
-//
-//        val adapter = recyclerView.adapter as? ProductItemRecyclerAdapter
-//        adapter?.submitList(items ?: emptyList())
-//    }
 
     @JvmStatic
     @BindingAdapter("benefitsImage")
@@ -86,10 +71,5 @@ object ProductBindingAdapter {
         }
     }
 
-    @JvmStatic
-    @BindingAdapter("recentSearchText")
-    fun setRecentSearch(view: TextView, resource: String) {
-        view.text=resource
-    }
 
 }

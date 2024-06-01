@@ -35,6 +35,8 @@ import com.example.oneplusone.recyclerAdapter.ProductItemRecyclerAdapter
 import com.example.oneplusone.util.FilterAnimated
 import com.example.oneplusone.util.FilterStyle
 import com.example.oneplusone.util.ItemSpacingController
+import com.example.oneplusone.util.ProductItemRecyclerAdapterStateManagement
+import com.example.oneplusone.util.UpdateCheckDialog
 import com.example.oneplusone.viewModel.DataBaseViewModel
 import com.example.oneplusone.viewModel.FilterDataViewModel
 import com.example.oneplusone.viewModel.MainFilterViewModel
@@ -94,6 +96,7 @@ class HomeFragment : Fragment() {
 
         moveSearchActivity()
 
+
     }
 
 
@@ -101,7 +104,11 @@ class HomeFragment : Fragment() {
         initMainFilterAdapter()
         initProductFilterAdapter()
         initProductItemRecyclerAdapter()
-        productItemRecyclerAdapterStateManagement()
+        ProductItemRecyclerAdapterStateManagement(
+            adapter = productItemRecyclerAdapter,
+            loadingImage = binding.progressBarImage,
+            emptyImage = binding.emptyProduct
+        )
     }
 
     private fun moveSearchActivity() {
@@ -116,6 +123,9 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun setMonth(){
+
+    }
 
     private fun setupDataBinding() {
         binding.apply {
@@ -180,50 +190,7 @@ class HomeFragment : Fragment() {
 
         binding.productGridView.addItemDecoration(productSpacingController)
 
-
-
     }
-
-    //상품이 존재하지 않을때를 표시하기 위해
-    private fun productItemRecyclerAdapterStateManagement(){
-        productItemRecyclerAdapter.addLoadStateListener { loadState ->
-
-            val isLoading = loadState.source.refresh is LoadState.Loading ||
-                    loadState.source.prepend is LoadState.Loading ||
-                    loadState.source.append is LoadState.Loading
-
-
-
-            val isEmpty = productItemRecyclerAdapter.itemCount < 1
-
-            val productEmptyImage=binding.emptyProduct
-            val productLoadingImage=binding.progressBar
-
-            if (isLoading) {
-                // 로드 중 이미지
-                Log.d("로딩", "로드중")
-                productLoadingImage.visibility = View.VISIBLE
-
-                productEmptyImage.visibility = View.GONE
-            }else if (isEmpty) {
-                // 아이템이 없을 때
-                Log.d("로딩", "빔")
-                productEmptyImage.visibility = View.VISIBLE
-                productLoadingImage.visibility = View.GONE
-
-
-            } else {
-                // 아이템이 있을 때
-                Log.d("로딩", "있음")
-                productEmptyImage.visibility = View.GONE
-                productLoadingImage.visibility = View.GONE
-
-
-            }
-        }
-    }
-
-
 
     private fun observeMainFilterViewModel() {
         mainFilterViewModel.mainFilterDataList.observe(viewLifecycleOwner, Observer { mainFilterData ->
@@ -278,6 +245,10 @@ class HomeFragment : Fragment() {
             this.productNameList=productNameList
         })
 
+        productDataViewModel.notifyMonth.observe(viewLifecycleOwner, Observer { notifyMonth ->
+            binding.notifyMonth.text=notifyMonth
+        })
+
 
     }
     @SuppressLint("NotifyDataSetChanged")
@@ -314,6 +285,8 @@ class HomeFragment : Fragment() {
     }
     private fun observeDataBaseViewModel() {
 
+        val updateCheckDialog=UpdateCheckDialog(requireContext())
+
 
         dbViewModel.favoriteProducts.observe(viewLifecycleOwner, Observer { favoriteProductData ->
             productDataViewModel.loadFavoriteProduct(favoriteProductData)
@@ -343,13 +316,15 @@ class HomeFragment : Fragment() {
             Log.d("mainFilterDataList", mainFilterDataList.toString())
             Log.d("mainFilterDataList", serverConnectProcessState.toString())
 
+
             if (mainFilterDataList != null && serverConnectProcessState==true) {
+
                 dbViewModel.loadFavoriteProducts()
                 dbViewModel.loadProductDataList()
                 //서버에서 업데이트가 있는지 확인후 db에 넣는동안 로딩바와 안내 텍스트를 보여줌
-                binding.progressBar.visibility = View.GONE
+                updateCheckDialog.dismiss()
             }else{
-                binding.progressBar.visibility = View.VISIBLE
+                updateCheckDialog.show()
             }
 
         })

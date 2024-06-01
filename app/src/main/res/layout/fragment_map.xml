@@ -146,10 +146,10 @@
                 android:alpha="0.4"
                 android:orientation="horizontal"
                 android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@id/map_product_grid_view"
+                app:layout_constraintBottom_toBottomOf="@id/map_product_layout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/map_product_grid_view">
+                app:layout_constraintTop_toTopOf="@id/map_product_layout">
 
 
                 <ImageView
@@ -184,16 +184,20 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
+            <com.github.ybq.android.spinkit.SpinKitView
+                android:id="@+id/progressBarImage"
+                style="@style/SpinKitView.Large.Wave"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="150dp"
+                android:alpha="0.7"
+
+                app:SpinKit_Color="#87CEEB"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/map_product_grid_view"
-                app:layout_constraintBottom_toBottomOf="@id/map_product_grid_view"
-                android:layout_centerInParent="true"
-                android:visibility="gone" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/map_product_layout" />
 
 
 
