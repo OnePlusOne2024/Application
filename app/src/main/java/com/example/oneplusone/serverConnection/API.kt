@@ -2,6 +2,7 @@ package com.example.oneplusone.serverConnection
 
 import com.example.oneplusone.db.ProductData
 import com.example.oneplusone.model.data.ServerConvenienceResult
+import com.example.oneplusone.model.data.ServerProductSearchRankingResult
 import com.example.oneplusone.model.data.ServerResponse
 import retrofit2.Call
 import retrofit2.Response
@@ -27,6 +28,12 @@ interface API {
         @Query("longitude")longitude: String?,
     ): Response<ServerConvenienceResult>
 
+
+    @POST("/postSearchText")
+    suspend fun postSearchText(@Body searchText:String)
+
+    @GET("/api/v1/product/read_all")
+    suspend fun getProductSearchRanking(): Response<ServerProductSearchRankingResult>
 
     //상품 정보들을 가져옴//하나로 통일
     @GET("product/GS25")

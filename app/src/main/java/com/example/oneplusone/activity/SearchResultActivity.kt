@@ -277,6 +277,9 @@ class SearchResultActivity : AppCompatActivity() {
 
             //검색한 데이터를 저장함
             searchViewModel.saveSearchText(this@SearchResultActivity,newSearchText)
+
+            //서버에서 인기 검색어를 계산하기 위해 새로 검색할때마다 서버로 전송
+            searchViewModel.postCurrentSearchText(newSearchText)
         }
         searchViewModel.searchTextCheckResult.observe(this) { searchTextCheckResult ->
             Log.d("searchTextResult", searchTextCheckResult.toString())

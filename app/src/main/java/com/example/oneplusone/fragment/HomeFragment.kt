@@ -198,9 +198,7 @@ class HomeFragment : Fragment() {
             mainFilterAdapter.submitList(mainFilterData)
 //            productDataViewModel.setCurrentMainFilterData(mainFilterData)
             dbViewModel.setCurrentMainFilterData(mainFilterData)
-            //메인필터의 값이 바뀔때마다 아이템들을 새로 불러옴
-//            dbViewModel.loadFavoriteProducts()
-//            dbViewModel.loadProductDataList()
+
 
         })
 

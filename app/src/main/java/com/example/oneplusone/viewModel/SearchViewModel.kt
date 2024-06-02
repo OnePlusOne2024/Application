@@ -52,7 +52,19 @@ class SearchViewModel @Inject constructor(
     }
 
     fun loadProductRankingList(){
-        _productRanking.value=productRankingDataRepository.loadProductRankingData()
+//        _productRanking.value=
+            productRankingDataRepository.loadProductRankingData { productSearchRanking ->
+            Log.d("serverProductData", productSearchRanking.toString())
+            if (productSearchRanking != null) {
+                if(productSearchRanking.success){
+                    _productRanking.value=productSearchRanking.result
+                }else{
+                    _productRanking.value= emptyList()
+                }
+            }else{
+                _productRanking.value=emptyList()
+            }
+        }
     }
 
 
@@ -133,5 +145,9 @@ class SearchViewModel @Inject constructor(
 
             this._searchText.value=searchText
         }
+    }
+
+    fun postCurrentSearchText(searchText: String){
+        productRankingDataRepository.postCurrentSearchText(searchText)
     }
 }

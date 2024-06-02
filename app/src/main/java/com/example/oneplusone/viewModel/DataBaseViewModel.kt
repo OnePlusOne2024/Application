@@ -123,7 +123,7 @@ class DataBaseViewModel@Inject constructor(
         }
     }
 
-    fun deleteAllFavoriteProduct(){
+    private fun deleteAllFavoriteProduct(){
         viewModelScope.launch {
             dbRepository.deleteAllFavoriteProductList()
         }

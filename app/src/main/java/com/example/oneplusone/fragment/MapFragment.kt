@@ -90,9 +90,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     lateinit var locationPermission: ActivityResultLauncher<Array<String>>
 
     //위치 서비스가 gps를 사용해서 위치를 확인
-    lateinit var fusedLocationClient: FusedLocationProviderClient
 
-    lateinit var locationCallback: LocationCallback
 
 
 //todo 코드 너무 중구난방으로 나누어져 있음, 맵메인뷰모델을 꼭 써야하는지 생각해보기, 디자인 구림,
@@ -112,10 +110,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         binding = FragmentMapBinding.inflate(inflater, container, false)
 
-//        @SuppressLint("InflateParams")
-//        markerView = LayoutInflater.from(requireContext()).inflate(R.layout.custom_marker, null)
-//        tagMarker = markerView.findViewById(R.id.custom_marker)
-
         binding.mapView.onCreate(savedInstanceState)
         binding.mapView.getMapAsync(this)
 
@@ -131,12 +125,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         setupDataBinding()
         observeSetting()
         mapZipperTouch()
-//        onMarkerClickListener()
+
 
         locationPermissionCheck()
         locationPermissionLaunch()
-        //todo:지도에 편의점 띄우기 + 터치시 상품뷰 출력
-        dbViewModel.loadFavoriteProducts()
+
 
         //임시로 초기 상품뷰의 높이 설정
         binding.mapProductLayout.layoutParams.height=(screenHeight * 0.4).toInt()
@@ -164,9 +157,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         locationPermission = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()){ results ->
             if(results.all{it.value}){
-
-            }else{ //문제가 발생했을 때
-                Toast.makeText(requireContext(),"권한 승인이 필요합니다.",Toast.LENGTH_LONG).show()
+                updateLocation()
+            }else{
+                //문제가 발생했을 때
+                Toast.makeText(requireContext(),"권한 승인이 필요 합니다.",Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -286,10 +280,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun observeMainFilterViewModel() {
         mapMainFilterViewModel.mainFilterDataList.observe(viewLifecycleOwner, Observer { mainFilterData ->
             mainFilterAdapter.submitList(mainFilterData)
-//            productDataViewModel.setCurrentMainFilterData(mainFilterData)
 
             dbViewModel.setCurrentMainFilterData(mainFilterData)
-//            dbViewModel.loadProductDataList()
 
         })
     }
@@ -391,12 +383,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
             if (convenienceData != null) {
                 if (convenienceData.isEmpty()) {
-                    Toast.makeText(requireContext(), "500M 이내에 편의점이 존재하지 않습니다.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(requireContext(), "1KM 이내에 편의점이 존재하지 않습니다.", Toast.LENGTH_LONG).show()
                 } else {
                     for (i in convenienceData.indices) {
                         addMarker(convenienceData[i], false)
                     }
-                    Toast.makeText(requireContext(),"500M 이내의 편의점을 불러왔습니다.",Toast.LENGTH_LONG).show()
+                    Toast.makeText(requireContext(),"1KM 이내의 편의점을 불러왔습니다.",Toast.LENGTH_LONG).show()
                 }
             } else {
                 Toast.makeText(requireContext(), "편의점 정보를 가져오는데 실패했습니다.", Toast.LENGTH_LONG).show()
@@ -443,10 +435,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
-//        val point = LatLng(37.514655, 126.979974)
-//        googleMap.addMarker(MarkerOptions().position(point))
-        updateLocation()
-//        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(37.514655, 126.979974), 12f))
+
+
         observeConvenienceData()
         setMarkerClickListener()
     }
@@ -458,7 +448,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         //setMinUpdateDistanceMeters는 거리 변화의 업데이트 1000F는 1키로
         //setWaitForAccurateLocation는 정확한 위치를 기다릴리 여부
         val locationRequest=LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 3000).apply {
-            setMinUpdateDistanceMeters(500f)
+            setMinUpdateDistanceMeters(100f)
             setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
             setWaitForAccurateLocation(true)
         }.build()
