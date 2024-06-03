@@ -136,11 +136,9 @@ class ProductDataViewModel @Inject constructor(
 
         productDataRepository.getProductDataList(loadConnectTime) { serverProductData ->
             Log.d("serverProductData", serverProductData.toString())
-            if (serverProductData != null) {
-                _serverProductDataList.value=serverProductData
-            }else{
-                _serverProductDataList.value=null
-            }
+
+            _serverProductDataList.value=serverProductData
+
         }
     }
 
@@ -164,7 +162,7 @@ class ProductDataViewModel @Inject constructor(
 
 
 
-    fun convertProductDataType(favoriteProduct: List<FavoriteProductModel>): List<ProductData> {
+    private fun convertProductDataType(favoriteProduct: List<FavoriteProductModel>): List<ProductData> {
         return favoriteProduct.map { product ->
             ProductData(
                 id = product.id.toLong(),

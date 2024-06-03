@@ -58,6 +58,7 @@ import kotlinx.coroutines.launch
 import android.Manifest
 import android.os.Looper
 import com.example.oneplusone.util.ProductItemRecyclerAdapterStateManagement
+import com.example.oneplusone.util.UpdateCheckDialog
 import com.google.android.gms.location.Granularity
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -157,6 +158,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         locationPermission = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()){ results ->
             if(results.all{it.value}){
+
                 updateLocation()
             }else{
                 //문제가 발생했을 때
@@ -243,7 +245,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         binding.mainFilterViewer.adapter = mainFilterAdapter
 //        binding.mainFilterViewer.addItemDecoration(filterSpacingController)
     }
-
 
     private fun initProductFilterAdapter() {
         productFilterAdapter = ProductFilterRecyclerAdapter(object : FilterClickListener {
@@ -444,6 +445,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     @SuppressLint("MissingPermission")
     fun updateLocation(){
 
+        val updateCheckDialog= UpdateCheckDialog(requireContext())
+        //사용자위 위치를 가져오는 동안 터치 막기
+        updateCheckDialog.show()
+
         //intervalMillis는 업데이트 단위 1초
         //setMinUpdateDistanceMeters는 거리 변화의 업데이트 1000F는 1키로
         //setWaitForAccurateLocation는 정확한 위치를 기다릴리 여부
@@ -459,6 +464,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     if(location==null){
                         Toast.makeText(requireContext(),"사용자의 위치를 가져오는데 오류가 발생했습니다.",Toast.LENGTH_LONG).show()
                     }
+                    //위치를 가져오면 풀어줌
+                    updateCheckDialog.dismiss()
                     productDataViewModel.setCoordinate(location.latitude,location.longitude)
                     Log.d("위치정보", "위도: ${location.latitude} 경도: ${location.longitude}")
 
@@ -466,7 +473,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
         }
 
-        // 권한 처리 후
+
         LocationServices.getFusedLocationProviderClient(requireContext()).requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper())
     }
 

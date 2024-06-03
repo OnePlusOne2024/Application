@@ -59,13 +59,23 @@ class MapDataViewModel  @Inject constructor(
 
     private fun convertConvenienceDataType(serverConvenienceData: List<ServerConvenienceData>): List<ConvenienceData> {
         return serverConvenienceData.map { convenience ->
+
+            val serverConvenienceType = when (convenience.convBrandName) {
+                "EMART" -> "이마트 24"
+                "SEVENELEVEN" -> "세븐 일레븐"
+                else -> convenience.convBrandName
+            }
+
+            // 변환된 브랜드 이름을 사용하여 ConvenienceData 객체를 생성합니다.
             ConvenienceData(
-                convenienceType=convenience.convBrandName,
+                convenienceType = serverConvenienceType,
                 convenienceName = convenience.convName,
                 convenienceAddress = convenience.convAddr,
-                conveniencePosition = LatLng(convenience.latitude,convenience.longitude)
+                conveniencePosition = LatLng(convenience.latitude, convenience.longitude)
             )
         }
     }
+
+
 
 }

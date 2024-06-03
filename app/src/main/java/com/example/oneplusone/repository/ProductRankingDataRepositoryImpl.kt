@@ -44,16 +44,5 @@ class ProductRankingDataRepositoryImpl @Inject constructor()
         }
     }
 
-//    override fun loadProductRanking() {
-//        RetrofitBuilder.api.getProductRanking().enqueue(object : Callback<List<String>> {
-//            override fun onResponse(call: Call<List<String>>, response: Response<List<String>>) {
-//                if (response.isSuccessful) {
-//                    val productRankingList = response.body()
-//                }
-//            }
-//
-//            override fun onFailure(call: Call<List<String>>, t: Throwable) {
-//            }
-//        })
-//    }
+
 }

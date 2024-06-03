@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:fontFamily="@font/scdream5"
-        android:text="업데이트를 확인하고 있습니다."
+        android:text="정보를 가져오고 있습니다."
         android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

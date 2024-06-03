@@ -196,12 +196,22 @@ class DataBaseViewModel@Inject constructor(
 
 
     private fun convertServerProductDataToDBData(serverProductDate:List<ServerProductData>): List<ProductData> {
+
+
+
         return serverProductDate.map { product ->
+
+            val serverConvenienceType = when (product.convname) {
+                "EMART" -> "이마트 24"
+                "SEVENELEVEN" -> "세븐 일레븐"
+                else -> product.convname
+            }
+
             ProductData(
                 id = null,
                 productName = product.name,
                 productPrice = product.price,
-                brand = product.convname,
+                brand = serverConvenienceType,
                 benefits = product.event,
                 productImage = product.image,
                 favorite = false,
