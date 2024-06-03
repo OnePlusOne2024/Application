@@ -66,7 +66,6 @@ class MapDataViewModel  @Inject constructor(
                 else -> convenience.convBrandName
             }
 
-            // 변환된 브랜드 이름을 사용하여 ConvenienceData 객체를 생성합니다.
             ConvenienceData(
                 convenienceType = serverConvenienceType,
                 convenienceName = convenience.convName,

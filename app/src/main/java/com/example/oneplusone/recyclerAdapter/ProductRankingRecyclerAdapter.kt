@@ -23,14 +23,11 @@ class ProductRankingRecyclerAdapter(
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
         //10개 미만이면 공백으로 채움
-        val productName = if (position < currentList.size) getItem(position) else ""
+        val productName = getItem(position)
 
         holder.bind(productName,rankingProductTextClickListener)
     }
-    override fun getItemCount(): Int {
-        //강제로 10개 채우려고 작성
-        return if (currentList.size < 10) 10 else currentList.size
-    }
+
     class Holder(private val binding: ProductRankingBinding) :
         RecyclerView.ViewHolder(binding.root) {
 

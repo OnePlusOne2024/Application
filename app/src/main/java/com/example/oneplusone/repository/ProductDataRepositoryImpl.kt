@@ -53,7 +53,7 @@ class ProductDataRepositoryImpl @Inject constructor(
                     Log.d("연결 성공", response.body().toString())
                     response.body()
                 } else {
-                    Log.d("연결 실패","실패")
+                    Log.d("연결 실패", response.body().toString())
                     null
                 }
             } catch (e: Exception) {

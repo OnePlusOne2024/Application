@@ -1,9 +1,11 @@
 package com.example.oneplusone.serverConnection
 
 import com.example.oneplusone.db.ProductData
+import com.example.oneplusone.model.data.ProductRanking
 import com.example.oneplusone.model.data.ServerConvenienceResult
 import com.example.oneplusone.model.data.ServerProductSearchRankingResult
 import com.example.oneplusone.model.data.ServerResponse
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
@@ -29,11 +31,11 @@ interface API {
     ): Response<ServerConvenienceResult>
 
 
-    @POST("/postSearchText")
-    suspend fun postSearchText(@Body searchText:String)
+    @POST("/api/v1/product/search")
+    suspend fun postSearchText(@Query("productName")productName: String):Response<ResponseBody>
 
-    @GET("/api/v1/product/read_all")
-    suspend fun getProductSearchRanking(): Response<ServerProductSearchRankingResult>
+    @GET("/api/v1/product/topSearched")
+    suspend fun getProductSearchRanking(): Response<List<ProductRanking>>
 
     //상품 정보들을 가져옴//하나로 통일
     @GET("product/GS25")

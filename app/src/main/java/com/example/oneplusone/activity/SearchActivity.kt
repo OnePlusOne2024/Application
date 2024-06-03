@@ -127,6 +127,7 @@ class SearchActivity : AppCompatActivity() {
     }
     private fun observeProductRanking(){
         searchViewModel.productRanking.observe(this) { productRanking ->
+            Log.d("productRanking", productRanking.toString())
             productRankingAdapter.submitList(productRanking)
         }
     }
@@ -136,7 +137,11 @@ class SearchActivity : AppCompatActivity() {
             recentSearchRecyclerAdapter.submitList(recentSearchList)
 
             //최근검색어의 수를 표시
-            binding.recentSearchCount.text= "${recentSearchList?.size}/20"
+            binding.recentSearchCount.text=recentSearchList?.let{
+                "${recentSearchList.size}/20"
+            }?:"0/20"
+
+
 
         }
     }

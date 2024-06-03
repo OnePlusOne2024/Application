@@ -22,6 +22,8 @@
             android:paddingEnd="10dp"
             android:text="상품"
             android:textColor="#000000"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:textSize="15dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"

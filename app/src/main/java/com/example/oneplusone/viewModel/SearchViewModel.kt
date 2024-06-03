@@ -1,17 +1,13 @@
 package com.example.oneplusone.viewModel
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.oneplusone.repository.ProductDataRepository
+import com.example.oneplusone.model.data.ProductRanking
 import com.example.oneplusone.repository.ProductRankingDataRepository
 import com.example.oneplusone.util.SearchTextCheck
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -21,7 +17,7 @@ class SearchViewModel @Inject constructor(
 ): ViewModel() {
 
     private val _productNameList=MutableLiveData<List<String>>()
-    private val _productRanking=MutableLiveData<List<String>>()
+    private val _productRanking=MutableLiveData<List<String>?>()
     private val _recentSearchList=MutableLiveData<MutableList<String>?>()
     private val _inputText=MutableLiveData<String>()
     private val _searchText=MutableLiveData<String>()
@@ -33,7 +29,7 @@ class SearchViewModel @Inject constructor(
     val productNameList: LiveData<List<String>>
         get() = _productNameList
 
-    val productRanking: LiveData<List<String>>
+    val productRanking: LiveData<List<String>?>
         get() = _productRanking
 
     val recentSearchList: LiveData<MutableList<String>?>
@@ -51,21 +47,26 @@ class SearchViewModel @Inject constructor(
         _productNameList.value = productNamesList
     }
 
-    fun loadProductRankingList(){
-//        _productRanking.value=
-            productRankingDataRepository.loadProductRankingData { productSearchRanking ->
+    fun loadProductRankingList() {
+        productRankingDataRepository.loadProductRankingData { productSearchRanking ->
             Log.d("serverProductData", productSearchRanking.toString())
-            if (productSearchRanking != null) {
-                if(productSearchRanking.success){
-                    _productRanking.value=productSearchRanking.result
-                }else{
-                    _productRanking.value= emptyList()
-                }
-            }else{
-                _productRanking.value=emptyList()
-            }
+            val productRankingList = productSearchRanking?.let {
+                convertProductRankingListToString(it)
+            } ?: emptyList()
+            _productRanking.value = paddingProductSearchRanking(productRankingList)
         }
     }
+
+    private fun convertProductRankingListToString(productSearchRanking: List<ProductRanking>): List<String> =
+        productSearchRanking.map { singleProductName ->
+            Log.d("singleProductName", singleProductName.productName)
+            singleProductName.productName
+        }
+
+    private fun paddingProductSearchRanking(productSearchRanking: List<String>): List<String> =
+        productSearchRanking.toMutableList().apply {
+            while (size < 10) add("")
+        }
 
 
     fun loadRecentSearchList(context: Context){
