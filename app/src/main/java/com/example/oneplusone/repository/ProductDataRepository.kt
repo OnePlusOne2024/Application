@@ -14,7 +14,7 @@ interface ProductDataRepository {
 
     fun getUpdateInfoCheck(lastConnectTime: String?, callback: (Boolean) -> Unit)
 
-    fun getProductDataList(lastConnectTime: String?,callback: (ServerResponse?) -> Unit)
+    fun getProductDataList(lastConnectTime: String,callback: (ServerResponse?) -> Unit)
 
     fun getConvenienceData(userCoordinate: LatLng,callback: (ServerConvenienceResult?) -> Unit)
 

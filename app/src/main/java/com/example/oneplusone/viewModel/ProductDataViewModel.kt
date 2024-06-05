@@ -131,7 +131,7 @@ class ProductDataViewModel @Inject constructor(
 
 
     //서버에서 상품 목록을 가져옴
-    fun getProductDataFromServer(loadConnectTime: String?) {
+    fun getProductDataFromServer(loadConnectTime: String) {
         Log.d("실행됨", "serverProductData.toString()")
 
         productDataRepository.getProductDataList(loadConnectTime) { serverProductData ->

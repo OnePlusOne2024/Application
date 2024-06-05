@@ -50,19 +50,16 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun loadConnectTime(context: Context): String? {
+    private fun loadConnectTime(context: Context): String {
         val sharedPreferences = context.getSharedPreferences("LastConnectTime", Context.MODE_PRIVATE)
-        val lastConnectTime = sharedPreferences.getString("lastConnectTime",null)
+        var lastConnectTime = sharedPreferences.getString("lastConnectTime",null)
         val editor = sharedPreferences.edit()
 
-
-        //접속했으면 현재 날짜를 등록
+        if(lastConnectTime==null){
+            lastConnectTime= LocalDateTime.of(1999, 1, 1, 0, 0).toString()
+        }
         editor.putString("lastConnectTime", getCurrentDate().toString())
         editor.apply()
-
-
-        Log.d("dateTime", lastConnectTime.toString())
-
 
         return lastConnectTime
         //서버와 통신해서 데이터를 가져와야함, 만약 null이라면 처음 접속한것이기 때문에 다가져와야함

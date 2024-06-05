@@ -39,11 +39,10 @@ class ProductDataRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getProductDataList(lastConnectTime: String?,callback: (ServerResponse?) -> Unit) {
+    override fun getProductDataList(lastConnectTime: String,callback: (ServerResponse?) -> Unit) {
 
-        if (lastConnectTime != null) {
-            Log.d("lastConnectTime",lastConnectTime)
-        }
+        Log.d("lastConnectTime",lastConnectTime)
+
         CoroutineScope(Dispatchers.IO).launch {
             val result = try {
                 val response = RetrofitBuilder.api.getProductList(lastConnectTime)
@@ -58,6 +57,7 @@ class ProductDataRepositoryImpl @Inject constructor(
                 }
             } catch (e: Exception) {
                 Log.d("연결 실패", e.toString())
+                Log.d("연결 실패", "접속실패")
                 null
             }
             withContext(Dispatchers.Main) {

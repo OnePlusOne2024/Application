@@ -49,7 +49,6 @@ class ProductDataPagingSource(
             delay(500)
 
 
-
             // 반환할 데이터
             LoadResult.Page(
                 data = data,
@@ -73,7 +72,6 @@ class ProductDataPagingSource(
     }
 
     private fun loadFilteredProductData(productData: List<ProductData>): List<ProductData> {
-
 
         return productData.filter { product ->
             mainFilterDataList.all { filter ->

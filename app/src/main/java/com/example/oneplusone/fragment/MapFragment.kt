@@ -337,6 +337,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             //업데이트된 좌표로 카메라를 이동시키고 서버에서 편의점 리스트를 불러옴
             googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(userCoordinate.latitude, userCoordinate.longitude), 15f))
 
+
+            val markerOptions = MarkerOptions()
+                .position(userCoordinate)
+                .title("현재 위치")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+
+            googleMap?.addMarker(markerOptions)
             mapDataViewModel.loadConvenienceDataFromServer(userCoordinate)
         })
 
