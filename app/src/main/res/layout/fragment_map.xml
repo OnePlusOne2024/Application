@@ -29,7 +29,7 @@
         android:id="@+id/mapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#E3E3E3">
+        android:background="#ffffff">
 
 
         <com.google.android.gms.maps.MapView
@@ -48,6 +48,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:visibility="gone"
+
             android:background="@drawable/map_view_product_border"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -67,61 +68,36 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:id="@+id/product_filter_bar"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/main_filter_viewer"
                 android:layout_width="match_parent"
-                android:layout_height="85dp"
+                android:layout_height="wrap_content"
+
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="10dp"
-                android:background="#ffffff"
-                android:elevation="10dp"
+                android:elevation="12dp"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintBottom_toTopOf="@id/filter_viewer"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/product_filter" />
 
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/main_filter_viewer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:elevation="12dp"
-                android:layout_marginStart="8dp"
-                android:orientation="horizontal"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-
-                app:layout_constraintBottom_toBottomOf="@id/product_filter_bar"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/product_filter_bar" />
-
-
-            <ImageView
-                android:id="@+id/filter_bar_detail"
-                android:layout_width="match_parent"
-                android:layout_height="85dp"
-
-                android:background="#ffffff"
-                android:elevation="10dp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toTopOf="@+id/map_product_grid_view"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/product_filter_bar" />
-            <!--            filterBar="@{filterDataViewModel.filterBar}"/>-->
-
-
-            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/filter_viewer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:elevation="10dp"
+
                 android:layout_marginStart="8dp"
                 android:orientation="horizontal"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-
-                app:layout_constraintBottom_toBottomOf="@id/filter_bar_detail"
+                android:elevation="12dp"
+                app:layout_constraintBottom_toTopOf="@id/map_product_grid_view"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/filter_bar_detail" />
+                app:layout_constraintTop_toBottomOf="@id/main_filter_viewer" />
+
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/map_product_grid_view"
@@ -130,12 +106,12 @@
 
                 android:clipToPadding="false"
                 android:paddingBottom="75dp"
-
+                android:background="#E3E3E3"
                 app:layoutManager="GridLayoutManager"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/filter_bar_detail"
+                app:layout_constraintTop_toBottomOf="@+id/filter_viewer"
 
                 app:spanCount="2" />
 

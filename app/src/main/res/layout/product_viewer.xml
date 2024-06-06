@@ -57,7 +57,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_marginTop="35dp"
-
+            android:src="@drawable/example_product_image2"
             productImage="@{productData.productImage}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -75,6 +75,7 @@
             android:paddingBottom="7dp"
             android:text="행사 종류"
             android:textSize="12dp"
+            android:src="@drawable/one_plus_one_product_icon"
             benefitsImage="@{productData.benefits}"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -89,7 +90,7 @@
             android:paddingTop="10dp"
             android:paddingEnd="10dp"
             android:paddingBottom="7dp"
-
+            android:src="@drawable/gs25_product_icon"
             brandImage="@{productData.brand}"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

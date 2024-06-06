@@ -172,7 +172,7 @@ class FavoriteFragment : Fragment() {
 
         })
         filterDataViewModel.filterBar.observe(viewLifecycleOwner, Observer { isVisible  ->
-            FilterAnimated().viewAnimated(isVisible,binding.filterBarDetail)
+//            FilterAnimated().viewAnimated(isVisible,binding.filterBarDetail)
 
         })
 

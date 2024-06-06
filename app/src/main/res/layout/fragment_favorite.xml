@@ -23,7 +23,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#E3E3E3"
+        android:background="#ffffff"
         android:id="@+id/favoriteFragment">
 
         <TextView
@@ -40,45 +40,20 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/product_filter_bar"
-            android:layout_width="match_parent"
-            android:layout_height="85dp"
-            android:layout_marginTop="10dp"
-            android:elevation="10dp"
-            android:background="#ffffff"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/product_filter" />
-
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/main_filter_viewer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:elevation="12dp"
+
             android:layout_marginStart="8dp"
+            android:layout_marginTop="10dp"
+            android:elevation="12dp"
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-
-            app:layout_constraintBottom_toBottomOf="@id/product_filter_bar"
+            app:layout_constraintBottom_toTopOf="@id/filter_viewer"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/product_filter_bar" />
-
-        <ImageView
-            android:id="@+id/filter_bar_detail"
-            android:layout_width="match_parent"
-            android:layout_height="85dp"
-
-            android:background="#ffffff"
-            android:visibility="gone"
-            android:elevation="10dp"
-            app:layout_constraintBottom_toTopOf="@+id/product_grid_view"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/product_filter_bar" />
-        <!--            filterBar="@{filterDataViewModel.filterBar}"/>-->
+            app:layout_constraintTop_toBottomOf="@id/product_filter" />
 
 
         <androidx.recyclerview.widget.RecyclerView
@@ -90,16 +65,19 @@
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             android:elevation="12dp"
-            app:layout_constraintBottom_toBottomOf="@id/filter_bar_detail"
+            app:layout_constraintBottom_toTopOf="@id/product_grid_view"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/filter_bar_detail" />
+            app:layout_constraintTop_toBottomOf="@id/main_filter_viewer" />
+
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/product_grid_view"
-
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginTop="10dp"
+            android:background="#E3E3E3"
             android:clipToPadding="false"
             android:paddingBottom="75dp"
             app:layoutManager="GridLayoutManager"
@@ -107,9 +85,10 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/filter_bar_detail"
+            app:layout_constraintTop_toBottomOf="@+id/filter_viewer"
             app:layout_constraintVertical_bias="0.0"
             app:spanCount="2" />
+
 
 
         <androidx.constraintlayout.widget.ConstraintLayout

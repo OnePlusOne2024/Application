@@ -295,7 +295,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         filterDataViewModel.filterBar.observe(viewLifecycleOwner, Observer { isVisible  ->
             //사라질 때 시각적으로 버벅 거림이 느껴져서 애니메이션으로 부드럽게 바꿨음
-            FilterAnimated().viewAnimated(isVisible,binding.filterBarDetail)
+//            FilterAnimated().viewAnimated(isVisible,binding.filterBarDetail)
 
         })
 
@@ -334,6 +334,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         productDataViewModel.userCoordinate.observe(viewLifecycleOwner, Observer { userCoordinate ->
 
+
+            googleMap?.clear()
             //업데이트된 좌표로 카메라를 이동시키고 서버에서 편의점 리스트를 불러옴
             googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(userCoordinate.latitude, userCoordinate.longitude), 15f))
 
