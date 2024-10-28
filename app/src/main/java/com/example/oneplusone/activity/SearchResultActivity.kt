@@ -194,7 +194,7 @@ class SearchResultActivity : AppCompatActivity() {
 
         filterDataViewModel.filterBar.observe(this) { isVisible  ->
             //사라질 때 시각적으로 버벅 거림이 느껴져서 애니메이션으로 부드럽게 바꿨음
-            FilterAnimated().viewAnimated(isVisible,binding.filterBarDetail)
+//            FilterAnimated().viewAnimated(isVisible,binding.filterBarDetail)
 
         }
 
